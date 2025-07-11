@@ -30,33 +30,35 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
       )}
       <div
         className={cn(
-          "fixed right-0 top-0 h-full w-full sm:w-96 max-w-full bg-background border-l z-50 transform transition-transform duration-300 ease-in-out",
+          "fixed right-0 top-0 h-full w-full sm:w-[400px] max-w-full bg-background border-l z-50 transform transition-transform duration-300 ease-in-out",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
-        <Card className="h-full rounded-none border-0 bg-card text-card-foreground">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-6 px-6 border-b border-border/50">
-            <CardTitle className="text-xl font-sans flex items-center gap-2">
-              <ShoppingBag className="w-5 h-5" />
+        <Card className="h-full rounded-2xl border-none bg-card text-black shadow-xl">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-6 px-6 border-b border-border/30">
+            <CardTitle className="text-xl font-sans flex items-center gap-2 text-black">
+              <ShoppingBag className="w-5 h-5 text-secondary" />
               Carrinho
             </CardTitle>
             <Button
               variant="ghost"
               size="sm"
               onClick={onClose}
-              className="hover:bg-muted/60"
+              className="hover:bg-secondary/20 rounded-full"
             >
-              <X className="h-4 w-4" />
+              <X className="h-4 w-4 text-black" />
             </Button>
           </CardHeader>
-          <CardContent className="flex flex-col h-full px-6 py-0">
+          <CardContent className="flex flex-col h-full px-4 py-0">
             {cart.length === 0 ? (
               <div className="flex-1 flex items-center justify-center text-center text-muted-foreground">
                 <div className="space-y-3">
-                  <ShoppingBag className="w-12 h-12 mx-auto opacity-50" />
+                  <ShoppingBag className="w-12 h-12 mx-auto opacity-50 text-secondary" />
                   <div>
-                    <p className="font-medium">Seu carrinho está vazio</p>
-                    <p className="text-sm">
+                    <p className="font-semibold text-black">
+                      Seu carrinho está vazio
+                    </p>
+                    <p className="text-sm text-muted-foreground">
                       Adicione alguns produtos para começar
                     </p>
                   </div>
@@ -68,16 +70,16 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
                   {cart.map((item) => (
                     <div
                       key={item.id}
-                      className="flex gap-4 p-4 border rounded-xl border-border/50 bg-muted/20 hover:bg-muted/30 transition-colors"
+                      className="flex gap-4 p-3 border rounded-xl border-transparent bg-card hover:bg-muted/40 transition-colors"
                     >
-                      <div className="w-20 h-20 bg-muted/50 rounded-lg overflow-hidden flex-shrink-0 relative border border-border/30">
+                      <div className="w-16 h-16 bg-muted/40 rounded-lg overflow-hidden flex-shrink-0 relative border border-muted/30">
                         {item.image ? (
                           <Image
                             src={item.image}
                             alt={item.name}
                             fill
                             className="object-cover"
-                            sizes="80px"
+                            sizes="64px"
                             priority={false}
                           />
                         ) : (
@@ -86,9 +88,9 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
                           </div>
                         )}
                       </div>
-                      <div className="flex-1 min-w-0 space-y-3">
+                      <div className="flex-1 min-w-0 space-y-2">
                         <div>
-                          <h4 className="font-semibold text-sm truncate font-sans">
+                          <h4 className="font-semibold text-sm truncate font-sans text-black">
                             {item.name}
                           </h4>
                           <p className="text-sm text-muted-foreground font-sans">
@@ -96,18 +98,18 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
                           </p>
                         </div>
                         <div className="flex items-center gap-3">
-                          <div className="flex items-center gap-2 bg-background border border-border rounded-lg px-2 py-1">
+                          <div className="flex items-center gap-2 bg-background border border-muted rounded-xl px-2 py-1">
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() =>
                                 updateQuantity(item.id, item.quantity - 1)
                               }
-                              className="h-6 w-6 p-0 hover:bg-muted"
+                              className="h-7 w-7 p-0 hover:bg-secondary/20 rounded-full"
                             >
-                              <Minus className="h-3 w-3" />
+                              <Minus className="h-4 w-4" />
                             </Button>
-                            <span className="text-sm font-medium w-6 text-center">
+                            <span className="text-base font-semibold w-6 text-center text-black">
                               {item.quantity}
                             </span>
                             <Button
@@ -116,16 +118,16 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
                               onClick={() =>
                                 updateQuantity(item.id, item.quantity + 1)
                               }
-                              className="h-6 w-6 p-0 hover:bg-muted"
+                              className="h-7 w-7 p-0 hover:bg-secondary/20 rounded-full"
                             >
-                              <Plus className="h-3 w-3" />
+                              <Plus className="h-4 w-4" />
                             </Button>
                           </div>
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => removeFromCart(item.id)}
-                            className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive"
+                            className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive rounded-full"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -134,27 +136,26 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
                     </div>
                   ))}
                 </div>
-                <div className="border-t border-border/50 pt-6 space-y-4">
+                <div className="border-t border-muted pt-6 space-y-4">
                   <div className="flex justify-between items-center">
-                    <span className="font-semibold font-sans text-lg">
+                    <span className="font-semibold font-sans text-lg text-black">
                       Total:
                     </span>
-                    <span className="text-2xl font-bold text-primary font-sans">
+                    <span className="text-2xl font-bold text-secondary font-sans">
                       R$ {getTotalPrice().toFixed(2).replace(".", ",")}
                     </span>
                   </div>
                   <div className="space-y-3">
                     <Button
                       onClick={handleCheckout}
-                      className="w-full font-semibold py-6 text-base hover:scale-[1.02] transition-transform duration-200"
+                      className="w-full font-semibold py-5 text-base rounded-2xl bg-green-500 text-white hover:bg-green-600 hover:animate-pulse shadow-md hover:shadow-lg transition-all duration-300"
                       disabled={cart.length === 0}
                     >
                       Finalizar Compra
                     </Button>
                     <Button
-                      variant="outline"
                       onClick={clearCart}
-                      className="w-full font-semibold py-6 text-base"
+                      className="w-full font-semibold py-5 text-base rounded-2xl bg-red-500 text-white hover:bg-red-600 hover:animate-pulse shadow-md hover:shadow-lg transition-all duration-300"
                       disabled={cart.length === 0}
                     >
                       Limpar Carrinho

@@ -5,6 +5,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { ShoppingCart } from "@/components/ShoppingCart";
 import { Select, SelectItem, SelectValue } from "@/components/ui/select";
 import { Product, supabase } from "@/lib/supabaseClient";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
@@ -93,10 +94,17 @@ export default function HomePage() {
       </nav>
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         <div className="text-center mb-8">
-          <h1 className="text-4xl sm:text-5xl font-bold font-sans mb-2">
-            Manifeste
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-2">
+          <div className="flex justify-center mb-4">
+            <Image
+              src="/logo.jpg"
+              alt="Manifeste"
+              width={400}
+              height={160}
+              className="h-32 sm:h-40 w-auto object-contain"
+              priority
+            />
+          </div>
+          <p className="text-lg max-w-2xl mx-auto leading-relaxed mb-2 text-black/80">
             Produtos que unem design, qualidade e propósito.
           </p>
         </div>
@@ -110,7 +118,7 @@ export default function HomePage() {
               setSearch(e.target.value);
               setPage(1);
             }}
-            className="w-full sm:w-64 px-3 py-2 rounded border border-border bg-background text-sm"
+            className="w-full sm:w-64 px-4 py-2 rounded-full border border-muted/40 bg-card text-base text-black placeholder:text-muted focus:border-secondary focus:ring-2 focus:ring-secondary/40 outline-none transition"
             disabled={false}
           />
           <Select
@@ -119,7 +127,7 @@ export default function HomePage() {
               setCategory(v);
               setPage(1);
             }}
-            className="w-full sm:w-64"
+            className="w-full sm:w-64 [&>div]:rounded-full [&>div]:border-muted/40 [&>div]:bg-card [&>div]:text-black [&>div]:text-base"
             disabled={false}
           >
             <SelectValue placeholder="Filtrar por categoria" />
@@ -133,10 +141,10 @@ export default function HomePage() {
         </div>
         <div className="mb-12">
           <div className="text-center mb-8">
-            <h2 className="text-2xl sm:text-3xl font-bold font-sans mb-2">
+            <h2 className="text-2xl sm:text-3xl font-bold font-sans mb-2 text-black">
               Catálogo
             </h2>
-            <p className="text-muted-foreground text-base max-w-xl mx-auto">
+            <p className="text-base max-w-xl mx-auto text-black/70">
               Escolha entre nossos produtos selecionados
             </p>
           </div>
@@ -156,7 +164,7 @@ export default function HomePage() {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4">
                 {products.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
@@ -185,27 +193,36 @@ export default function HomePage() {
         </div>
         <section
           id="sobre"
-          className="bg-muted/20 rounded-xl p-8 sm:p-12 border border-border/50 mb-12"
+          className="bg-card/80 rounded-2xl p-8 sm:p-14 border border-muted/30 mb-12 shadow-sm"
         >
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-2xl font-bold font-sans mb-4">
+            <h2 className="text-2xl font-bold font-sans mb-4 text-primary">
               Sobre o Manifeste
             </h2>
-            <p className="text-muted-foreground text-base mb-4">
+            <p className="text-primary text-base mb-4">
               O Manifeste nasceu da crença de que produtos bem projetados podem
               transformar nossa experiência diária.
             </p>
-            <p className="text-muted-foreground text-base">
+            <p className="text-primary text-base">
               Trabalhamos com marcas e artesãos que compartilham nossa visão de
               excelência, garantindo que cada produto em nossa coleção seja uma
               escolha que você pode fazer com confiança.
             </p>
           </div>
         </section>
-        <section id="contato" className="text-center py-8">
-          <h2 className="text-xl font-bold mb-2">Contato</h2>
-          <p className="text-muted-foreground">
-            Dúvidas? Fale conosco pelo e-mail contato@manifeste.com.br
+        <section
+          id="contato"
+          className="text-center py-8 bg-card/80 rounded-2xl border border-muted/30 max-w-2xl mx-auto mb-12 shadow-sm"
+        >
+          <h2 className="text-xl font-bold mb-2 text-primary">Contato</h2>
+          <p className="text-primary">
+            Dúvidas? Fale conosco pelo e-mail{" "}
+            <a
+              href="mailto:contato@manifeste.com.br"
+              className="text-secondary underline hover:text-secondary/80 transition"
+            >
+              contato@manifeste.com.br
+            </a>
           </p>
         </section>
       </main>

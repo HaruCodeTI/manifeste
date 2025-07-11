@@ -44,69 +44,27 @@
 }
 
 :root {
-  --color-purple: #6d28d9;
-  --color-pink: #f472b6;
-  --color-gold: #ffd700;
-  --color-wine: #7c2d12;
-  --color-blue-dark: #1e293b;
-  --color-gray-dark: #18181b;
-
-  --radius: 0.625rem;
-  --background: var(--color-gray-dark);
-  --foreground: #f3f4f6;
-  --card: #232136;
-  --card-foreground: #f3f4f6;
-  --popover: #232136;
-  --popover-foreground: #f3f4f6;
-  --primary: var(--color-purple);
+  --background: #f4f0db;
+  --foreground: #969696;
+  --primary: #969696;
   --primary-foreground: #fff;
-  --secondary: var(--color-pink);
+  --secondary: #ffacc2;
   --secondary-foreground: #fff;
-  --muted: #312e81;
-  --muted-foreground: #c4b5fd;
-  --accent: var(--color-gold);
-  --accent-foreground: #232136;
-  --destructive: var(--color-wine);
-  --border: #3f3f46;
-  --input: #3f3f46;
-  --ring: var(--color-pink);
-  --sidebar: #232136;
-  --sidebar-foreground: #f3f4f6;
-  --sidebar-primary: var(--color-purple);
-  --sidebar-primary-foreground: #fff;
-  --sidebar-accent: var(--color-pink);
-  --sidebar-accent-foreground: #fff;
-  --sidebar-border: #3f3f46;
-  --sidebar-ring: var(--color-gold);
+  --muted: #bdbdbd;
+  --card: #f8f6ed;
+  --card-foreground: #969696;
 }
 
 .dark {
   --background: #18181b;
   --foreground: #f3f4f6;
+  --primary: #f3f4f6;
+  --primary-foreground: #18181b;
+  --secondary: #ffacc2;
+  --secondary-foreground: #fff;
+  --muted: #bdbdbd;
   --card: #232136;
   --card-foreground: #f3f4f6;
-  --popover: #232136;
-  --popover-foreground: #f3f4f6;
-  --primary: var(--color-purple);
-  --primary-foreground: #fff;
-  --secondary: var(--color-pink);
-  --secondary-foreground: #fff;
-  --muted: #312e81;
-  --muted-foreground: #c4b5fd;
-  --accent: var(--color-gold);
-  --accent-foreground: #232136;
-  --destructive: var(--color-wine);
-  --border: #3f3f46;
-  --input: #3f3f46;
-  --ring: var(--color-pink);
-  --sidebar: #232136;
-  --sidebar-foreground: #f3f4f6;
-  --sidebar-primary: var(--color-purple);
-  --sidebar-primary-foreground: #fff;
-  --sidebar-accent: var(--color-pink);
-  --sidebar-accent-foreground: #fff;
-  --sidebar-border: #3f3f46;
-  --sidebar-ring: var(--color-gold);
 }
 
 @layer base {

@@ -183,7 +183,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 onClick={handleAddToCart}
                 disabled={product.stock_quantity === 0}
                 size="lg"
-                className="w-full font-semibold text-base py-6 hover:scale-[1.02] transition-transform duration-200"
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-base py-6 hover:scale-[1.02] transition-transform duration-200 rounded-xl"
               >
                 <ShoppingCart className="w-5 h-5 mr-3" />
                 Adicionar ao Carrinho

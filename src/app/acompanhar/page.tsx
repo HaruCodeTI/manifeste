@@ -97,9 +97,9 @@ export default function AcompanharPedidoPage() {
           Voltar
         </button>
       </div>
-      <Card className="w-full max-w-lg mx-auto">
+      <Card className="w-full max-w-lg mx-auto rounded-2xl shadow-lg border-none bg-card">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-black font-semibold text-2xl">
             <Package className="w-6 h-6 text-primary" />
             Acompanhar Pedido
           </CardTitle>
@@ -107,7 +107,9 @@ export default function AcompanharPedidoPage() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="email">E-mail usado no pedido</Label>
+              <Label htmlFor="email" className="text-black font-medium">
+                E-mail usado no pedido
+              </Label>
               <Input
                 id="email"
                 type="email"
@@ -116,19 +118,27 @@ export default function AcompanharPedidoPage() {
                 required
                 autoComplete="email"
                 placeholder="seu@email.com"
+                className="placeholder:text-muted focus:ring-2 focus:ring-secondary/40 focus:border-secondary border border-muted rounded-xl bg-background text-black"
               />
             </div>
             <div>
-              <Label htmlFor="order">Código do pedido</Label>
+              <Label htmlFor="order" className="text-black font-medium">
+                Código do pedido
+              </Label>
               <Input
                 id="order"
                 value={orderId}
                 onChange={(e) => setOrderId(e.target.value)}
                 required
                 placeholder="Ex: 123e4567-..."
+                className="placeholder:text-muted focus:ring-2 focus:ring-secondary/40 focus:border-secondary border border-muted rounded-xl bg-background text-black"
               />
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button
+              type="submit"
+              className="w-full rounded-2xl font-semibold text-base bg-secondary text-secondary-foreground shadow-md hover:bg-secondary/90 transition-all duration-300 py-3"
+              disabled={loading}
+            >
               {loading ? (
                 <Loader2 className="w-4 h-4 animate-spin mr-2" />
               ) : null}
@@ -137,9 +147,9 @@ export default function AcompanharPedidoPage() {
           </form>
 
           {error && (
-            <div className="mt-6 flex items-center gap-2 text-destructive">
+            <div className="mt-6 flex items-center gap-2 text-destructive bg-red-50 border border-red-200 rounded-xl p-2">
               <XCircle className="w-5 h-5" />
-              <span>{error}</span>
+              <span className="text-black">{error}</span>
             </div>
           )}
 
@@ -149,7 +159,7 @@ export default function AcompanharPedidoPage() {
                 {statusIcons[result.order.status] || (
                   <Truck className="w-6 h-6 text-primary" />
                 )}
-                <span className="text-lg font-bold">
+                <span className="text-lg font-bold text-black">
                   Status:{" "}
                   {statusLabels[result.order.status] || result.order.status}
                 </span>
@@ -160,7 +170,7 @@ export default function AcompanharPedidoPage() {
                 result.order.stripe_checkout_session_id && (
                   <div className="my-4">
                     <Button
-                      className="w-full"
+                      className="w-full rounded-2xl bg-secondary text-secondary-foreground shadow-md hover:bg-secondary/90 transition-all duration-300 py-3"
                       onClick={() => {
                         window.location.href = `https://checkout.stripe.com/pay/${result.order.stripe_checkout_session_id}`;
                       }}
@@ -172,8 +182,8 @@ export default function AcompanharPedidoPage() {
 
               {result.order.payment_method === "pix" &&
                 result.order.status === "pending_payment" && (
-                  <div className="my-4 p-4 bg-yellow-50 border border-yellow-300 rounded">
-                    <h3 className="font-bold mb-2 text-yellow-900">
+                  <div className="my-4 p-4 bg-yellow-50 border border-yellow-200 rounded-2xl">
+                    <h3 className="font-bold mb-2 text-yellow-900 text-lg">
                       Pagamento via PIX
                     </h3>
                     <p className="text-yellow-900">
@@ -196,7 +206,7 @@ export default function AcompanharPedidoPage() {
                         type="button"
                         size="sm"
                         variant="outline"
-                        className="ml-1"
+                        className="ml-1 border-yellow-300 text-yellow-900 hover:bg-yellow-100 rounded-lg"
                         onClick={() => {
                           navigator.clipboard.writeText(
                             "seu-pix@seudominio.com"
@@ -228,39 +238,39 @@ export default function AcompanharPedidoPage() {
                     </p>
                   </div>
                 )}
-              <div>
-                <div className="font-semibold mb-2">Histórico:</div>
-                <ul className="text-sm space-y-1">
-                  {result.history.map((h, i) => (
-                    <li key={i}>
-                      <span className="font-medium">
-                        {statusLabels[h.status] || h.status}
-                      </span>{" "}
-                      em{" "}
-                      {new Date(h.changed_at).toLocaleString("pt-BR", {
-                        dateStyle: "short",
-                        timeStyle: "short",
-                      })}
-                      {h.changed_by ? ` (${h.changed_by})` : ""}
-                    </li>
-                  ))}
-                </ul>
+              <div className="font-semibold mb-2 text-black mt-4">
+                Histórico:
               </div>
-              <div>
-                <div className="font-semibold mb-2">Itens do pedido:</div>
-                <ul className="text-sm space-y-1">
-                  {result.items.map((item, i) => (
-                    <li key={i}>
-                      {item.products?.name} — Qtd: {item.quantity} — R${" "}
-                      {Number(item.price_at_purchase)
-                        .toFixed(2)
-                        .replace(".", ",")}
-                    </li>
-                  ))}
-                </ul>
+              <ul className="text-sm space-y-1 bg-muted/30 rounded-xl p-3">
+                {result.history.map((h, i) => (
+                  <li key={i} className="text-black/80">
+                    <span className="font-medium text-black">
+                      {statusLabels[h.status] || h.status}
+                    </span>{" "}
+                    em{" "}
+                    {new Date(h.changed_at).toLocaleString("pt-BR", {
+                      dateStyle: "short",
+                      timeStyle: "short",
+                    })}
+                    {h.changed_by ? ` (${h.changed_by})` : ""}
+                  </li>
+                ))}
+              </ul>
+              <div className="font-semibold mb-2 text-black mt-4">
+                Itens do pedido:
               </div>
-              <div className="text-sm text-muted-foreground">
-                <div>
+              <ul className="text-sm space-y-1 bg-muted/30 rounded-xl p-3">
+                {result.items.map((item, i) => (
+                  <li key={i} className="text-black/80">
+                    {item.products?.name} — Qtd: {item.quantity} — R${" "}
+                    {Number(item.price_at_purchase)
+                      .toFixed(2)
+                      .replace(".", ",")}
+                  </li>
+                ))}
+              </ul>
+              <div className="text-sm text-muted-foreground mt-4">
+                <div className="text-black">
                   Total:{" "}
                   <span className="font-bold">
                     R${" "}
@@ -269,20 +279,20 @@ export default function AcompanharPedidoPage() {
                       .replace(".", ",")}
                   </span>
                 </div>
-                <div>
+                <div className="text-black">
                   Método de envio:{" "}
                   {shippingLabels[result.order.shipping_method] ||
                     result.order.shipping_method}
                 </div>
                 {result.order.tracking_code && (
-                  <div>
+                  <div className="text-black">
                     Código de rastreio:{" "}
                     <span className="font-mono">
                       {result.order.tracking_code}
                     </span>
                   </div>
                 )}
-                <div>
+                <div className="text-black">
                   Pedido feito em:{" "}
                   {new Date(result.order.created_at).toLocaleString("pt-BR", {
                     dateStyle: "short",

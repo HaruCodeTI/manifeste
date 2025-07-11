@@ -48,7 +48,11 @@ export function useCart() {
   }, [cart, isLoaded]);
 
   const addToCart = useCallback(
-    (item: Omit<CartItem, "quantity">, onSuccess?: () => void) => {
+    (
+      item: Omit<CartItem, "quantity">,
+      onSuccess?: () => void,
+      quantity: number = 1
+    ) => {
       setCart((prevCart) => {
         const existingItem = prevCart.find(
           (cartItem) => cartItem.id === item.id
@@ -56,11 +60,11 @@ export function useCart() {
         if (existingItem) {
           return prevCart.map((cartItem) =>
             cartItem.id === item.id
-              ? { ...cartItem, quantity: cartItem.quantity + 1 }
+              ? { ...cartItem, quantity: cartItem.quantity + quantity }
               : cartItem
           );
         }
-        return [...prevCart, { ...item, quantity: 1 }];
+        return [...prevCart, { ...item, quantity }];
       });
 
       if (onSuccess) {

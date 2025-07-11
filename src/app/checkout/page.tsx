@@ -8,14 +8,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectItem, SelectValue } from "@/components/ui/select";
 import { useCartContext } from "@/contexts/CartContext";
-import {
-  ArrowLeft,
-  CreditCard,
-  MapPin,
-  Package,
-  Store,
-  Truck,
-} from "lucide-react";
+import { ArrowLeft, CreditCard, MapPin, Package, Truck } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -164,17 +157,19 @@ export default function CheckoutPage() {
           {/* Formulário de Checkout */}
           <div className="space-y-8">
             {/* Informações do Cliente */}
-            <Card>
+            <Card className="rounded-2xl shadow-lg border-none bg-card">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <MapPin className="w-5 h-5" />
+                <CardTitle className="flex items-center gap-2 text-black font-semibold text-xl">
+                  <MapPin className="w-5 h-5 text-secondary" />
                   Informações Pessoais
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="name">Nome Completo</Label>
+                    <Label htmlFor="name" className="text-black font-medium">
+                      Nome Completo
+                    </Label>
                     <Input
                       id="name"
                       value={customerInfo.name}
@@ -185,10 +180,13 @@ export default function CheckoutPage() {
                         }))
                       }
                       placeholder="Seu nome completo"
+                      className="border border-muted rounded-xl bg-background text-black focus:ring-2 focus:ring-secondary/40 focus:border-secondary placeholder:text-muted"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="email">E-mail</Label>
+                    <Label htmlFor="email" className="text-black font-medium">
+                      E-mail
+                    </Label>
                     <Input
                       id="email"
                       type="email"
@@ -200,11 +198,14 @@ export default function CheckoutPage() {
                         }))
                       }
                       placeholder="seu@email.com"
+                      className="border border-muted rounded-xl bg-background text-black focus:ring-2 focus:ring-secondary/40 focus:border-secondary placeholder:text-muted"
                     />
                   </div>
                 </div>
                 <div>
-                  <Label htmlFor="phone">Telefone</Label>
+                  <Label htmlFor="phone" className="text-black font-medium">
+                    Telefone
+                  </Label>
                   <Input
                     id="phone"
                     value={customerInfo.phone}
@@ -215,16 +216,17 @@ export default function CheckoutPage() {
                       }))
                     }
                     placeholder="(11) 99999-9999"
+                    className="border border-muted rounded-xl bg-background text-black focus:ring-2 focus:ring-secondary/40 focus:border-secondary placeholder:text-muted"
                   />
                 </div>
               </CardContent>
             </Card>
 
             {/* Método de Entrega */}
-            <Card>
+            <Card className="rounded-2xl shadow-lg border-none bg-card">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Truck className="w-5 h-5" />
+                <CardTitle className="flex items-center gap-2 text-black font-semibold text-xl">
+                  <Truck className="w-5 h-5 text-secondary" />
                   Entrega ou Retirada
                 </CardTitle>
               </CardHeader>
@@ -243,17 +245,18 @@ export default function CheckoutPage() {
                       value="delivery"
                       checked={shippingMethod === "delivery"}
                       onChange={() => setShippingMethod("delivery")}
+                      className="border border-muted rounded-full focus:ring-2 focus:ring-secondary/40 focus:border-secondary"
                     />
-                    <span>Entrega no endereço</span>
+                    <span className="text-black">Entrega no endereço</span>
                   </label>
                   <label className="flex items-center gap-2 cursor-pointer">
                     <RadioGroupItem
                       value="pickup"
                       checked={shippingMethod === "pickup"}
                       onChange={() => setShippingMethod("pickup")}
+                      className="border border-muted rounded-full focus:ring-2 focus:ring-secondary/40 focus:border-secondary"
                     />
-                    <Store className="w-4 h-4 text-primary" />
-                    <span>Retirada na loja (frete grátis)</span>
+                    <span className="text-black">Retirar no local</span>
                   </label>
                 </RadioGroup>
               </CardContent>
@@ -261,10 +264,10 @@ export default function CheckoutPage() {
 
             {/* Endereço de Entrega */}
             {shippingMethod === "delivery" && (
-              <Card>
+              <Card className="rounded-2xl shadow-lg border-none bg-card">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Truck className="w-5 h-5" />
+                  <CardTitle className="flex items-center gap-2 text-black font-semibold text-xl">
+                    <Truck className="w-5 h-5 text-secondary" />
                     Endereço de Entrega
                   </CardTitle>
                 </CardHeader>
@@ -299,11 +302,13 @@ export default function CheckoutPage() {
                           }}
                           placeholder="00000-000"
                           maxLength={9}
+                          className="border border-muted rounded-xl bg-background text-black focus:ring-2 focus:ring-secondary/40 focus:border-secondary placeholder:text-muted"
                         />
                         <Button
                           onClick={calculateShipping}
                           disabled={isCalculatingShipping || !shippingInfo.cep}
                           size="sm"
+                          className="border border-muted rounded-xl bg-background text-black hover:bg-secondary/10 focus:ring-2 focus:ring-secondary/40 focus:border-secondary"
                         >
                           {isCalculatingShipping ? "Calculando..." : "Calcular"}
                         </Button>
@@ -318,6 +323,7 @@ export default function CheckoutPage() {
                           setShippingInfo((prev) => ({ ...prev, state: value }))
                         }
                         required
+                        className="border border-muted rounded-xl bg-background text-black focus:ring-2 focus:ring-secondary/40 focus:border-secondary"
                       >
                         <SelectValue placeholder="Selecione o estado" />
                         <SelectItem value="MS">Mato Grosso do Sul</SelectItem>
@@ -336,6 +342,7 @@ export default function CheckoutPage() {
                         }))
                       }
                       placeholder="Rua, Avenida, etc."
+                      className="border border-muted rounded-xl bg-background text-black focus:ring-2 focus:ring-secondary/40 focus:border-secondary placeholder:text-muted"
                     />
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -351,6 +358,7 @@ export default function CheckoutPage() {
                           }))
                         }
                         placeholder="123"
+                        className="border border-muted rounded-xl bg-background text-black focus:ring-2 focus:ring-secondary/40 focus:border-secondary placeholder:text-muted"
                       />
                     </div>
                     <div className="sm:col-span-2">
@@ -365,6 +373,7 @@ export default function CheckoutPage() {
                           }))
                         }
                         placeholder="Apartamento, bloco, etc."
+                        className="border border-muted rounded-xl bg-background text-black focus:ring-2 focus:ring-secondary/40 focus:border-secondary placeholder:text-muted"
                       />
                     </div>
                   </div>
@@ -380,6 +389,7 @@ export default function CheckoutPage() {
                         }))
                       }
                       placeholder="Nome do bairro"
+                      className="border border-muted rounded-xl bg-background text-black focus:ring-2 focus:ring-secondary/40 focus:border-secondary placeholder:text-muted"
                     />
                   </div>
                   <div>
@@ -394,6 +404,7 @@ export default function CheckoutPage() {
                         }))
                       }
                       placeholder="Nome da cidade"
+                      className="border border-muted rounded-xl bg-background text-black focus:ring-2 focus:ring-secondary/40 focus:border-secondary placeholder:text-muted"
                     />
                   </div>
                 </CardContent>
@@ -401,10 +412,10 @@ export default function CheckoutPage() {
             )}
 
             {/* Método de Pagamento */}
-            <Card>
+            <Card className="rounded-2xl shadow-lg border-none bg-card">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <CreditCard className="w-5 h-5" />
+                <CardTitle className="flex items-center gap-2 text-black font-semibold text-xl">
+                  <CreditCard className="w-5 h-5 text-secondary" />
                   Método de Pagamento
                 </CardTitle>
               </CardHeader>
@@ -423,24 +434,27 @@ export default function CheckoutPage() {
                       value="card"
                       checked={paymentMethod === "card"}
                       onChange={() => setPaymentMethod("card")}
+                      className="border border-muted rounded-full focus:ring-2 focus:ring-secondary/40 focus:border-secondary"
                     />
-                    <span>Cartão de Crédito/Débito</span>
+                    <span className="text-black">Cartão de Crédito/Débito</span>
                   </label>
                   <label className="flex items-center gap-2 cursor-pointer">
                     <RadioGroupItem
                       value="pix"
                       checked={paymentMethod === "pix"}
                       onChange={() => setPaymentMethod("pix")}
+                      className="border border-muted rounded-full focus:ring-2 focus:ring-secondary/40 focus:border-secondary"
                     />
-                    <span>PIX</span>
+                    <span className="text-black">PIX</span>
                   </label>
                   <label className="flex items-center gap-2 cursor-pointer">
                     <RadioGroupItem
                       value="delivery"
                       checked={paymentMethod === "delivery"}
                       onChange={() => setPaymentMethod("delivery")}
+                      className="border border-muted rounded-full focus:ring-2 focus:ring-secondary/40 focus:border-secondary"
                     />
-                    <span>Pagamento na Entrega</span>
+                    <span className="text-black">Pagamento na Entrega</span>
                   </label>
                 </RadioGroup>
               </CardContent>
@@ -449,9 +463,11 @@ export default function CheckoutPage() {
 
           {/* Resumo do Pedido */}
           <div className="space-y-6">
-            <Card>
+            <Card className="rounded-2xl shadow-lg border-none bg-card">
               <CardHeader>
-                <CardTitle>Resumo do Pedido</CardTitle>
+                <CardTitle className="text-black font-semibold text-xl">
+                  Resumo do Pedido
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 {cart.map((item) => (
@@ -460,13 +476,13 @@ export default function CheckoutPage() {
                     className="flex justify-between items-center"
                   >
                     <div className="flex-1">
-                      <p className="font-medium">{item.name}</p>
+                      <p className="font-medium text-black">{item.name}</p>
                       <p className="text-sm text-muted-foreground">
                         Qtd: {item.quantity} x R${" "}
                         {item.price.toFixed(2).replace(".", ",")}
                       </p>
                     </div>
-                    <p className="font-semibold">
+                    <p className="font-semibold text-black">
                       R${" "}
                       {(item.price * item.quantity)
                         .toFixed(2)
@@ -476,12 +492,14 @@ export default function CheckoutPage() {
                 ))}
                 <div className="border-t pt-4 space-y-2">
                   <div className="flex justify-between">
-                    <span>Subtotal:</span>
-                    <span>R$ {subtotal.toFixed(2).replace(".", ",")}</span>
+                    <span className="text-black">Subtotal:</span>
+                    <span className="text-black">
+                      R$ {subtotal.toFixed(2).replace(".", ",")}
+                    </span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Frete:</span>
-                    <span>
+                    <span className="text-black">Frete:</span>
+                    <span className="text-black">
                       {shippingMethod === "pickup"
                         ? "Grátis"
                         : shippingCost > 0
@@ -489,16 +507,18 @@ export default function CheckoutPage() {
                           : "Calculando..."}
                     </span>
                   </div>
-                  <div className="flex justify-between text-lg font-bold border-t pt-2">
-                    <span>Total:</span>
-                    <span>R$ {total.toFixed(2).replace(".", ",")}</span>
+                  <div className="flex justify-between text-lg font-bold text-black border-t pt-2">
+                    <span className="text-black">Total:</span>
+                    <span className="text-black">
+                      R$ {total.toFixed(2).replace(".", ",")}
+                    </span>
                   </div>
                 </div>
               </CardContent>
             </Card>
             <Button
               onClick={handleCheckout}
-              className="w-full py-6 text-lg font-semibold"
+              className="w-full py-6 text-lg font-semibold rounded-2xl shadow-md hover:bg-secondary/10 focus:ring-2 focus:ring-secondary/40 focus:border-secondary transition-colors"
               disabled={
                 !customerInfo.name ||
                 !customerInfo.email ||
