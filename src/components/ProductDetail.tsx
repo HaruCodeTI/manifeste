@@ -6,7 +6,18 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Toast } from "@/components/ui/toast";
 import { useCartContext } from "@/contexts/CartContext";
 import { Product } from "@/lib/supabaseClient";
-import { ArrowLeft, Package, Ruler, ShoppingCart } from "lucide-react";
+import {
+  ArrowLeft,
+  CheckCircle,
+  Heart,
+  Info,
+  Package,
+  Ruler,
+  Share2,
+  Shield,
+  ShoppingCart,
+  Truck,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -19,6 +30,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const { addToCart } = useCartContext();
   const [selectedImage, setSelectedImage] = useState(0);
   const [showToast, setShowToast] = useState(false);
+  const [quantity, setQuantity] = useState(1);
 
   const handleAddToCart = () => {
     addToCart(
@@ -34,16 +46,20 @@ export function ProductDetail({ product }: ProductDetailProps) {
     );
   };
 
+  const formatPrice = (price: number) => {
+    return price.toFixed(2).replace(".", ",");
+  };
+
   return (
     <>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-foreground">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Breadcrumb */}
-        <div className="mb-8">
+        <div className="mb-6">
           <Button
             asChild
             variant="ghost"
             size="sm"
-            className="font-sans hover:bg-muted/60"
+            className="text-black hover:bg-muted/60 rounded-xl font-medium"
           >
             <Link href="/">
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -52,22 +68,24 @@ export function ProductDetail({ product }: ProductDetailProps) {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
           {/* Galeria de Imagens */}
-          <div className="space-y-6">
-            <div className="aspect-square bg-muted/30 rounded-xl overflow-hidden relative border border-border/50">
+          <div className="space-y-4">
+            {/* Imagem Principal */}
+            <div className="aspect-square bg-gradient-to-br from-muted/20 to-muted/40 rounded-2xl overflow-hidden relative border border-muted/30 shadow-lg">
               {product.image_urls && product.image_urls[selectedImage] ? (
                 <Image
                   src={product.image_urls[selectedImage]}
                   alt={product.name}
                   fill
-                  className="object-cover transition-all duration-300 hover:scale-105"
+                  className="object-cover transition-all duration-500 hover:scale-110"
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 40vw"
-                  priority={false}
+                  priority={true}
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">
-                  Sem imagem disponível
+                <div className="w-full h-full flex items-center justify-center text-black/60 text-sm font-medium">
+                  <Package className="w-12 h-12 mb-2" />
+                  <p>Sem imagem disponível</p>
                 </div>
               )}
             </div>
@@ -79,10 +97,10 @@ export function ProductDetail({ product }: ProductDetailProps) {
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
-                    className={`aspect-square bg-muted/50 rounded-lg overflow-hidden border-2 transition-all duration-200 hover:border-primary/50 ${
+                    className={`aspect-square bg-muted/30 rounded-xl overflow-hidden border-2 transition-all duration-300 hover:scale-105 ${
                       selectedImage === index
-                        ? "border-primary shadow-md"
-                        : "border-transparent hover:shadow-sm"
+                        ? "border-secondary shadow-lg scale-105"
+                        : "border-muted/40 hover:border-secondary/50"
                     }`}
                   >
                     <Image
@@ -99,96 +117,197 @@ export function ProductDetail({ product }: ProductDetailProps) {
           </div>
 
           {/* Informações do Produto */}
-          <div className="space-y-8">
-            {/* Título e Preço */}
+          <div className="space-y-6">
+            {/* Cabeçalho */}
             <div className="space-y-4">
-              <h1 className="text-3xl sm:text-4xl font-bold font-sans leading-tight">
-                {product.name}
-              </h1>
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-black leading-tight mb-2">
+                    {product.name}
+                  </h1>
+                  {product.sku && (
+                    <p className="text-sm text-black/60 font-mono">
+                      SKU: {product.sku}
+                    </p>
+                  )}
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="rounded-full p-2 text-black/60 hover:text-secondary hover:bg-secondary/10"
+                  >
+                    <Heart className="w-5 h-5" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="rounded-full p-2 text-black/60 hover:text-secondary hover:bg-secondary/10"
+                  >
+                    <Share2 className="w-5 h-5" />
+                  </Button>
+                </div>
+              </div>
 
+              {/* Preço e Status */}
               <div className="flex items-center gap-4 flex-wrap">
-                <span className="text-3xl sm:text-4xl font-bold text-primary">
-                  R$ {product.price.toFixed(2).replace(".", ",")}
-                </span>
-                {product.stock_quantity > 0 ? (
-                  <Badge variant="secondary" className="text-sm px-3 py-1">
-                    Em estoque
-                  </Badge>
-                ) : (
-                  <Badge variant="destructive" className="text-sm px-3 py-1">
-                    Indisponível
-                  </Badge>
-                )}
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl sm:text-4xl font-bold text-black">
+                    R$ {formatPrice(product.price)}
+                  </span>
+                  <span className="text-sm text-black/60 line-through">
+                    R$ {formatPrice(product.price * 1.2)}
+                  </span>
+                </div>
+                <Badge
+                  variant="secondary"
+                  className="bg-green-100 text-green-800 border-green-200 rounded-full px-3 py-1 font-medium"
+                >
+                  <CheckCircle className="w-3 h-3 mr-1" />
+                  {product.stock_quantity > 0
+                    ? `${product.stock_quantity} em estoque`
+                    : "Indisponível"}
+                </Badge>
               </div>
             </div>
 
+            {/* Quantidade e Botão */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <label className="text-sm font-medium text-black">
+                    Quantidade:
+                  </label>
+                  <div className="flex items-center border border-muted/40 rounded-xl overflow-hidden">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      className="rounded-none hover:bg-muted/50 text-black"
+                    >
+                      -
+                    </Button>
+                    <span className="px-4 py-2 text-black font-medium min-w-[3rem] text-center">
+                      {quantity}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setQuantity(quantity + 1)}
+                      className="rounded-none hover:bg-muted/50 text-black"
+                    >
+                      +
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              <Button
+                onClick={handleAddToCart}
+                disabled={product.stock_quantity === 0}
+                size="lg"
+                className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold text-base py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
+              >
+                <ShoppingCart className="w-5 h-5 mr-3" />
+                Adicionar ao Carrinho
+              </Button>
+            </div>
+
+            {/* Informações de Entrega */}
+            <Card className="bg-gradient-to-r from-muted/20 to-muted/30 border border-muted/30 rounded-2xl">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3 text-black/80">
+                  <Truck className="w-5 h-5 text-secondary" />
+                  <div>
+                    <p className="font-medium text-sm">Entrega rápida</p>
+                    <p className="text-xs text-black/60">2-3 dias úteis</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Descrição */}
             {product.description && (
-              <Card className="bg-muted/20 border border-border/50">
-                <CardContent className="pt-6">
-                  <h3 className="font-semibold mb-3 font-sans text-lg">
-                    Descrição
+              <Card className="bg-white border border-muted/30 rounded-2xl shadow-sm">
+                <CardContent className="p-6">
+                  <h3 className="font-bold text-lg text-black mb-4 flex items-center gap-2">
+                    <Info className="w-5 h-5 text-secondary" />
+                    Descrição do Produto
                   </h3>
-                  <p className="text-muted-foreground whitespace-pre-wrap text-base font-sans leading-relaxed">
-                    {product.description}
-                  </p>
+                  <div className="prose prose-sm max-w-none">
+                    <p className="text-black/80 leading-relaxed whitespace-pre-wrap">
+                      {product.description}
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
             )}
 
             {/* Tags */}
             {product.tags && product.tags.length > 0 && (
-              <div className="space-y-3">
-                <h3 className="font-semibold font-sans text-lg">Tags</h3>
-                <div className="flex flex-wrap gap-2">
-                  {product.tags.map((tag, index) => (
-                    <Badge key={index} variant="outline" className="text-sm">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
+              <Card className="bg-white border border-muted/30 rounded-2xl shadow-sm">
+                <CardContent className="p-6">
+                  <h3 className="font-bold text-lg text-black mb-4">
+                    Características
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {product.tags.map((tag, index) => (
+                      <Badge
+                        key={index}
+                        variant="outline"
+                        className="bg-muted/20 text-black border-muted/40 rounded-full px-3 py-1 font-medium hover:bg-secondary/10 hover:border-secondary/30 transition-colors"
+                      >
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
             )}
 
             {/* Especificações */}
             {(product.weight_grams || product.dimensions_cm) && (
-              <div className="space-y-3">
-                <h3 className="font-semibold font-sans text-lg">
-                  Especificações
-                </h3>
-                <div className="space-y-3">
-                  {product.weight_grams && (
-                    <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                      <Package className="w-4 h-4" />
-                      <span>Peso: {product.weight_grams}g</span>
-                    </div>
-                  )}
-                  {product.dimensions_cm && (
-                    <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                      <Ruler className="w-4 h-4" />
-                      <span>
-                        Dimensões: {product.dimensions_cm.height}cm x{" "}
-                        {product.dimensions_cm.width}cm x{" "}
-                        {product.dimensions_cm.length}cm
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
+              <Card className="bg-white border border-muted/30 rounded-2xl shadow-sm">
+                <CardContent className="p-6">
+                  <h3 className="font-bold text-lg text-black mb-4">
+                    Especificações Técnicas
+                  </h3>
+                  <div className="space-y-3">
+                    {product.weight_grams && (
+                      <div className="flex items-center gap-3 text-black/80">
+                        <Package className="w-4 h-4 text-secondary" />
+                        <span className="font-medium">Peso:</span>
+                        <span>{product.weight_grams}g</span>
+                      </div>
+                    )}
+                    {product.dimensions_cm && (
+                      <div className="flex items-center gap-3 text-black/80">
+                        <Ruler className="w-4 h-4 text-secondary" />
+                        <span className="font-medium">Dimensões:</span>
+                        <span>
+                          {product.dimensions_cm.height}cm x{" "}
+                          {product.dimensions_cm.width}cm x{" "}
+                          {product.dimensions_cm.length}cm
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
             )}
 
-            {/* Botão de Adicionar ao Carrinho */}
-            <div className="pt-4">
-              <Button
-                onClick={handleAddToCart}
-                disabled={product.stock_quantity === 0}
-                size="lg"
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-base py-6 hover:scale-[1.02] transition-transform duration-200 rounded-xl"
-              >
-                <ShoppingCart className="w-5 h-5 mr-3" />
-                Adicionar ao Carrinho
-              </Button>
-            </div>
+            {/* Garantia */}
+            <Card className="bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-2xl">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3 text-green-800">
+                  <Shield className="w-5 h-5" />
+                  <div>
+                    <p className="font-medium text-sm">Garantia de 30 dias</p>
+                    <p className="text-xs text-green-700">Devolução gratuita</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>

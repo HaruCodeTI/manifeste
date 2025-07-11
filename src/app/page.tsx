@@ -24,7 +24,8 @@ export default function HomePage() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const PAGE_SIZE = 12;
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [itemsPerPage, setItemsPerPage] = useState(12);
 
   useEffect(() => {
     async function fetchCategories() {
@@ -77,16 +78,17 @@ export default function HomePage() {
       }
       query = query
         .order("created_at", { ascending: false })
-        .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
+        .range((page - 1) * itemsPerPage, page * itemsPerPage - 1);
       const { data, count, error } = await query;
       if (!error) {
         setProducts(data || []);
-        setTotalPages(count ? Math.ceil(count / PAGE_SIZE) : 1);
+        setTotalProducts(count || 0);
+        setTotalPages(count ? Math.ceil(count / itemsPerPage) : 1);
       }
       setLoading(false);
     }
     fetchProducts();
-  }, [debouncedSearch, category, selectedTags, page]);
+  }, [debouncedSearch, category, selectedTags, page, itemsPerPage]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -208,9 +210,42 @@ export default function HomePage() {
             <h2 className="text-2xl sm:text-3xl font-bold font-sans mb-2 text-black">
               Catálogo
             </h2>
-            <p className="text-base max-w-xl mx-auto text-black/70">
+            <p className="text-base max-w-xl mx-auto text-black/70 mb-4">
               Escolha entre nossos produtos selecionados
             </p>
+            {!loading && totalProducts > 0 && (
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-muted/20 rounded-2xl p-4 border border-muted/30">
+                <div className="text-sm text-black/70">
+                  <span className="font-medium text-black">
+                    {totalProducts} produto{totalProducts !== 1 ? "s" : ""}{" "}
+                    encontrado{totalProducts !== 1 ? "s" : ""}
+                  </span>
+                  {totalProducts > itemsPerPage && (
+                    <span className="ml-2">
+                      (página {page} de {totalPages})
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-black/70">
+                    Itens por página:
+                  </span>
+                  <Select
+                    value={itemsPerPage.toString()}
+                    onValueChange={(value) => {
+                      setItemsPerPage(Number(value));
+                      setPage(1);
+                    }}
+                    className="w-20 [&>div]:rounded-xl [&>div]:border-muted/40 [&>div]:bg-white [&>div]:text-black [&>div]:text-sm"
+                  >
+                    <SelectItem value="12">12</SelectItem>
+                    <SelectItem value="24">24</SelectItem>
+                    <SelectItem value="48">48</SelectItem>
+                    <SelectItem value="96">96</SelectItem>
+                  </Select>
+                </div>
+              </div>
+            )}
           </div>
           {/* Loading só na grade de produtos */}
           {loading ? (
@@ -233,25 +268,64 @@ export default function HomePage() {
                   <ProductCard key={product.id} product={product} />
                 ))}
               </div>
-              <div className="flex justify-center items-center gap-4 mt-8">
-                <button
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={page === 1}
-                  className="px-4 py-2 rounded bg-muted text-foreground disabled:opacity-50"
-                >
-                  Anterior
-                </button>
-                <span className="text-sm">
-                  Página {page} de {totalPages}
-                </span>
-                <button
-                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={page === totalPages}
-                  className="px-4 py-2 rounded bg-muted text-foreground disabled:opacity-50"
-                >
-                  Próxima
-                </button>
-              </div>
+              {totalPages > 1 && (
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 p-4 bg-muted/20 rounded-2xl border border-muted/30">
+                  <div className="text-sm text-black/70">
+                    Mostrando {(page - 1) * itemsPerPage + 1} a{" "}
+                    {Math.min(page * itemsPerPage, totalProducts)} de{" "}
+                    {totalProducts} produtos
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setPage((p) => Math.max(1, p - 1))}
+                      disabled={page === 1}
+                      className="px-4 py-2 rounded-xl bg-white border border-muted/40 text-black hover:bg-muted/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium"
+                    >
+                      Anterior
+                    </button>
+                    <div className="flex items-center gap-1">
+                      {Array.from(
+                        { length: Math.min(5, totalPages) },
+                        (_, i) => {
+                          let pageNumber;
+                          if (totalPages <= 5) {
+                            pageNumber = i + 1;
+                          } else if (page <= 3) {
+                            pageNumber = i + 1;
+                          } else if (page >= totalPages - 2) {
+                            pageNumber = totalPages - 4 + i;
+                          } else {
+                            pageNumber = page - 2 + i;
+                          }
+
+                          return (
+                            <button
+                              key={pageNumber}
+                              onClick={() => setPage(pageNumber)}
+                              className={`w-10 h-10 rounded-xl border transition-all duration-200 font-medium ${
+                                page === pageNumber
+                                  ? "bg-secondary text-secondary-foreground border-secondary shadow-md"
+                                  : "bg-white text-black border-muted/40 hover:bg-muted/50"
+                              }`}
+                            >
+                              {pageNumber}
+                            </button>
+                          );
+                        }
+                      )}
+                    </div>
+                    <button
+                      onClick={() =>
+                        setPage((p) => Math.min(totalPages, p + 1))
+                      }
+                      disabled={page === totalPages}
+                      className="px-4 py-2 rounded-xl bg-white border border-muted/40 text-black hover:bg-muted/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-medium"
+                    >
+                      Próxima
+                    </button>
+                  </div>
+                </div>
+              )}
             </>
           )}
         </div>
