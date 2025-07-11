@@ -1,103 +1,215 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { Header } from "@/components/Header";
+import { ProductCard } from "@/components/ProductCard";
+import { ShoppingCart } from "@/components/ShoppingCart";
+import { Select, SelectItem, SelectValue } from "@/components/ui/select";
+import { Product, supabase } from "@/lib/supabaseClient";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+
+export default function HomePage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>(
+    []
+  );
+  const [loading, setLoading] = useState(true);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const searchTimeout = useRef<NodeJS.Timeout | null>(null);
+  const [category, setCategory] = useState("");
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const PAGE_SIZE = 12;
+
+  useEffect(() => {
+    async function fetchCategories() {
+      const { data } = await supabase.from("categories").select("id, name");
+      setCategories(data || []);
+    }
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    if (searchTimeout.current) clearTimeout(searchTimeout.current);
+    searchTimeout.current = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 400);
+    return () => {
+      if (searchTimeout.current) clearTimeout(searchTimeout.current);
+    };
+  }, [search]);
+
+  useEffect(() => {
+    async function fetchProducts() {
+      setLoading(true);
+      let query = supabase
+        .from("products")
+        .select("*", { count: "exact" })
+        .eq("status", "active");
+      if (debouncedSearch) query = query.ilike("name", `%${debouncedSearch}%`);
+      if (category) query = query.eq("category_id", category);
+      query = query
+        .order("created_at", { ascending: false })
+        .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
+      const { data, count, error } = await query;
+      if (!error) {
+        setProducts(data || []);
+        setTotalPages(count ? Math.ceil(count / PAGE_SIZE) : 1);
+      }
+      setLoading(false);
+    }
+    fetchProducts();
+  }, [debouncedSearch, category, page]);
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="min-h-screen bg-background">
+      <Header onCartClick={() => setIsCartOpen(true)} />
+      <nav className="container mx-auto flex justify-between items-center py-4 px-4 sm:px-6 lg:px-8">
+        <div className="flex gap-6">
+          <Link href="/" className="font-bold text-lg text-primary">
+            Loja
+          </Link>
+          <Link
+            href="#sobre"
+            className="text-muted-foreground hover:text-primary transition"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            Sobre
+          </Link>
+          <Link
+            href="#contato"
+            className="text-muted-foreground hover:text-primary transition"
           >
-            Read our docs
-          </a>
+            Contato
+          </Link>
         </div>
+        <Link
+          href="/acompanhar"
+          className="text-sm text-primary hover:underline"
+        >
+          Acompanhar Pedido
+        </Link>
+      </nav>
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl sm:text-5xl font-bold font-sans mb-2">
+            Manifeste
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-2">
+            Produtos que unem design, qualidade e propósito.
+          </p>
+        </div>
+        {/* Filtros e paginação */}
+        <div className="flex flex-col sm:flex-row gap-4 items-center justify-between mb-8">
+          <input
+            type="text"
+            placeholder="Buscar produto..."
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+            className="w-full sm:w-64 px-3 py-2 rounded border border-border bg-background text-sm"
+            disabled={false}
+          />
+          <Select
+            value={category}
+            onValueChange={(v) => {
+              setCategory(v);
+              setPage(1);
+            }}
+            className="w-full sm:w-64"
+            disabled={false}
+          >
+            <SelectValue placeholder="Filtrar por categoria" />
+            <SelectItem value="">Todas</SelectItem>
+            {categories.map((cat) => (
+              <SelectItem key={cat.id} value={cat.id}>
+                {cat.name}
+              </SelectItem>
+            ))}
+          </Select>
+        </div>
+        <div className="mb-12">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl sm:text-3xl font-bold font-sans mb-2">
+              Catálogo
+            </h2>
+            <p className="text-muted-foreground text-base max-w-xl mx-auto">
+              Escolha entre nossos produtos selecionados
+            </p>
+          </div>
+          {/* Loading só na grade de produtos */}
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-muted-foreground text-lg">
+                Carregando produtos...
+              </p>
+            </div>
+          ) : products.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground text-lg">
+                Nenhum produto disponível no momento.
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
+                {products.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+              <div className="flex justify-center items-center gap-4 mt-8">
+                <button
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  className="px-4 py-2 rounded bg-muted text-foreground disabled:opacity-50"
+                >
+                  Anterior
+                </button>
+                <span className="text-sm">
+                  Página {page} de {totalPages}
+                </span>
+                <button
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={page === totalPages}
+                  className="px-4 py-2 rounded bg-muted text-foreground disabled:opacity-50"
+                >
+                  Próxima
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+        <section
+          id="sobre"
+          className="bg-muted/20 rounded-xl p-8 sm:p-12 border border-border/50 mb-12"
+        >
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-2xl font-bold font-sans mb-4">
+              Sobre o Manifeste
+            </h2>
+            <p className="text-muted-foreground text-base mb-4">
+              O Manifeste nasceu da crença de que produtos bem projetados podem
+              transformar nossa experiência diária.
+            </p>
+            <p className="text-muted-foreground text-base">
+              Trabalhamos com marcas e artesãos que compartilham nossa visão de
+              excelência, garantindo que cada produto em nossa coleção seja uma
+              escolha que você pode fazer com confiança.
+            </p>
+          </div>
+        </section>
+        <section id="contato" className="text-center py-8">
+          <h2 className="text-xl font-bold mb-2">Contato</h2>
+          <p className="text-muted-foreground">
+            Dúvidas? Fale conosco pelo e-mail contato@manifeste.com.br
+          </p>
+        </section>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      <ShoppingCart isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </div>
   );
 }
