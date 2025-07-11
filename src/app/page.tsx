@@ -14,12 +14,14 @@ export default function HomePage() {
   const [categories, setCategories] = useState<{ id: string; name: string }[]>(
     []
   );
+  const [allTags, setAllTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const searchTimeout = useRef<NodeJS.Timeout | null>(null);
   const [category, setCategory] = useState("");
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const PAGE_SIZE = 12;
@@ -30,6 +32,25 @@ export default function HomePage() {
       setCategories(data || []);
     }
     fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    async function fetchTags() {
+      const { data } = await supabase
+        .from("products")
+        .select("tags")
+        .eq("status", "active")
+        .not("tags", "is", null);
+
+      if (data) {
+        const allProductTags = data
+          .flatMap((product) => product.tags || [])
+          .filter((tag, index, arr) => arr.indexOf(tag) === index)
+          .sort();
+        setAllTags(allProductTags);
+      }
+    }
+    fetchTags();
   }, []);
 
   useEffect(() => {
@@ -51,6 +72,9 @@ export default function HomePage() {
         .eq("status", "active");
       if (debouncedSearch) query = query.ilike("name", `%${debouncedSearch}%`);
       if (category) query = query.eq("category_id", category);
+      if (selectedTags.length > 0) {
+        query = query.overlaps("tags", selectedTags);
+      }
       query = query
         .order("created_at", { ascending: false })
         .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
@@ -62,7 +86,7 @@ export default function HomePage() {
       setLoading(false);
     }
     fetchProducts();
-  }, [debouncedSearch, category, page]);
+  }, [debouncedSearch, category, selectedTags, page]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -109,35 +133,75 @@ export default function HomePage() {
           </p>
         </div>
         {/* Filtros e paginação */}
-        <div className="flex flex-col sm:flex-row gap-4 items-center justify-between mb-8">
-          <input
-            type="text"
-            placeholder="Buscar produto..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
-            className="w-full sm:w-64 px-4 py-2 rounded-full border border-muted/40 bg-card text-base text-black placeholder:text-muted focus:border-secondary focus:ring-2 focus:ring-secondary/40 outline-none transition"
-            disabled={false}
-          />
-          <Select
-            value={category}
-            onValueChange={(v) => {
-              setCategory(v);
-              setPage(1);
-            }}
-            className="w-full sm:w-64 [&>div]:rounded-full [&>div]:border-muted/40 [&>div]:bg-card [&>div]:text-black [&>div]:text-base"
-            disabled={false}
-          >
-            <SelectValue placeholder="Filtrar por categoria" />
-            <SelectItem value="">Todas</SelectItem>
-            {categories.map((cat) => (
-              <SelectItem key={cat.id} value={cat.id}>
-                {cat.name}
-              </SelectItem>
-            ))}
-          </Select>
+        <div className="flex flex-col gap-4 mb-8">
+          <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+            <input
+              type="text"
+              placeholder="Buscar produto..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+              className="w-full sm:w-64 px-4 py-2 rounded-full border border-muted/40 bg-card text-base text-black placeholder:text-muted focus:border-secondary focus:ring-2 focus:ring-secondary/40 outline-none transition"
+              disabled={false}
+            />
+            <Select
+              value={category}
+              onValueChange={(v) => {
+                setCategory(v);
+                setPage(1);
+              }}
+              className="w-full sm:w-64 [&>div]:rounded-full [&>div]:border-muted/40 [&>div]:bg-card [&>div]:text-black [&>div]:text-base"
+              disabled={false}
+            >
+              <SelectValue placeholder="Filtrar por categoria" />
+              <SelectItem value="">Todas</SelectItem>
+              {categories.map((cat) => (
+                <SelectItem key={cat.id} value={cat.id}>
+                  {cat.name}
+                </SelectItem>
+              ))}
+            </Select>
+          </div>
+
+          {/* Filtro por tags */}
+          {allTags.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              <span className="text-sm font-medium text-black mr-2">Tags:</span>
+              {allTags.map((tag) => (
+                <button
+                  key={tag}
+                  onClick={() => {
+                    setSelectedTags((prev) =>
+                      prev.includes(tag)
+                        ? prev.filter((t) => t !== tag)
+                        : [...prev, tag]
+                    );
+                    setPage(1);
+                  }}
+                  className={`px-3 py-1 rounded-full text-sm font-medium transition-all duration-200 ${
+                    selectedTags.includes(tag)
+                      ? "bg-secondary text-secondary-foreground shadow-md"
+                      : "bg-muted/50 text-black hover:bg-muted border border-muted/40"
+                  }`}
+                >
+                  {tag}
+                </button>
+              ))}
+              {selectedTags.length > 0 && (
+                <button
+                  onClick={() => {
+                    setSelectedTags([]);
+                    setPage(1);
+                  }}
+                  className="px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-700 hover:bg-red-200 transition-all duration-200"
+                >
+                  Limpar tags
+                </button>
+              )}
+            </div>
+          )}
         </div>
         <div className="mb-12">
           <div className="text-center mb-8">
