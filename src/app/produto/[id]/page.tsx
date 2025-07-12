@@ -42,7 +42,13 @@ export default function ProductPage({ params }: ProductPageProps) {
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
-        <Header onCartClick={() => setIsCartOpen(true)} />
+        <Header
+          onCartClick={() => setIsCartOpen(true)}
+          onTrackOrderClick={() => {}}
+          categories={[]}
+          selectedCategory={""}
+          onCategoryChange={() => {}}
+        />
         <main className="py-8 sm:py-12">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
@@ -59,7 +65,13 @@ export default function ProductPage({ params }: ProductPageProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header onCartClick={() => setIsCartOpen(true)} />
+      <Header
+        onCartClick={() => setIsCartOpen(true)}
+        onTrackOrderClick={() => {}}
+        categories={[]}
+        selectedCategory={""}
+        onCategoryChange={() => {}}
+      />
 
       <main className="py-8 sm:py-12">
         <ProductDetail product={product} />

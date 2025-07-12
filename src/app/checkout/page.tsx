@@ -121,7 +121,13 @@ export default function CheckoutPage() {
   if (cart.length === 0) {
     return (
       <div className="min-h-screen bg-background">
-        <Header onCartClick={() => {}} />
+        <Header
+          onCartClick={() => {}}
+          onTrackOrderClick={() => {}}
+          categories={[]}
+          selectedCategory={""}
+          onCategoryChange={() => {}}
+        />
         <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           <div className="text-center">
             <Package className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
@@ -143,7 +149,13 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header onCartClick={() => {}} />
+      <Header
+        onCartClick={() => {}}
+        onTrackOrderClick={() => {}}
+        categories={[]}
+        selectedCategory={""}
+        onCategoryChange={() => {}}
+      />
       <main className="max-w-6xl mx-auto px-2 sm:px-6 lg:px-8 py-8 sm:py-12">
         <div className="mb-8">
           <Button asChild variant="ghost" size="sm">
