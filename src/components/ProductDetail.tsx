@@ -59,7 +59,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
             asChild
             variant="ghost"
             size="sm"
-            className="text-black hover:bg-muted/60 rounded-xl font-medium"
+            className="text-foreground hover:bg-muted/60 rounded-xl font-medium"
           >
             <Link href="/">
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -122,11 +122,11 @@ export function ProductDetail({ product }: ProductDetailProps) {
             <div className="space-y-4">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-black leading-tight mb-2">
+                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-serif leading-tight mb-2 text-foreground">
                     {product.name}
                   </h1>
                   {product.sku && (
-                    <p className="text-sm text-black/60 font-mono">
+                    <p className="text-sm text-muted-foreground font-mono">
                       SKU: {product.sku}
                     </p>
                   )}
@@ -135,14 +135,14 @@ export function ProductDetail({ product }: ProductDetailProps) {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="rounded-full p-2 text-black/60 hover:text-secondary hover:bg-secondary/10"
+                    className="rounded-full p-2 text-muted-foreground hover:text-secondary hover:bg-secondary/10"
                   >
                     <Heart className="w-5 h-5" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="rounded-full p-2 text-black/60 hover:text-secondary hover:bg-secondary/10"
+                    className="rounded-full p-2 text-muted-foreground hover:text-secondary hover:bg-secondary/10"
                   >
                     <Share2 className="w-5 h-5" />
                   </Button>
@@ -152,16 +152,16 @@ export function ProductDetail({ product }: ProductDetailProps) {
               {/* Preço e Status */}
               <div className="flex items-center gap-4 flex-wrap">
                 <div className="flex items-baseline gap-2">
-                  <span className="text-3xl sm:text-4xl font-bold text-black">
+                  <span className="text-3xl sm:text-4xl font-bold text-foreground">
                     R$ {formatPrice(product.price)}
                   </span>
-                  <span className="text-sm text-black/60 line-through">
+                  <span className="text-sm text-muted-foreground line-through">
                     R$ {formatPrice(product.price * 1.2)}
                   </span>
                 </div>
                 <Badge
                   variant="secondary"
-                  className="bg-green-100 text-green-800 border-green-200 rounded-full px-3 py-1 font-medium"
+                  className="bg-accent text-foreground border-accent rounded-full px-3 py-1 font-medium"
                 >
                   <CheckCircle className="w-3 h-3 mr-1" />
                   {product.stock_quantity > 0
@@ -175,7 +175,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
             <div className="space-y-4">
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <label className="text-sm font-medium text-black">
+                  <label className="text-sm font-medium text-foreground">
                     Quantidade:
                   </label>
                   <div className="flex items-center border border-muted/40 rounded-xl overflow-hidden">
@@ -183,18 +183,18 @@ export function ProductDetail({ product }: ProductDetailProps) {
                       variant="ghost"
                       size="sm"
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className="rounded-none hover:bg-muted/50 text-black"
+                      className="rounded-none hover:bg-muted/50 text-foreground"
                     >
                       -
                     </Button>
-                    <span className="px-4 py-2 text-black font-medium min-w-[3rem] text-center">
+                    <span className="px-4 py-2 text-foreground font-medium min-w-[3rem] text-center">
                       {quantity}
                     </span>
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => setQuantity(quantity + 1)}
-                      className="rounded-none hover:bg-muted/50 text-black"
+                      className="rounded-none hover:bg-muted/50 text-foreground"
                     >
                       +
                     </Button>
@@ -216,11 +216,13 @@ export function ProductDetail({ product }: ProductDetailProps) {
             {/* Informações de Entrega */}
             <Card className="bg-gradient-to-r from-muted/20 to-muted/30 border border-muted/30 rounded-2xl">
               <CardContent className="p-4">
-                <div className="flex items-center gap-3 text-black/80">
+                <div className="flex items-center gap-3 text-accent">
                   <Truck className="w-5 h-5 text-secondary" />
                   <div>
                     <p className="font-medium text-sm">Entrega rápida</p>
-                    <p className="text-xs text-black/60">2-3 dias úteis</p>
+                    <p className="text-xs text-muted-foreground">
+                      2-3 dias úteis
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -228,14 +230,14 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
             {/* Descrição */}
             {product.description && (
-              <Card className="bg-white border border-muted/30 rounded-2xl shadow-sm">
+              <Card className="bg-background border border-muted/30 rounded-2xl shadow-sm">
                 <CardContent className="p-6">
-                  <h3 className="font-bold text-lg text-black mb-4 flex items-center gap-2">
+                  <h3 className="font-bold text-lg font-serif mb-4 flex items-center gap-2 text-foreground">
                     <Info className="w-5 h-5 text-secondary" />
                     Descrição do Produto
                   </h3>
                   <div className="prose prose-sm max-w-none">
-                    <p className="text-black/80 leading-relaxed whitespace-pre-wrap">
+                    <p className="text-foreground/80 leading-relaxed whitespace-pre-wrap">
                       {product.description}
                     </p>
                   </div>
@@ -245,9 +247,9 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
             {/* Tags */}
             {product.tags && product.tags.length > 0 && (
-              <Card className="bg-white border border-muted/30 rounded-2xl shadow-sm">
+              <Card className="bg-background border border-muted/30 rounded-2xl shadow-sm">
                 <CardContent className="p-6">
-                  <h3 className="font-bold text-lg text-black mb-4">
+                  <h3 className="font-bold text-lg text-foreground mb-4">
                     Características
                   </h3>
                   <div className="flex flex-wrap gap-2">
@@ -255,7 +257,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                       <Badge
                         key={index}
                         variant="outline"
-                        className="bg-muted/20 text-black border-muted/40 rounded-full px-3 py-1 font-medium hover:bg-secondary/10 hover:border-secondary/30 transition-colors"
+                        className="bg-muted/20 text-foreground border-muted/40 rounded-full px-3 py-1 font-medium hover:bg-secondary/10 hover:border-secondary/30 transition-colors"
                       >
                         {tag}
                       </Badge>
@@ -267,21 +269,21 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
             {/* Especificações */}
             {(product.weight_grams || product.dimensions_cm) && (
-              <Card className="bg-white border border-muted/30 rounded-2xl shadow-sm">
+              <Card className="bg-background border border-muted/30 rounded-2xl shadow-sm">
                 <CardContent className="p-6">
-                  <h3 className="font-bold text-lg text-black mb-4">
+                  <h3 className="font-bold text-lg text-foreground mb-4">
                     Especificações Técnicas
                   </h3>
                   <div className="space-y-3">
                     {product.weight_grams && (
-                      <div className="flex items-center gap-3 text-black/80">
+                      <div className="flex items-center gap-3 text-muted-foreground">
                         <Package className="w-4 h-4 text-secondary" />
                         <span className="font-medium">Peso:</span>
                         <span>{product.weight_grams}g</span>
                       </div>
                     )}
                     {product.dimensions_cm && (
-                      <div className="flex items-center gap-3 text-black/80">
+                      <div className="flex items-center gap-3 text-muted-foreground">
                         <Ruler className="w-4 h-4 text-secondary" />
                         <span className="font-medium">Dimensões:</span>
                         <span>
@@ -297,13 +299,13 @@ export function ProductDetail({ product }: ProductDetailProps) {
             )}
 
             {/* Garantia */}
-            <Card className="bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-2xl">
+            <Card className="bg-gradient-to-r from-accent/10 to-accent/20 border border-accent rounded-2xl">
               <CardContent className="p-4">
-                <div className="flex items-center gap-3 text-green-800">
+                <div className="flex items-center gap-3 text-accent">
                   <Shield className="w-5 h-5" />
                   <div>
                     <p className="font-medium text-sm">Garantia de 30 dias</p>
-                    <p className="text-xs text-green-700">Devolução gratuita</p>
+                    <p className="text-xs text-accent">Devolução gratuita</p>
                   </div>
                 </div>
               </CardContent>

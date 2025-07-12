@@ -111,7 +111,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <CardContent className="p-2 space-y-3">
           <div className="space-y-2">
             <Link href={`/produto/${product.id}`}>
-              <h3 className="font-semibold text-base font-sans line-clamp-2 group-hover:text-primary transition-colors duration-200 text-black">
+              <h3 className="font-semibold text-base font-serif line-clamp-2 group-hover:text-primary transition-colors duration-200 text-foreground">
                 {product.name}
               </h3>
             </Link>
@@ -120,7 +120,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 R$ {product.price.toFixed(2).replace(".", ",")}
               </span>
               {product.stock_quantity > 0 ? (
-                <Badge className="text-xs bg-green-100 text-green-700 rounded-full px-3 py-1 border-none">
+                <Badge className="text-xs bg-accent text-foreground rounded-full px-3 py-1 border-none">
                   Em estoque
                 </Badge>
               ) : (
@@ -176,7 +176,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 >
                   <Minus className="h-3 w-3" />
                 </Button>
-                <span className="text-sm font-semibold text-black min-w-[1.5rem] text-center">
+                <span className="text-sm font-semibold text-foreground min-w-[1.5rem] text-center">
                   {currentQuantity}
                 </span>
                 <Button

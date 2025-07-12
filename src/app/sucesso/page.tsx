@@ -18,7 +18,9 @@ function SuccessPageInner() {
         <Card className="w-full max-w-md text-center">
           <CardContent className="pt-8 pb-8 px-8">
             <Package className="w-12 h-12 mx-auto mb-4 text-primary" />
-            <h1 className="text-2xl font-bold mb-2">Pedido realizado!</h1>
+            <h1 className="text-2xl font-bold font-serif mb-2 text-foreground">
+              Pedido realizado!
+            </h1>
             <p className="text-muted-foreground mb-6">
               Não foi possível encontrar o código do pedido.
               <br />
@@ -44,7 +46,7 @@ function SuccessPageInner() {
       <Card className="w-full max-w-md text-center">
         <CardContent className="pt-8 pb-8 px-8">
           <CheckCircle className="w-12 h-12 mx-auto mb-4 text-green-500" />
-          <h1 className="text-2xl font-bold mb-2">
+          <h1 className="text-2xl font-bold font-serif mb-2 text-foreground">
             Pedido realizado com sucesso!
           </h1>
           <p className="text-muted-foreground mb-6">

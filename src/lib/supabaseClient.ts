@@ -43,6 +43,8 @@ export interface Product {
   } | null;
   created_at: string;
   updated_at: string | null;
+  original_price: number | null;
+  is_offer: boolean;
 }
 
 export interface Coupon {

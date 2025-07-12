@@ -34,9 +34,9 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
-        <Card className="h-full rounded-2xl border-none bg-card text-black shadow-xl">
+        <Card className="h-full rounded-2xl border-none bg-card text-foreground shadow-xl">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-6 px-6 border-b border-border/30">
-            <CardTitle className="text-xl font-sans flex items-center gap-2 text-black">
+            <CardTitle className="text-xl font-sans flex items-center gap-2 text-foreground">
               <ShoppingBag className="w-5 h-5 text-secondary" />
               Carrinho
             </CardTitle>
@@ -46,7 +46,7 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
               onClick={onClose}
               className="hover:bg-secondary/20 rounded-full"
             >
-              <X className="h-4 w-4 text-black" />
+              <X className="h-4 w-4 text-foreground" />
             </Button>
           </CardHeader>
           <CardContent className="flex flex-col h-full px-4 py-0">
@@ -55,7 +55,7 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
                 <div className="space-y-3">
                   <ShoppingBag className="w-12 h-12 mx-auto opacity-50 text-secondary" />
                   <div>
-                    <p className="font-semibold text-black">
+                    <p className="font-semibold text-foreground">
                       Seu carrinho está vazio
                     </p>
                     <p className="text-sm text-muted-foreground">
@@ -66,13 +66,13 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
               </div>
             ) : (
               <>
-                <div className="flex-1 space-y-4 overflow-y-auto py-6">
+                <div className="flex-1 space-y-4 overflow-y-auto py-6 max-h-[40vh] sm:max-h-[55vh]">
                   {cart.map((item) => (
                     <div
                       key={item.id}
-                      className="flex gap-4 p-3 border rounded-xl border-transparent bg-card hover:bg-muted/40 transition-colors"
+                      className="flex gap-4 p-3 border rounded-2xl border-transparent bg-card hover:bg-muted/40 transition-colors"
                     >
-                      <div className="w-16 h-16 bg-muted/40 rounded-lg overflow-hidden flex-shrink-0 relative border border-muted/30">
+                      <div className="w-16 h-16 bg-muted/40 rounded-2xl overflow-hidden flex-shrink-0 relative border border-muted/30">
                         {item.image ? (
                           <Image
                             src={item.image}
@@ -90,7 +90,7 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
                       </div>
                       <div className="flex-1 min-w-0 space-y-2">
                         <div>
-                          <h4 className="font-semibold text-sm truncate font-sans text-black">
+                          <h4 className="font-semibold text-sm truncate font-sans text-foreground">
                             {item.name}
                           </h4>
                           <p className="text-sm text-muted-foreground font-sans">
@@ -109,7 +109,7 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
                             >
                               <Minus className="h-4 w-4" />
                             </Button>
-                            <span className="text-base font-semibold w-6 text-center text-black">
+                            <span className="text-base font-semibold w-6 text-center text-foreground">
                               {item.quantity}
                             </span>
                             <Button
@@ -136,9 +136,9 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
                     </div>
                   ))}
                 </div>
-                <div className="border-t border-muted pt-6 space-y-4">
+                <div className="border-t border-muted pt-6 space-y-4 bg-card sticky bottom-0 z-10 pb-4">
                   <div className="flex justify-between items-center">
-                    <span className="font-semibold font-sans text-lg text-black">
+                    <span className="font-semibold font-sans text-lg text-foreground">
                       Total:
                     </span>
                     <span className="text-2xl font-bold text-secondary font-sans">
@@ -148,14 +148,14 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
                   <div className="space-y-3">
                     <Button
                       onClick={handleCheckout}
-                      className="w-full font-semibold py-5 text-base rounded-2xl bg-green-500 text-white hover:bg-green-600 hover:animate-pulse shadow-md hover:shadow-lg transition-all duration-300"
+                      className="w-full font-semibold py-5 text-base rounded-2xl bg-primary text-primary-foreground hover:bg-primary/90 hover:animate-pulse shadow-md hover:shadow-lg transition-all duration-300"
                       disabled={cart.length === 0}
                     >
                       Finalizar Compra
                     </Button>
                     <Button
                       onClick={clearCart}
-                      className="w-full font-semibold py-5 text-base rounded-2xl bg-red-500 text-white hover:bg-red-600 hover:animate-pulse shadow-md hover:shadow-lg transition-all duration-300"
+                      className="w-full font-semibold py-5 text-base rounded-2xl bg-destructive text-white hover:bg-destructive/90 hover:animate-pulse shadow-md hover:shadow-lg transition-all duration-300"
                       disabled={cart.length === 0}
                     >
                       Limpar Carrinho

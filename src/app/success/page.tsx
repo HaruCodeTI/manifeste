@@ -14,14 +14,14 @@ function SuccessContent() {
           <div className="space-y-6">
             {/* Ícone de Sucesso */}
             <div className="flex justify-center">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-                <CheckCircle className="w-8 h-8 text-green-600" />
+              <div className="w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center">
+                <CheckCircle className="w-8 h-8 text-accent" />
               </div>
             </div>
 
             {/* Título */}
             <div className="space-y-2">
-              <h1 className="text-2xl font-bold font-sans text-foreground">
+              <h1 className="text-2xl font-bold font-serif text-foreground">
                 Pedido Confirmado!
               </h1>
               <p className="text-muted-foreground text-sm">

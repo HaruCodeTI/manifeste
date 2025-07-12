@@ -1,0 +1,320 @@
+{
+  "designSystem": {
+    "name": "Vibrio Design System",
+    "version": "1.0.0",
+    "description": "Sophisticated minimalist e-commerce design system with premium aesthetic and monochromatic styling",
+
+    "colorPalette": {
+      "primary": {
+        "background": "#000000",
+        "surface": "#1a1a1a",
+        "surfaceVariant": "#2a2a2a"
+      },
+      "secondary": {
+        "background": "#ffffff",
+        "surface": "#f5f5f5",
+        "surfaceVariant": "#e5e5e5"
+      },
+      "accent": {
+        "primary": "#22c55e",
+        "gold": "#d4af37",
+        "warning": "#ef4444"
+      },
+      "text": {
+        "primary": "#ffffff",
+        "secondary": "#a3a3a3",
+        "muted": "#737373",
+        "inverse": "#000000"
+      },
+      "neutral": {
+        "100": "#f5f5f5",
+        "200": "#e5e5e5",
+        "300": "#d4d4d4",
+        "400": "#a3a3a3",
+        "500": "#737373",
+        "600": "#525252",
+        "700": "#404040",
+        "800": "#262626",
+        "900": "#171717"
+      }
+    },
+
+    "typography": {
+      "fonts": {
+        "primary": "Inter, system-ui, sans-serif",
+        "secondary": "Helvetica Neue, Arial, sans-serif"
+      },
+      "scales": {
+        "hero": {
+          "fontSize": "4rem",
+          "lineHeight": "1.1",
+          "fontWeight": "700",
+          "letterSpacing": "-0.02em"
+        },
+        "heading1": {
+          "fontSize": "2.5rem",
+          "lineHeight": "1.2",
+          "fontWeight": "600",
+          "letterSpacing": "-0.01em"
+        },
+        "heading2": {
+          "fontSize": "2rem",
+          "lineHeight": "1.3",
+          "fontWeight": "600"
+        },
+        "heading3": {
+          "fontSize": "1.5rem",
+          "lineHeight": "1.4",
+          "fontWeight": "500"
+        },
+        "body": {
+          "fontSize": "1rem",
+          "lineHeight": "1.6",
+          "fontWeight": "400"
+        },
+        "caption": {
+          "fontSize": "0.875rem",
+          "lineHeight": "1.4",
+          "fontWeight": "400"
+        },
+        "label": {
+          "fontSize": "0.75rem",
+          "lineHeight": "1.2",
+          "fontWeight": "500",
+          "letterSpacing": "0.05em",
+          "textTransform": "uppercase"
+        }
+      }
+    },
+
+    "spacing": {
+      "unit": "0.25rem",
+      "scale": {
+        "xs": "0.25rem",
+        "sm": "0.5rem",
+        "md": "1rem",
+        "lg": "1.5rem",
+        "xl": "2rem",
+        "2xl": "3rem",
+        "3xl": "4rem",
+        "4xl": "6rem",
+        "5xl": "8rem"
+      },
+      "containerPadding": {
+        "mobile": "1rem",
+        "tablet": "2rem",
+        "desktop": "3rem"
+      }
+    },
+
+    "layout": {
+      "maxWidth": "1440px",
+      "breakpoints": {
+        "sm": "640px",
+        "md": "768px",
+        "lg": "1024px",
+        "xl": "1280px",
+        "2xl": "1536px"
+      },
+      "grid": {
+        "columns": 12,
+        "gap": "1.5rem"
+      }
+    },
+
+    "components": {
+      "navigation": {
+        "height": "80px",
+        "backgroundColor": "transparent",
+        "backdropFilter": "blur(10px)",
+        "borderBottom": "1px solid rgba(255, 255, 255, 0.1)",
+        "padding": "0 2rem",
+        "items": {
+          "fontSize": "0.875rem",
+          "fontWeight": "500",
+          "spacing": "2rem",
+          "hoverColor": "#a3a3a3"
+        }
+      },
+
+      "hero": {
+        "minHeight": "100vh",
+        "backgroundType": "image",
+        "overlay": "rgba(0, 0, 0, 0.4)",
+        "contentAlignment": "center-left",
+        "textColor": "#ffffff",
+        "padding": "0 3rem"
+      },
+
+      "productCard": {
+        "backgroundColor": "#1a1a1a",
+        "borderRadius": "0.5rem",
+        "aspectRatio": "1:1",
+        "padding": "1.5rem",
+        "hoverTransform": "translateY(-4px)",
+        "transition": "all 0.3s ease",
+        "shadow": "0 4px 20px rgba(0, 0, 0, 0.1)",
+        "image": {
+          "aspectRatio": "1:1",
+          "objectFit": "cover",
+          "borderRadius": "0.25rem"
+        },
+        "content": {
+          "padding": "1rem 0",
+          "textAlign": "center"
+        },
+        "title": {
+          "fontSize": "1.125rem",
+          "fontWeight": "500",
+          "marginBottom": "0.5rem"
+        },
+        "price": {
+          "fontSize": "1rem",
+          "fontWeight": "600",
+          "color": "#ffffff"
+        },
+        "originalPrice": {
+          "fontSize": "0.875rem",
+          "textDecoration": "line-through",
+          "color": "#737373",
+          "marginRight": "0.5rem"
+        },
+        "badge": {
+          "position": "absolute",
+          "top": "1rem",
+          "left": "1rem",
+          "backgroundColor": "#000000",
+          "color": "#ffffff",
+          "padding": "0.25rem 0.75rem",
+          "borderRadius": "0.25rem",
+          "fontSize": "0.75rem",
+          "fontWeight": "500"
+        }
+      },
+
+      "button": {
+        "primary": {
+          "backgroundColor": "#22c55e",
+          "color": "#ffffff",
+          "padding": "0.75rem 2rem",
+          "borderRadius": "0.5rem",
+          "fontSize": "1rem",
+          "fontWeight": "600",
+          "border": "none",
+          "cursor": "pointer",
+          "transition": "all 0.2s ease",
+          "hoverBackgroundColor": "#16a34a"
+        },
+        "secondary": {
+          "backgroundColor": "transparent",
+          "color": "#ffffff",
+          "padding": "0.75rem 2rem",
+          "borderRadius": "0.5rem",
+          "fontSize": "1rem",
+          "fontWeight": "500",
+          "border": "1px solid rgba(255, 255, 255, 0.2)",
+          "cursor": "pointer",
+          "transition": "all 0.2s ease",
+          "hoverBackgroundColor": "rgba(255, 255, 255, 0.1)"
+        }
+      },
+
+      "input": {
+        "backgroundColor": "transparent",
+        "color": "#ffffff",
+        "padding": "0.75rem 1rem",
+        "borderRadius": "0.5rem",
+        "border": "1px solid rgba(255, 255, 255, 0.2)",
+        "fontSize": "1rem",
+        "placeholder": {
+          "color": "#737373"
+        },
+        "focus": {
+          "borderColor": "#22c55e",
+          "outline": "none"
+        }
+      },
+
+      "sidebar": {
+        "backgroundColor": "#ffffff",
+        "width": "400px",
+        "height": "100vh",
+        "position": "fixed",
+        "right": "0",
+        "top": "0",
+        "boxShadow": "-4px 0 20px rgba(0, 0, 0, 0.1)",
+        "padding": "2rem",
+        "zIndex": "1000"
+      },
+
+      "overlay": {
+        "backgroundColor": "rgba(0, 0, 0, 0.5)",
+        "position": "fixed",
+        "top": "0",
+        "left": "0",
+        "width": "100%",
+        "height": "100%",
+        "zIndex": "999"
+      }
+    },
+
+    "patterns": {
+      "sectioning": {
+        "backgroundColor": "#000000",
+        "padding": "4rem 0",
+        "marginBottom": "0"
+      },
+
+      "contentGrid": {
+        "display": "grid",
+        "gridTemplateColumns": "repeat(auto-fit, minmax(300px, 1fr))",
+        "gap": "2rem",
+        "padding": "0 2rem"
+      },
+
+      "imageOverlay": {
+        "position": "relative",
+        "backgroundBlendMode": "multiply",
+        "filter": "grayscale(20%)"
+      },
+
+      "glassmorphism": {
+        "backgroundColor": "rgba(255, 255, 255, 0.1)",
+        "backdropFilter": "blur(10px)",
+        "border": "1px solid rgba(255, 255, 255, 0.2)"
+      }
+    },
+
+    "animations": {
+      "hover": {
+        "duration": "0.3s",
+        "easing": "ease-in-out",
+        "transform": "translateY(-4px)"
+      },
+      "fadeIn": {
+        "duration": "0.5s",
+        "easing": "ease-out"
+      },
+      "slideIn": {
+        "duration": "0.4s",
+        "easing": "cubic-bezier(0.4, 0, 0.2, 1)"
+      }
+    },
+
+    "designPrinciples": {
+      "aesthetic": "Minimalist luxury with monochromatic base and selective color accents",
+      "contrast": "High contrast between dark backgrounds and light text",
+      "whitespace": "Generous use of negative space for premium feel",
+      "imagery": "High-quality, artistic photography with dramatic lighting",
+      "interaction": "Subtle hover effects and smooth transitions",
+      "hierarchy": "Clear visual hierarchy through typography scale and spacing"
+    },
+
+    "usage": {
+      "primaryUseCase": "Premium e-commerce and lifestyle brands",
+      "targetAudience": "Adults 25-45 with disposable income",
+      "brandPersonality": "Sophisticated, intimate, premium, trustworthy",
+      "contentStrategy": "High-quality product photography, minimal copy, focus on experience"
+    }
+  }
+}

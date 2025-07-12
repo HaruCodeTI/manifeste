@@ -83,11 +83,11 @@ export default function AcompanharPedidoPage() {
       <div className="w-full max-w-lg mx-auto mb-4 flex justify-start">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-primary hover:underline text-sm px-2 py-1"
+          className="flex items-center gap-2 text-black hover:underline text-sm px-2 py-1"
         >
           <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
             <path
-              stroke="currentColor"
+              stroke="#000"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -99,15 +99,15 @@ export default function AcompanharPedidoPage() {
       </div>
       <Card className="w-full max-w-lg mx-auto rounded-2xl shadow-lg border-none bg-card">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-black font-semibold text-2xl">
-            <Package className="w-6 h-6 text-primary" />
+          <CardTitle className="flex items-center gap-2 text-foreground font-serif font-semibold text-2xl">
+            <Package className="w-6 h-6 text-white" />
             Acompanhar Pedido
           </CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="email" className="text-black font-medium">
+              <Label htmlFor="email" className="text-white font-medium">
                 E-mail usado no pedido
               </Label>
               <Input
@@ -118,11 +118,11 @@ export default function AcompanharPedidoPage() {
                 required
                 autoComplete="email"
                 placeholder="seu@email.com"
-                className="placeholder:text-muted focus:ring-2 focus:ring-secondary/40 focus:border-secondary border border-muted rounded-xl bg-background text-black"
+                className="placeholder:text-neutral-500 focus:ring-2 focus:ring-accent focus:border-accent border border-neutral-200 rounded-xl bg-white text-black"
               />
             </div>
             <div>
-              <Label htmlFor="order" className="text-black font-medium">
+              <Label htmlFor="order" className="text-white font-medium">
                 Código do pedido
               </Label>
               <Input
@@ -131,12 +131,12 @@ export default function AcompanharPedidoPage() {
                 onChange={(e) => setOrderId(e.target.value)}
                 required
                 placeholder="Ex: 123e4567-..."
-                className="placeholder:text-muted focus:ring-2 focus:ring-secondary/40 focus:border-secondary border border-muted rounded-xl bg-background text-black"
+                className="placeholder:text-neutral-500 focus:ring-2 focus:ring-accent focus:border-accent border border-neutral-200 rounded-xl bg-white text-black"
               />
             </div>
             <Button
               type="submit"
-              className="w-full rounded-2xl font-semibold text-base bg-secondary text-secondary-foreground shadow-md hover:bg-secondary/90 transition-all duration-300 py-3"
+              className="w-full rounded-2xl font-semibold text-base bg-black text-white shadow-md hover:bg-white hover:text-black transition-all duration-300 py-3"
               disabled={loading}
             >
               {loading ? (
@@ -155,11 +155,28 @@ export default function AcompanharPedidoPage() {
 
           {result && (
             <div className="mt-8 space-y-6">
+              <div className="w-full flex justify-start mb-2">
+                <button
+                  onClick={() => (window.location.href = "/")}
+                  className="flex items-center gap-2 text-white hover:underline text-sm px-2 py-1"
+                >
+                  <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
+                    <path
+                      stroke="#fff"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15 19l-7-7 7-7"
+                    />
+                  </svg>
+                  Voltar para a Home
+                </button>
+              </div>
               <div className="flex items-center gap-3">
                 {statusIcons[result.order.status] || (
                   <Truck className="w-6 h-6 text-primary" />
                 )}
-                <span className="text-lg font-bold text-black">
+                <span className="text-lg font-bold text-white">
                   Status:{" "}
                   {statusLabels[result.order.status] || result.order.status}
                 </span>
@@ -238,13 +255,13 @@ export default function AcompanharPedidoPage() {
                     </p>
                   </div>
                 )}
-              <div className="font-semibold mb-2 text-black mt-4">
+              <div className="font-semibold mb-2 text-white mt-4 text-lg">
                 Histórico:
               </div>
-              <ul className="text-sm space-y-1 bg-muted/30 rounded-xl p-3">
+              <ul className="text-sm space-y-2 bg-white/10 rounded-xl p-4 border border-neutral-700">
                 {result.history.map((h, i) => (
-                  <li key={i} className="text-black/80">
-                    <span className="font-medium text-black">
+                  <li key={i} className="text-white/90">
+                    <span className="font-semibold text-white">
                       {statusLabels[h.status] || h.status}
                     </span>{" "}
                     em{" "}
@@ -256,21 +273,22 @@ export default function AcompanharPedidoPage() {
                   </li>
                 ))}
               </ul>
-              <div className="font-semibold mb-2 text-black mt-4">
+              <div className="font-semibold mb-2 text-white mt-4 text-lg">
                 Itens do pedido:
               </div>
-              <ul className="text-sm space-y-1 bg-muted/30 rounded-xl p-3">
+              <ul className="text-sm space-y-2 bg-white/10 rounded-xl p-4 border border-neutral-700">
                 {result.items.map((item, i) => (
-                  <li key={i} className="text-black/80">
+                  <li key={i} className="text-white/90">
                     {item.products?.name} — Qtd: {item.quantity} — R${" "}
-                    {Number(item.price_at_purchase)
-                      .toFixed(2)
-                      .replace(".", ",")}
+                    {item.price_at_purchase.toLocaleString("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    })}
                   </li>
                 ))}
               </ul>
               <div className="text-sm text-muted-foreground mt-4">
-                <div className="text-black">
+                <div className="text-white">
                   Total:{" "}
                   <span className="font-bold">
                     R${" "}
@@ -279,20 +297,20 @@ export default function AcompanharPedidoPage() {
                       .replace(".", ",")}
                   </span>
                 </div>
-                <div className="text-black">
+                <div className="text-white">
                   Método de envio:{" "}
                   {shippingLabels[result.order.shipping_method] ||
                     result.order.shipping_method}
                 </div>
                 {result.order.tracking_code && (
-                  <div className="text-black">
+                  <div className="text-white">
                     Código de rastreio:{" "}
                     <span className="font-mono">
                       {result.order.tracking_code}
                     </span>
                   </div>
                 )}
-                <div className="text-black">
+                <div className="text-white">
                   Pedido feito em:{" "}
                   {new Date(result.order.created_at).toLocaleString("pt-BR", {
                     dateStyle: "short",
