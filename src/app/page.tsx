@@ -4,6 +4,7 @@ import { Header } from "@/components/Header";
 import { ShoppingCart } from "@/components/ShoppingCart";
 import { LoadingGrid } from "@/components/ui/loading";
 import { Product, supabase } from "@/lib/supabaseClient";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
@@ -23,6 +24,10 @@ export default function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(12);
+  const [sort, setSort] = useState<
+    "featured" | "price_asc" | "price_desc" | "az" | "za"
+  >("featured");
 
   useEffect(() => {
     async function fetchCategories() {
@@ -53,18 +58,24 @@ export default function HomePage() {
         .eq("status", "active");
       if (debouncedSearch) query = query.ilike("name", `%${debouncedSearch}%`);
       if (selectedCategory) query = query.eq("category_id", selectedCategory);
-      query = query
-        .order("created_at", { ascending: false })
-        .range((page - 1) * 12, page * 12 - 1);
+      // Ordenação
+      if (sort === "price_asc")
+        query = query.order("price", { ascending: true });
+      else if (sort === "price_desc")
+        query = query.order("price", { ascending: false });
+      else if (sort === "az") query = query.order("name", { ascending: true });
+      else if (sort === "za") query = query.order("name", { ascending: false });
+      else query = query.order("created_at", { ascending: false });
+      query = query.range((page - 1) * itemsPerPage, page * itemsPerPage - 1);
       const { data, count, error } = await query;
       if (!error) {
         setProducts(data || []);
-        setTotalPages(count ? Math.ceil(count / 12) : 1);
+        setTotalPages(count ? Math.ceil(count / itemsPerPage) : 1);
       }
       setLoading(false);
     }
     fetchProducts();
-  }, [debouncedSearch, selectedCategory, page]);
+  }, [debouncedSearch, selectedCategory, page, itemsPerPage, sort]);
 
   const handleCategoryChange = (categoryId: string) => {
     setSelectedCategory(categoryId);
@@ -72,7 +83,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5]">
+    <div className="min-h-screen bg-[#f4f0db]">
       <Header
         onCartClick={() => setIsCartOpen(true)}
         onTrackOrderClick={() => (window.location.href = "/acompanhar")}
@@ -82,10 +93,47 @@ export default function HomePage() {
       />
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-12">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold font-serif mb-2 text-black">
-              Catálogo
-            </h2>
+          {/* Filtros premium */}
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-8 px-1">
+            <div className="flex items-center gap-2 text-neutral-700 text-lg">
+              <span className="font-medium">Ordenar por:</span>
+              <select
+                value={sort}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                  setSort(e.target.value as typeof sort);
+                  setPage(1);
+                }}
+                className="bg-transparent border-none outline-none font-medium text-lg cursor-pointer"
+                style={{ minWidth: 120 }}
+              >
+                <option value="featured">Em destaque</option>
+                <option value="price_asc">Menor preço</option>
+                <option value="price_desc">Maior preço</option>
+                <option value="az">A-Z</option>
+                <option value="za">Z-A</option>
+              </select>
+            </div>
+            <div className="flex items-center gap-2 text-neutral-700 text-lg">
+              <span className="font-medium">Exibir:</span>
+              <select
+                value={itemsPerPage}
+                onChange={(e) => {
+                  setItemsPerPage(Number(e.target.value));
+                  setPage(1);
+                }}
+                className="bg-transparent border-none outline-none font-medium text-lg cursor-pointer"
+                style={{ minWidth: 60 }}
+              >
+                {[4, 8, 12, 20, 40].map((n) => (
+                  <option key={n} value={n}>
+                    {n}
+                  </option>
+                ))}
+              </select>
+              <span className="ml-4 text-neutral-700 text-lg font-medium">
+                {products.length} produto{products.length !== 1 ? "s" : ""}
+              </span>
+            </div>
           </div>
           {/* Grid de produtos minimalista */}
           {loading ? (
@@ -114,30 +162,42 @@ export default function HomePage() {
                     )}
                     {/* Imagem principal e hover */}
                     {product.image_urls && product.image_urls.length > 0 ? (
-                      <img
+                      <Image
                         src={product.image_urls[0]}
                         alt={product.name}
+                        width={400}
+                        height={500}
                         className="object-cover w-full h-full transition-opacity duration-300 group-hover:opacity-0"
                         loading="lazy"
+                        style={{ objectFit: "cover" }}
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">
-                        Sem imagem
+                      <div className="w-full h-full flex flex-col items-center justify-center bg-neutral-900 text-white gap-2">
+                        <span style={{ fontSize: 44, lineHeight: 1 }}>🤫</span>
+                        <span className="text-xs font-medium text-white/80">
+                          Surpresa! Imagem indisponível 😏
+                        </span>
                       </div>
                     )}
                     {product.image_urls && product.image_urls.length > 1 && (
-                      <img
+                      <Image
                         src={product.image_urls[1]}
                         alt={product.name}
+                        width={400}
+                        height={500}
                         className="object-cover w-full h-full absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                         loading="lazy"
+                        style={{ objectFit: "cover" }}
                       />
                     )}
                   </div>
                   <div className="pt-4 pb-4 px-1 text-center">
                     <h3
-                      className="font-serif font-medium text-lg mb-1 text-black leading-tight tracking-tight"
-                      style={{ fontFamily: "Playfair Display, serif" }}
+                      className="text-lg mb-1 text-black leading-tight tracking-tight"
+                      style={{
+                        fontFamily: "var(--font-heading-family)",
+                        fontWeight: "var(--font-body-weight-bold)",
+                      }}
                     >
                       {product.name}
                     </h3>
@@ -151,13 +211,17 @@ export default function HomePage() {
                           })}
                         </span>
                       ) : null}
-                      <span className="flex items-end justify-center gap-1">
-                        <span className="font-normal text-base text-black">
-                          R$
-                        </span>
+                      <span
+                        className="flex items-end justify-center gap-1"
+                        style={{
+                          fontFamily: "var(--font-body-family)",
+                          fontWeight: "var(--font-body-weight)",
+                        }}
+                      >
+                        <span className="text-base text-black">R$</span>
                         <span
-                          className="font-serif text-xl font-light tracking-tight text-black"
-                          style={{ fontFamily: "Playfair Display, serif" }}
+                          className="text-xl text-black"
+                          style={{ fontWeight: "var(--font-body-weight)" }}
                         >
                           {product.price
                             .toLocaleString("pt-BR", {

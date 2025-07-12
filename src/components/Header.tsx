@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { useCartContext } from "@/contexts/CartContext";
 import { Menu, ShoppingCart } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -41,10 +42,16 @@ export function Header({
       </div>
       {/* Logo centralizada */}
       <div className="flex flex-col items-center justify-center py-4">
-        <Link href="/" className="select-none">
-          <span className="text-2xl sm:text-3xl font-serif font-bold tracking-tight">
-            Manifeste
-          </span>
+        <Link href="/" className="select-none flex items-center justify-center">
+          <Image
+            src="/logo.png"
+            alt="Logo Manifeste"
+            width={220}
+            height={48}
+            className="h-10 sm:h-12 w-auto"
+            priority
+            draggable={false}
+          />
         </Link>
       </div>
       {/* Menu + ícones */}
@@ -75,36 +82,39 @@ export function Header({
           <Menu className="w-5 h-5" />
         </button>
         {/* Navegação (desktop) */}
-        <nav className="hidden md:flex gap-6 mx-auto text-base font-medium font-sans">
-          <button
-            onClick={() => onCategoryChange("")}
-            className={`hover:text-foreground/80 transition ${
-              selectedCategory === "" ? "text-white" : "text-foreground/60"
-            }`}
-          >
-            TODOS
-          </button>
-          {categories.map((category) => (
+        {categories.length > 0 && (
+          <nav className="hidden md:flex gap-6 mx-auto text-base font-medium font-sans">
             <button
-              key={category.id}
-              onClick={() => onCategoryChange(category.id)}
+              onClick={() => onCategoryChange("")}
               className={`hover:text-foreground/80 transition ${
-                selectedCategory === category.id
-                  ? "text-white"
-                  : "text-foreground/60"
+                selectedCategory === "" ? "text-white" : "text-foreground/60"
               }`}
             >
-              {category.name.toUpperCase()}
+              TODOS
             </button>
-          ))}
-        </nav>
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                onClick={() => onCategoryChange(category.id)}
+                className={`hover:text-foreground/80 transition ${
+                  selectedCategory === category.id
+                    ? "text-white"
+                    : "text-foreground/60"
+                }`}
+              >
+                {category.name.toUpperCase()}
+              </button>
+            ))}
+          </nav>
+        )}
         {/* Ícones à direita */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 w-full max-w-xs justify-end md:justify-end">
           <Button
             variant="secondary"
             size="icon"
             onClick={onCartClick}
-            className="ml-2 px-2 py-1.5 rounded-full font-medium text-white bg-neutral-900 border border-neutral-700 hover:bg-neutral-800 transition hidden md:block text-sm"
+            className="relative ml-2 px-2 py-1.5 rounded-full font-medium text-white bg-neutral-900 border border-neutral-700 hover:bg-neutral-800 transition text-sm flex-1 min-w-0 max-w-[50%] md:max-w-none md:flex-initial md:block"
+            style={{ minWidth: 0 }}
             onMouseEnter={() => setIsCartHovered(true)}
             onMouseLeave={() => setIsCartHovered(false)}
             aria-label="Abrir carrinho"
@@ -115,22 +125,46 @@ export function Header({
               }`}
             />
             {itemCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-in zoom-in-50 duration-200">
+              <span
+                className="pointer-events-none select-none"
+                style={{
+                  position: "absolute",
+                  top: -8,
+                  right: -8,
+                  background: "#ffacc2",
+                  color: "#000",
+                  fontSize: "0.95rem",
+                  fontWeight: 700,
+                  borderRadius: "9999px",
+                  width: 22,
+                  height: 22,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  boxShadow: "0 1px 4px 0 #0002",
+                  zIndex: 10,
+                  border: "2px solid #222",
+                  lineHeight: 1,
+                }}
+              >
                 {itemCount}
               </span>
             )}
           </Button>
           <Button
             variant="secondary"
-            className="ml-2 px-4 py-1.5 rounded-full font-medium text-white bg-neutral-900 border border-neutral-700 hover:bg-neutral-800 transition hidden md:block text-sm"
+            className="ml-2 px-2 py-1 rounded-full font-medium text-white bg-neutral-900 border border-neutral-700 hover:bg-neutral-800 transition text-xs flex-1 min-w-0 max-w-[50%] md:max-w-none md:flex-initial md:block md:px-4 md:py-1.5 md:text-sm"
             onClick={onTrackOrderClick}
+            style={{ minWidth: 0 }}
           >
-            Acompanhar Pedido
+            <span className="hidden xs:inline md:inline">
+              Acompanhar Pedido
+            </span>
+            <span className="inline xs:hidden md:hidden">Pedido</span>
           </Button>
         </div>
       </div>
-      {/* Menu mobile drawer */}
-      {mobileMenuOpen && (
+      {mobileMenuOpen && categories.length > 0 && (
         <div className="fixed inset-0 z-50 bg-black/90 flex flex-col">
           <div className="flex justify-end p-4">
             <button

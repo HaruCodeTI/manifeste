@@ -80,14 +80,15 @@ export default function AcompanharPedidoPage() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4 py-12">
+      {/* Botão de voltar sempre visível */}
       <div className="w-full max-w-lg mx-auto mb-4 flex justify-start">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-black hover:underline text-sm px-2 py-1"
+          className="flex items-center gap-2 text-[#ffacc2] hover:underline text-base font-serif px-2 py-1"
         >
           <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
             <path
-              stroke="#000"
+              stroke="#ffacc2"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -99,15 +100,18 @@ export default function AcompanharPedidoPage() {
       </div>
       <Card className="w-full max-w-lg mx-auto rounded-2xl shadow-lg border-none bg-card">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-foreground font-serif font-semibold text-2xl">
-            <Package className="w-6 h-6 text-white" />
+          <CardTitle className="flex items-center gap-2 text-foreground font-serif font-bold text-2xl">
+            <Package className="w-6 h-6" style={{ color: "#ffacc2" }} />
             Acompanhar Pedido
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4 font-sans">
             <div>
-              <Label htmlFor="email" className="text-white font-medium">
+              <Label
+                htmlFor="email"
+                className="text-foreground font-medium font-sans"
+              >
                 E-mail usado no pedido
               </Label>
               <Input
@@ -118,11 +122,14 @@ export default function AcompanharPedidoPage() {
                 required
                 autoComplete="email"
                 placeholder="seu@email.com"
-                className="placeholder:text-neutral-500 focus:ring-2 focus:ring-accent focus:border-accent border border-neutral-200 rounded-xl bg-white text-black"
+                className="placeholder:text-muted-foreground focus:ring-2 focus:ring-[#ffacc2] focus:border-[#ffacc2] border border-neutral-200 rounded-xl bg-white text-black"
               />
             </div>
             <div>
-              <Label htmlFor="order" className="text-white font-medium">
+              <Label
+                htmlFor="order"
+                className="text-foreground font-medium font-sans"
+              >
                 Código do pedido
               </Label>
               <Input
@@ -131,12 +138,12 @@ export default function AcompanharPedidoPage() {
                 onChange={(e) => setOrderId(e.target.value)}
                 required
                 placeholder="Ex: 123e4567-..."
-                className="placeholder:text-neutral-500 focus:ring-2 focus:ring-accent focus:border-accent border border-neutral-200 rounded-xl bg-white text-black"
+                className="placeholder:text-muted-foreground focus:ring-2 focus:ring-[#ffacc2] focus:border-[#ffacc2] border border-neutral-200 rounded-xl bg-white text-black"
               />
             </div>
             <Button
               type="submit"
-              className="w-full rounded-2xl font-semibold text-base bg-black text-white shadow-md hover:bg-white hover:text-black transition-all duration-300 py-3"
+              className="w-full rounded-2xl font-semibold text-base bg-black text-white shadow-md hover:bg-[#ffacc2] hover:text-black transition-all duration-300 py-3 font-sans"
               disabled={loading}
             >
               {loading ? (
@@ -147,36 +154,19 @@ export default function AcompanharPedidoPage() {
           </form>
 
           {error && (
-            <div className="mt-6 flex items-center gap-2 text-destructive bg-red-50 border border-red-200 rounded-xl p-2">
+            <div className="mt-6 flex items-center gap-2 text-destructive bg-red-50 border border-red-200 rounded-xl p-2 font-sans">
               <XCircle className="w-5 h-5" />
               <span className="text-black">{error}</span>
             </div>
           )}
 
           {result && (
-            <div className="mt-8 space-y-6">
-              <div className="w-full flex justify-start mb-2">
-                <button
-                  onClick={() => (window.location.href = "/")}
-                  className="flex items-center gap-2 text-white hover:underline text-sm px-2 py-1"
-                >
-                  <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
-                    <path
-                      stroke="#fff"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M15 19l-7-7 7-7"
-                    />
-                  </svg>
-                  Voltar para a Home
-                </button>
-              </div>
+            <div className="mt-8 space-y-6 font-sans">
               <div className="flex items-center gap-3">
                 {statusIcons[result.order.status] || (
-                  <Truck className="w-6 h-6 text-primary" />
+                  <Truck className="w-6 h-6" style={{ color: "#ffacc2" }} />
                 )}
-                <span className="text-lg font-bold text-white">
+                <span className="text-lg font-bold font-serif text-[#ffacc2]">
                   Status:{" "}
                   {statusLabels[result.order.status] || result.order.status}
                 </span>
@@ -223,7 +213,7 @@ export default function AcompanharPedidoPage() {
                         type="button"
                         size="sm"
                         variant="outline"
-                        className="ml-1 border-yellow-300 text-yellow-900 hover:bg-yellow-100 rounded-lg"
+                        className="ml-1 rounded-lg"
                         onClick={() => {
                           navigator.clipboard.writeText(
                             "seu-pix@seudominio.com"

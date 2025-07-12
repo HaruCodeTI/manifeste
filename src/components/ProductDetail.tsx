@@ -42,7 +42,8 @@ export function ProductDetail({ product }: ProductDetailProps) {
       },
       () => {
         setShowToast(true);
-      }
+      },
+      quantity
     );
   };
 
@@ -83,14 +84,31 @@ export function ProductDetail({ product }: ProductDetailProps) {
                   priority={true}
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-black/60 text-sm font-medium">
-                  <Package className="w-12 h-12 mb-2" />
-                  <p>Sem imagem disponível</p>
+                <div className="w-full h-full flex flex-col items-center justify-center bg-neutral-900 text-white gap-2">
+                  <span style={{ fontSize: 44, lineHeight: 1 }}>🤫</span>
+                  <span className="text-xs font-medium text-white/80">
+                    Surpresa! Imagem indisponível 😏
+                  </span>
+                </div>
+              )}
+              {/* Dots de galeria */}
+              {product.image_urls && product.image_urls.length > 1 && (
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                  {product.image_urls.map((_, idx) => (
+                    <span
+                      key={idx}
+                      className="block w-3 h-3 rounded-full transition-all duration-200"
+                      style={{
+                        background:
+                          selectedImage === idx ? "#ffacc2" : "#e5e5e5",
+                        opacity: selectedImage === idx ? 1 : 0.6,
+                      }}
+                    />
+                  ))}
                 </div>
               )}
             </div>
 
-            {/* Miniaturas */}
             {product.image_urls && product.image_urls.length > 1 && (
               <div className="grid grid-cols-5 gap-3">
                 {product.image_urls.map((image, index) => (
@@ -116,9 +134,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
             )}
           </div>
 
-          {/* Informações do Produto */}
           <div className="space-y-6">
-            {/* Cabeçalho */}
             <div className="space-y-4">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
@@ -161,9 +177,13 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 </div>
                 <Badge
                   variant="secondary"
-                  className="bg-accent text-foreground border-accent rounded-full px-3 py-1 font-medium"
+                  className="rounded-full px-3 py-1 font-medium border-0"
+                  style={{ background: "#ffacc2", color: "#000" }}
                 >
-                  <CheckCircle className="w-3 h-3 mr-1" />
+                  <CheckCircle
+                    className="w-3 h-3 mr-1"
+                    style={{ color: "#ffacc2" }}
+                  />
                   {product.stock_quantity > 0
                     ? `${product.stock_quantity} em estoque`
                     : "Indisponível"}
@@ -214,14 +234,25 @@ export function ProductDetail({ product }: ProductDetailProps) {
             </div>
 
             {/* Informações de Entrega */}
-            <Card className="bg-gradient-to-r from-muted/20 to-muted/30 border border-muted/30 rounded-2xl">
+            <Card className="bg-gradient-to-r from-[#ffacc2]/10 to-[#ffacc2]/20 border border-0 rounded-2xl">
               <CardContent className="p-4">
-                <div className="flex items-center gap-3 text-accent">
-                  <Truck className="w-5 h-5 text-secondary" />
+                <div
+                  className="flex items-center gap-3"
+                  style={{ color: "#ffacc2" }}
+                >
+                  <Truck className="w-5 h-5" style={{ color: "#ffacc2" }} />
                   <div>
-                    <p className="font-medium text-sm">Entrega rápida</p>
-                    <p className="text-xs text-muted-foreground">
-                      2-3 dias úteis
+                    <p
+                      className="font-medium text-sm"
+                      style={{ color: "#ffacc2" }}
+                    >
+                      Entrega em até 1 hora
+                    </p>
+                    <p
+                      className="text-xs text-muted-foreground"
+                      style={{ color: "#ffacc2" }}
+                    >
+                      Consulte disponibilidade para sua região
                     </p>
                   </div>
                 </div>
@@ -299,13 +330,23 @@ export function ProductDetail({ product }: ProductDetailProps) {
             )}
 
             {/* Garantia */}
-            <Card className="bg-gradient-to-r from-accent/10 to-accent/20 border border-accent rounded-2xl">
+            <Card className="bg-gradient-to-r from-[#ffacc2]/10 to-[#ffacc2]/20 border-0 rounded-2xl">
               <CardContent className="p-4">
-                <div className="flex items-center gap-3 text-accent">
-                  <Shield className="w-5 h-5" />
+                <div
+                  className="flex items-center gap-3"
+                  style={{ color: "#ffacc2" }}
+                >
+                  <Shield className="w-5 h-5" style={{ color: "#ffacc2" }} />
                   <div>
-                    <p className="font-medium text-sm">Garantia de 30 dias</p>
-                    <p className="text-xs text-accent">Devolução gratuita</p>
+                    <p
+                      className="font-medium text-sm"
+                      style={{ color: "#ffacc2" }}
+                    >
+                      Garantia de 30 dias
+                    </p>
+                    <p className="text-xs" style={{ color: "#ffacc2" }}>
+                      Devolução gratuita
+                    </p>
                   </div>
                 </div>
               </CardContent>

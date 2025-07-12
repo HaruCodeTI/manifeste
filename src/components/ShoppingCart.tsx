@@ -83,8 +83,10 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
                             priority={false}
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs">
-                            Sem imagem
+                          <div className="w-full h-full flex flex-col items-center justify-center bg-neutral-900 text-white gap-2">
+                            <span style={{ fontSize: 28, lineHeight: 1 }}>
+                              🤫
+                            </span>
                           </div>
                         )}
                       </div>

@@ -32,7 +32,7 @@ export default function MissaoVisaoValoresPage() {
           </ul>
         </div>
         <div className="mt-8 text-center">
-          <Link href="/" className="text-accent hover:underline font-medium">
+          <Link href="/" className="text-[#ffacc2] hover:underline font-medium">
             Voltar para a Home
           </Link>
         </div>
