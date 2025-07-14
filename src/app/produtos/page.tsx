@@ -3,6 +3,7 @@
 import { Header } from "@/components/Header";
 import { ShoppingCart } from "@/components/ShoppingCart";
 import { LoadingGrid } from "@/components/ui/loading";
+import { gtagEvent } from "@/lib/gtag";
 import { Product, supabase } from "@/lib/supabaseClient";
 import Image from "next/image";
 import Link from "next/link";
@@ -76,6 +77,37 @@ export default function ProdutosPage() {
     fetchProducts();
   }, [debouncedSearch, selectedCategory, page, itemsPerPage, sort]);
 
+  useEffect(() => {
+    if (products.length > 0) {
+      gtagEvent("view_item_list", {
+        item_list_id: selectedCategory || "catalogo",
+        item_list_name: selectedCategory || "Catálogo Principal",
+        items: products.map((p, idx) => ({
+          item_id: p.id,
+          item_name: p.name,
+          index: idx + 1,
+          price: p.price,
+        })),
+      });
+    }
+  }, [products, selectedCategory]);
+
+  // Evento GA4: clique em produto
+  function handleProductClick(product: Product, idx: number) {
+    gtagEvent("select_item", {
+      item_list_id: selectedCategory || "catalogo",
+      item_list_name: selectedCategory || "Catálogo Principal",
+      items: [
+        {
+          item_id: product.id,
+          item_name: product.name,
+          index: idx + 1,
+          price: product.price,
+        },
+      ],
+    });
+  }
+
   const handleCategoryChange = (categoryId: string) => {
     setSelectedCategory(categoryId);
     setPage(1);
@@ -143,12 +175,13 @@ export default function ProdutosPage() {
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-6">
-              {products.map((product) => (
+              {products.map((product, idx) => (
                 <Link
                   key={product.id}
                   href={`/produto/${product.id}`}
                   className="group block bg-white rounded-none overflow-hidden transition-transform hover:-translate-y-1"
                   style={{ boxShadow: "none", border: "none" }}
+                  onClick={() => handleProductClick(product, idx)}
                 >
                   <div className="relative w-full aspect-[4/5] bg-white overflow-hidden flex items-center justify-center">
                     {product.is_offer && (

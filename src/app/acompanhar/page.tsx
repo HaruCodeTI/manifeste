@@ -80,7 +80,6 @@ export default function AcompanharPedidoPage() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4 py-12">
-      {/* Botão de voltar sempre visível */}
       <div className="w-full max-w-lg mx-auto mb-4 flex justify-start">
         <button
           onClick={() => router.back()}
@@ -177,7 +176,7 @@ export default function AcompanharPedidoPage() {
                 result.order.stripe_checkout_session_id && (
                   <div className="my-4">
                     <Button
-                      className="w-full rounded-2xl bg-secondary text-secondary-foreground shadow-md hover:bg-secondary/90 transition-all duration-300 py-3"
+                      className="w-full rounded-2xl bg-secondary text-secondary-foreground shadow-md transition-all duration-300 py-3"
                       onClick={() => {
                         window.location.href = `https://checkout.stripe.com/pay/${result.order.stripe_checkout_session_id}`;
                       }}

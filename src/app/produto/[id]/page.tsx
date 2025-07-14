@@ -3,6 +3,7 @@
 import { Header } from "@/components/Header";
 import { ProductDetail } from "@/components/ProductDetail";
 import { ShoppingCart } from "@/components/ShoppingCart";
+import { gtagEvent } from "@/lib/gtag";
 import { Product, supabase } from "@/lib/supabaseClient";
 import { notFound } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -38,6 +39,20 @@ export default function ProductPage({ params }: ProductPageProps) {
 
     getProduct();
   }, [params]);
+
+  useEffect(() => {
+    if (product) {
+      gtagEvent("view_item", {
+        items: [
+          {
+            item_id: product.id,
+            item_name: product.name,
+            price: product.price,
+          },
+        ],
+      });
+    }
+  }, [product]);
 
   if (loading) {
     return (
