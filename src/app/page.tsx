@@ -2,282 +2,204 @@
 
 import { Header } from "@/components/Header";
 import { ShoppingCart } from "@/components/ShoppingCart";
-import { LoadingGrid } from "@/components/ui/loading";
-import { Product, supabase } from "@/lib/supabaseClient";
-import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-
-interface Category {
-  id: string;
-  name: string;
-  slug: string;
-}
+import { useState } from "react";
 
 export default function HomePage() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  const searchTimeout = useRef<NodeJS.Timeout | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(12);
-  const [sort, setSort] = useState<
-    "featured" | "price_asc" | "price_desc" | "az" | "za"
-  >("featured");
-
-  useEffect(() => {
-    async function fetchCategories() {
-      const { data } = await supabase
-        .from("categories")
-        .select("id, name, slug");
-      setCategories(data || []);
-    }
-    fetchCategories();
-  }, []);
-
-  useEffect(() => {
-    if (searchTimeout.current) clearTimeout(searchTimeout.current);
-    searchTimeout.current = setTimeout(() => {
-      setDebouncedSearch("");
-    }, 400);
-    return () => {
-      if (searchTimeout.current) clearTimeout(searchTimeout.current);
-    };
-  }, []);
-
-  useEffect(() => {
-    async function fetchProducts() {
-      setLoading(true);
-      let query = supabase
-        .from("products")
-        .select("*", { count: "exact" })
-        .eq("status", "active");
-      if (debouncedSearch) query = query.ilike("name", `%${debouncedSearch}%`);
-      if (selectedCategory) query = query.eq("category_id", selectedCategory);
-      // Ordenação
-      if (sort === "price_asc")
-        query = query.order("price", { ascending: true });
-      else if (sort === "price_desc")
-        query = query.order("price", { ascending: false });
-      else if (sort === "az") query = query.order("name", { ascending: true });
-      else if (sort === "za") query = query.order("name", { ascending: false });
-      else query = query.order("created_at", { ascending: false });
-      query = query.range((page - 1) * itemsPerPage, page * itemsPerPage - 1);
-      const { data, count, error } = await query;
-      if (!error) {
-        setProducts(data || []);
-        setTotalPages(count ? Math.ceil(count / itemsPerPage) : 1);
-      }
-      setLoading(false);
-    }
-    fetchProducts();
-  }, [debouncedSearch, selectedCategory, page, itemsPerPage, sort]);
-
-  const handleCategoryChange = (categoryId: string) => {
-    setSelectedCategory(categoryId);
-    setPage(1); // Reset para primeira página ao mudar categoria
-  };
 
   return (
-    <div className="min-h-screen bg-[#f4f0db]">
+    <div className="min-h-screen bg-[#f4f0db] flex flex-col">
       <Header
         onCartClick={() => setIsCartOpen(true)}
         onTrackOrderClick={() => (window.location.href = "/acompanhar")}
-        categories={categories}
-        selectedCategory={selectedCategory}
-        onCategoryChange={handleCategoryChange}
+        categories={[]}
+        selectedCategory=""
+        onCategoryChange={() => {}}
       />
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="mb-12">
-          {/* Filtros premium */}
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-8 px-1">
-            <div className="flex items-center gap-2 text-neutral-700 text-lg">
-              <span className="font-medium">Ordenar por:</span>
-              <select
-                value={sort}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
-                  setSort(e.target.value as typeof sort);
-                  setPage(1);
-                }}
-                className="bg-transparent border-none outline-none font-medium text-lg cursor-pointer"
-                style={{ minWidth: 120 }}
+      <main className="flex-1 flex flex-col items-center justify-center w-full px-4">
+        <section className="w-full flex justify-center py-10 md:py-20 animate-fadein">
+          <div className="w-full max-w-screen-lg flex flex-col md:flex-row items-center justify-center gap-10 md:gap-16">
+            <div className="w-full md:w-1/2 flex flex-col items-center md:items-start justify-center text-center md:text-left">
+              <h1 className="text-4xl md:text-6xl font-extrabold text-black mb-4 tracking-tight animate-slidein">
+                Manifeste
+              </h1>
+              <p className="text-lg md:text-2xl text-black mb-6 max-w-xl animate-fadein delay-100">
+                Produtos que contam histórias.
+                <br className="hidden md:inline" /> Experiências que transformam
+                vidas.
+              </p>
+              <p className="text-xl md:text-2xl font-bold text-black mb-8 animate-fadein delay-200">
+                <span className="text-black">Manifeste</span> seu estilo,{" "}
+                <span className="text-black">manifeste</span> sua essência.
+              </p>
+              <Link
+                href="/produtos"
+                className="inline-block bg-black text-white px-8 py-3 text-base md:text-lg font-medium rounded transition-all duration-300 hover:scale-105 hover:bg-neutral-800 shadow-lg animate-fadein delay-300"
               >
-                <option value="featured">Em destaque</option>
-                <option value="price_asc">Menor preço</option>
-                <option value="price_desc">Maior preço</option>
-                <option value="az">A-Z</option>
-                <option value="za">Z-A</option>
-              </select>
+                Explorar Produtos
+              </Link>
             </div>
-            <div className="flex items-center gap-2 text-neutral-700 text-lg">
-              <span className="font-medium">Exibir:</span>
-              <select
-                value={itemsPerPage}
-                onChange={(e) => {
-                  setItemsPerPage(Number(e.target.value));
-                  setPage(1);
-                }}
-                className="bg-transparent border-none outline-none font-medium text-lg cursor-pointer"
-                style={{ minWidth: 60 }}
-              >
-                {[4, 8, 12, 20, 40].map((n) => (
-                  <option key={n} value={n}>
-                    {n}
-                  </option>
-                ))}
-              </select>
-              <span className="ml-4 text-neutral-700 text-lg font-medium">
-                {products.length} produto{products.length !== 1 ? "s" : ""}
-              </span>
+            <div className="w-full md:w-1/2 flex items-center justify-center animate-fadein delay-400 mt-8 md:mt-0">
+              <div className="w-64 h-64 md:w-80 md:h-80 bg-neutral-200 rounded-xl flex items-center justify-center shadow-inner">
+                <span className="text-5xl text-neutral-400">IMG</span>
+              </div>
             </div>
           </div>
-          {/* Grid de produtos minimalista */}
-          {loading ? (
-            <LoadingGrid />
-          ) : products.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-24">
-              <p className="text-muted-foreground text-lg">
-                Nenhum produto disponível no momento.
+        </section>
+
+        <section className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-20 items-center py-10 md:py-16 animate-fadein delay-300">
+          <div className="flex flex-col items-start md:items-start text-left md:text-left">
+            <h2 className="text-2xl md:text-3xl font-bold text-black mb-3">
+              Curadoria Cuidadosa
+            </h2>
+            <p className="text-base md:text-lg text-black/90 leading-relaxed mb-4">
+              Cada produto em nossa coleção foi selecionado com propósito.
+              <br />
+              Não vendemos apenas objetos, vendemos experiências que elevam sua
+              qualidade de vida.
+            </p>
+            <p className="text-lg md:text-xl font-semibold text-black animate-fadein delay-350">
+              <span className="text-black">Manifeste</span> o extraordinário no
+              seu dia a dia.
+            </p>
+          </div>
+          <div className="flex flex-col items-center md:items-end text-center md:text-right gap-4">
+            <span className="text-6xl md:text-7xl mb-2 animate-bounce-slow">
+              ✨
+            </span>
+            <span className="text-base md:text-lg text-black font-medium">
+              Qualidade que se manifesta
+            </span>
+            <div className="w-40 h-40 md:w-56 md:h-56 bg-neutral-200 rounded-xl flex items-center justify-center shadow-inner mt-4">
+              <span className="text-3xl text-neutral-400">IMG</span>
+            </div>
+          </div>
+        </section>
+
+        <section className="w-full max-w-6xl py-10 md:py-16 animate-fadein delay-400">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl md:text-3xl font-bold text-black mb-3">
+              Nossa Filosofia
+            </h2>
+            <p className="text-base md:text-lg text-black/90 max-w-2xl mx-auto">
+              Acreditamos que os objetos que nos cercam têm o poder de
+              transformar não apenas nossos espaços, mas também nossas vidas.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="flex flex-col items-center text-center p-4 animate-fadein delay-500">
+              <span className="text-4xl md:text-5xl mb-2">🎯</span>
+              <h3 className="text-lg md:text-xl font-bold text-black mb-2">
+                Propósito
+              </h3>
+              <p className="text-black/80 text-sm md:text-base">
+                Cada produto tem uma razão de ser, uma história para contar.
               </p>
             </div>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-6">
-              {products.map((product) => (
-                <Link
-                  key={product.id}
-                  href={`/produto/${product.id}`}
-                  className="group block bg-white rounded-none overflow-hidden transition-transform hover:-translate-y-1"
-                  style={{ boxShadow: "none", border: "none" }}
-                >
-                  <div className="relative w-full aspect-[4/5] bg-white overflow-hidden flex items-center justify-center">
-                    {/* Badge Oferta */}
-                    {product.is_offer && (
-                      <span className="absolute top-2 left-2 z-10 bg-black text-white text-[11px] font-medium rounded-full px-3 py-0.5 tracking-wide">
-                        Oferta
-                      </span>
-                    )}
-                    {/* Imagem principal e hover */}
-                    {product.image_urls && product.image_urls.length > 0 ? (
-                      <Image
-                        src={product.image_urls[0]}
-                        alt={product.name}
-                        width={400}
-                        height={500}
-                        className="object-cover w-full h-full transition-opacity duration-300 group-hover:opacity-0"
-                        loading="lazy"
-                        style={{ objectFit: "cover" }}
-                      />
-                    ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center bg-neutral-900 text-white gap-2">
-                        <span style={{ fontSize: 44, lineHeight: 1 }}>🤫</span>
-                        <span className="text-xs font-medium text-white/80">
-                          Surpresa! Imagem indisponível 😏
-                        </span>
-                      </div>
-                    )}
-                    {product.image_urls && product.image_urls.length > 1 && (
-                      <Image
-                        src={product.image_urls[1]}
-                        alt={product.name}
-                        width={400}
-                        height={500}
-                        className="object-cover w-full h-full absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                        loading="lazy"
-                        style={{ objectFit: "cover" }}
-                      />
-                    )}
-                  </div>
-                  <div className="pt-4 pb-4 px-1 text-center">
-                    <h3
-                      className="text-lg mb-1 text-black leading-tight tracking-tight"
-                      style={{
-                        fontFamily: "var(--font-heading-family)",
-                        fontWeight: "var(--font-body-weight-bold)",
-                      }}
-                    >
-                      {product.name}
-                    </h3>
-                    <div className="flex flex-col items-center gap-0.5">
-                      {typeof product.original_price === "number" &&
-                      product.original_price > product.price ? (
-                        <span className="text-sm text-muted-foreground line-through">
-                          {product.original_price.toLocaleString("pt-BR", {
-                            style: "currency",
-                            currency: "BRL",
-                          })}
-                        </span>
-                      ) : null}
-                      <span
-                        className="flex items-end justify-center gap-1"
-                        style={{
-                          fontFamily: "var(--font-body-family)",
-                          fontWeight: "var(--font-body-weight)",
-                        }}
-                      >
-                        <span className="text-base text-black">R$</span>
-                        <span
-                          className="text-xl text-black"
-                          style={{ fontWeight: "var(--font-body-weight)" }}
-                        >
-                          {product.price
-                            .toLocaleString("pt-BR", {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            })
-                            .replace(/^\d{1,3}(?=(\d{3})+(?!\d))/g, "$&.")
-                            .split(",")[0]
-                            .replace("R$", "")
-                            .trim()}
-                          ,{product.price.toFixed(2).split(".")[1]}
-                        </span>
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
+            <div className="flex flex-col items-center text-center p-4 animate-fadein delay-600">
+              <span className="text-4xl md:text-5xl mb-2">🌟</span>
+              <h3 className="text-lg md:text-xl font-bold text-black mb-2">
+                Qualidade
+              </h3>
+              <p className="text-black/80 text-sm md:text-base">
+                Materiais excepcionais, acabamentos perfeitos, durabilidade
+                comprovada.
+              </p>
             </div>
-          )}
-          {/* Paginação minimalista */}
-          {totalPages > 1 && (
-            <div className="flex justify-center items-center gap-2 mt-12">
-              <button
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className="px-4 py-2 rounded-lg bg-white border border-neutral-200 text-black hover:bg-neutral-100 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
-              >
-                Anterior
-              </button>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                (pageNumber) => (
-                  <button
-                    key={pageNumber}
-                    onClick={() => setPage(pageNumber)}
-                    className={`w-10 h-10 rounded-lg border font-medium transition-all duration-200 ${
-                      page === pageNumber
-                        ? "bg-black text-white border-black"
-                        : "bg-white text-black border-neutral-200 hover:bg-neutral-100"
-                    }`}
-                  >
-                    {pageNumber}
-                  </button>
-                )
-              )}
-              <button
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages}
-                className="px-4 py-2 rounded-lg bg-white border border-neutral-200 text-black hover:bg-neutral-100 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
-              >
-                Próxima
-              </button>
+            <div className="flex flex-col items-center text-center p-4 animate-fadein delay-700">
+              <span className="text-4xl md:text-5xl mb-2">💫</span>
+              <h3 className="text-lg md:text-xl font-bold text-black mb-2">
+                Experiência
+              </h3>
+              <p className="text-black/80 text-sm md:text-base">
+                Momentos que se transformam em memórias inesquecíveis.
+              </p>
             </div>
-          )}
-        </div>
+          </div>
+        </section>
+
+        <section className="w-full text-center py-10 md:py-16 animate-fadein delay-800">
+          <h2 className="text-2xl md:text-3xl font-bold text-black mb-4">
+            Descubra o Extraordinário
+          </h2>
+          <p className="text-base md:text-lg text-black/90 mb-8 max-w-xl mx-auto font-semibold">
+            <span className="text-black">Manifeste</span> qualidade,{" "}
+            <span className="text-black">manifeste</span> experiências.
+          </p>
+          <Link
+            href="/produtos"
+            className="inline-block bg-black text-white px-8 py-3 text-base md:text-lg font-medium rounded transition-all duration-300 hover:scale-105 hover:bg-neutral-800 shadow-lg"
+          >
+            Ver Catálogo Completo
+          </Link>
+        </section>
       </main>
       <ShoppingCart isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      <style jsx global>{`
+        @keyframes fadein {
+          from {
+            opacity: 0;
+            transform: translateY(24px);
+          }
+          to {
+            opacity: 1;
+            transform: none;
+          }
+        }
+        @keyframes slidein {
+          from {
+            opacity: 0;
+            transform: translateY(-32px);
+          }
+          to {
+            opacity: 1;
+            transform: none;
+          }
+        }
+        @keyframes bounce-slow {
+          0%,
+          100% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-12px);
+          }
+        }
+        .animate-fadein {
+          animation: fadein 0.8s cubic-bezier(0.4, 0, 0.2, 1) both;
+        }
+        .animate-slidein {
+          animation: slidein 0.8s cubic-bezier(0.4, 0, 0.2, 1) both;
+        }
+        .animate-bounce-slow {
+          animation: bounce-slow 2.2s infinite;
+        }
+        .delay-100 {
+          animation-delay: 0.1s;
+        }
+        .delay-200 {
+          animation-delay: 0.2s;
+        }
+        .delay-300 {
+          animation-delay: 0.3s;
+        }
+        .delay-400 {
+          animation-delay: 0.4s;
+        }
+        .delay-500 {
+          animation-delay: 0.5s;
+        }
+        .delay-600 {
+          animation-delay: 0.6s;
+        }
+        .delay-700 {
+          animation-delay: 0.7s;
+        }
+        .delay-800 {
+          animation-delay: 0.8s;
+        }
+      `}</style>
     </div>
   );
 }

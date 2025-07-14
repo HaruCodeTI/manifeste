@@ -2,10 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { useCartContext } from "@/contexts/CartContext";
-import { Menu, ShoppingCart } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface Category {
   id: string;
@@ -31,84 +31,114 @@ export function Header({
   const { cart } = useCartContext();
   const [isCartHovered, setIsCartHovered] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setDropdownOpen(false);
+      }
+    }
+    if (dropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownOpen]);
 
   const itemCount = cart.reduce((total, item) => total + item.quantity, 0);
 
   return (
     <header className="w-full bg-black text-white border-b border-border">
-      {/* Barra de aviso */}
       <div className="w-full text-center text-xs py-1.5 bg-black/90 border-b border-border font-medium tracking-wide">
         Parcele em até 6x sem juros!
       </div>
-      {/* Logo centralizada */}
-      <div className="flex flex-col items-center justify-center py-4">
-        <Link href="/" className="select-none flex items-center justify-center">
-          <Image
-            src="/logo.png"
-            alt="Logo Manifeste"
-            width={220}
-            height={48}
-            className="h-10 sm:h-12 w-auto"
-            priority
-            draggable={false}
-          />
-        </Link>
-      </div>
-      {/* Menu + ícones */}
-      <div className="relative flex items-center justify-between px-4 sm:px-8 max-w-7xl mx-auto pb-1">
-        {/* Ícone de busca (desktop) */}
-        <button
-          className="hidden md:flex items-center justify-center w-8 h-8"
-          aria-label="Buscar"
-        >
-          <svg
-            width="18"
-            height="18"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between max-w-7xl mx-auto w-full px-4 sm:px-8 py-4 gap-2 md:gap-0">
+        <div className="flex justify-center md:justify-start w-full md:w-auto mb-2 md:mb-0">
+          <Link
+            href="/"
+            className="select-none flex items-center justify-center"
           >
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-        </button>
-        {/* Menu hambúrguer (mobile) */}
-        <button
-          className="md:hidden flex items-center justify-center w-8 h-8"
-          onClick={() => setMobileMenuOpen(true)}
-          aria-label="Abrir menu"
-        >
-          <Menu className="w-5 h-5" />
-        </button>
-        {/* Navegação (desktop) */}
-        {categories.length > 0 && (
-          <nav className="hidden md:flex gap-6 mx-auto text-base font-medium font-sans">
-            <button
-              onClick={() => onCategoryChange("")}
-              className={`hover:text-foreground/80 transition ${
-                selectedCategory === "" ? "text-white" : "text-foreground/60"
-              }`}
-            >
-              TODOS
-            </button>
-            {categories.map((category) => (
+            <Image
+              src="/logo.png"
+              alt="Logo Manifeste"
+              width={220}
+              height={48}
+              className="h-10 sm:h-12 w-auto"
+              priority
+              draggable={false}
+            />
+          </Link>
+        </div>
+        <nav className="flex justify-center items-center gap-4 md:gap-8 text-base font-medium font-sans relative w-full">
+          <Link
+            href="/"
+            className="hover:text-foreground/80 transition text-foreground/60"
+          >
+            INÍCIO
+          </Link>
+          <Link
+            href="/produtos"
+            className="hover:text-foreground/80 transition text-foreground/60"
+          >
+            PRODUTOS
+          </Link>
+          {categories.length > 0 && (
+            <div className="relative" ref={dropdownRef}>
               <button
-                key={category.id}
-                onClick={() => onCategoryChange(category.id)}
-                className={`hover:text-foreground/80 transition ${
-                  selectedCategory === category.id
-                    ? "text-white"
-                    : "text-foreground/60"
-                }`}
+                onClick={() => setDropdownOpen((v) => !v)}
+                className="flex items-center gap-1 px-3 py-2 rounded hover:bg-neutral-800 transition select-none"
+                aria-haspopup="true"
+                aria-expanded={dropdownOpen}
               >
-                {category.name.toUpperCase()}
+                CATEGORIAS
+                <svg
+                  width="16"
+                  height="16"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
               </button>
-            ))}
-          </nav>
-        )}
-        {/* Ícones à direita */}
-        <div className="flex items-center gap-3 w-full max-w-xs justify-end md:justify-end">
+              {dropdownOpen && (
+                <div className="absolute left-0 mt-2 w-48 bg-black border border-neutral-700 rounded shadow-lg z-50 flex flex-col py-2 animate-fadein">
+                  <button
+                    onClick={() => {
+                      onCategoryChange("");
+                      setDropdownOpen(false);
+                    }}
+                    className={`w-full text-left px-4 py-2 hover:bg-neutral-900 transition ${selectedCategory === "" ? "text-white font-bold" : "text-foreground/60"}`}
+                  >
+                    TODOS
+                  </button>
+                  {categories.map((category) => (
+                    <button
+                      key={category.id}
+                      onClick={() => {
+                        onCategoryChange(category.id);
+                        setDropdownOpen(false);
+                      }}
+                      className={`w-full text-left px-4 py-2 hover:bg-neutral-900 transition ${selectedCategory === category.id ? "text-white font-bold" : "text-foreground/60"}`}
+                    >
+                      {category.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </nav>
+        <div className="flex items-center gap-3 justify-center md:justify-end w-full md:w-auto mt-2 md:mt-0">
           <Button
             variant="secondary"
             size="icon"
@@ -164,7 +194,7 @@ export function Header({
           </Button>
         </div>
       </div>
-      {mobileMenuOpen && categories.length > 0 && (
+      {mobileMenuOpen && (
         <div className="fixed inset-0 z-50 bg-black/90 flex flex-col">
           <div className="flex justify-end p-4">
             <button
@@ -184,34 +214,70 @@ export function Header({
               </svg>
             </button>
           </div>
-          <nav className="flex flex-col gap-5 items-center justify-center flex-1 text-lg font-medium font-sans">
-            <button
-              onClick={() => {
-                onCategoryChange("");
-                setMobileMenuOpen(false);
-              }}
-              className={`hover:text-foreground/80 transition ${
-                selectedCategory === "" ? "text-white" : "text-foreground/60"
-              }`}
+          <nav className="flex flex-col gap-6 items-center justify-center flex-1 text-lg font-medium font-sans">
+            <Link
+              href="/"
+              onClick={() => setMobileMenuOpen(false)}
+              className="hover:text-foreground/80 transition text-foreground/60"
             >
-              TODOS
-            </button>
-            {categories.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => {
-                  onCategoryChange(category.id);
-                  setMobileMenuOpen(false);
-                }}
-                className={`hover:text-foreground/80 transition ${
-                  selectedCategory === category.id
-                    ? "text-white"
-                    : "text-foreground/60"
-                }`}
-              >
-                {category.name.toUpperCase()}
-              </button>
-            ))}
+              INÍCIO
+            </Link>
+            <Link
+              href="/produtos"
+              onClick={() => setMobileMenuOpen(false)}
+              className="hover:text-foreground/80 transition text-foreground/60"
+            >
+              PRODUTOS
+            </Link>
+            {categories.length > 0 && (
+              <div className="w-full flex flex-col items-center">
+                <button
+                  onClick={() => setDropdownOpen((v) => !v)}
+                  className="flex items-center gap-1 px-3 py-2 rounded hover:bg-neutral-800 transition select-none w-full justify-center"
+                  aria-haspopup="true"
+                  aria-expanded={dropdownOpen}
+                >
+                  CATEGORIAS
+                  <svg
+                    width="16"
+                    height="16"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                </button>
+                {dropdownOpen && (
+                  <div className="w-full bg-black border border-neutral-700 rounded shadow-lg z-50 flex flex-col py-2 animate-fadein mt-2">
+                    <button
+                      onClick={() => {
+                        onCategoryChange("");
+                        setDropdownOpen(false);
+                        setMobileMenuOpen(false);
+                      }}
+                      className={`w-full text-left px-4 py-2 hover:bg-neutral-900 transition ${selectedCategory === "" ? "text-white font-bold" : "text-foreground/60"}`}
+                    >
+                      TODOS
+                    </button>
+                    {categories.map((category) => (
+                      <button
+                        key={category.id}
+                        onClick={() => {
+                          onCategoryChange(category.id);
+                          setDropdownOpen(false);
+                          setMobileMenuOpen(false);
+                        }}
+                        className={`w-full text-left px-4 py-2 hover:bg-neutral-900 transition ${selectedCategory === category.id ? "text-white font-bold" : "text-foreground/60"}`}
+                      >
+                        {category.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </nav>
         </div>
       )}

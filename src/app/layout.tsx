@@ -30,6 +30,22 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
+      <head>
+        <script
+          async
+          src={`https://www.googletagmanager.com/gtag/js?id=G-JBYFQVJG82`}
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-JBYFQVJG82');
+            `,
+          }}
+        />
+      </head>
       <body
         className={`${inter.variable} ${playfair.variable} antialiased`}
         style={{ fontFamily: "Inter, Helvetica Neue, Arial, sans-serif" }}
