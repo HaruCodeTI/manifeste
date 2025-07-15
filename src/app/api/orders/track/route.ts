@@ -9,16 +9,35 @@ const supabase = createClient(
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const email = searchParams.get("email");
+  const phone = searchParams.get("phone");
   const orderId = searchParams.get("order");
 
-  if (!email || !orderId) {
+  if (!email || !phone) {
     return NextResponse.json(
-      { error: "Parâmetros obrigatórios" },
+      { error: "Parâmetros obrigatórios: email e telefone" },
       { status: 400 }
     );
   }
 
-  // Buscar pedido
+  if (!orderId) {
+    const { data: orders, error } = await supabase
+      .from("orders")
+      .select(
+        "id, status, payment_method, shipping_method, total_price, created_at, stripe_checkout_session_id"
+      )
+      .eq("customer_email", email)
+      .eq("customer_phone", phone)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      return NextResponse.json(
+        { error: "Erro ao buscar pedidos" },
+        { status: 500 }
+      );
+    }
+    return NextResponse.json({ orders: orders || [] });
+  }
+
   const { data: order, error } = await supabase
     .from("orders")
     .select(
@@ -26,6 +45,7 @@ export async function GET(req: NextRequest) {
     )
     .eq("id", orderId)
     .eq("customer_email", email)
+    .eq("customer_phone", phone)
     .single();
 
   if (error || !order) {
@@ -35,14 +55,12 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  // Buscar histórico de status
   const { data: history } = await supabase
     .from("order_status_history")
     .select("status, changed_at, changed_by")
     .eq("order_id", orderId)
     .order("changed_at", { ascending: true });
 
-  // Buscar itens do pedido
   const { data: items } = await supabase
     .from("order_items")
     .select(

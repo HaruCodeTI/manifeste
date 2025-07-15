@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap");
 
 @custom-variant dark (&:is(.dark *));
 
@@ -44,18 +45,20 @@
 }
 
 :root {
-  --background: #f4eae6; /* nude claro */
+  --background: #b689e0;
+  --secondary-background: #e1e1e1; /* nude claro */
   --foreground: #1a1a1a; /* preto */
-  --primary: #8e44ad; /* lilás médio */
+  --primary: #b689e0; /* lilás médio */
+  --primaryy: #b689e0; /* lilás médio */
   --primary-foreground: #ffffff;
-  --secondary: #ff6f61; /* coral rosado */
+  --secondary: #fe53b3; /* coral rosado */
   --secondary-foreground: #1a1a1a;
   --muted: #f8e5d8; /* champanhe/nude suave */
   --card: #ffffff;
   --card-foreground: #1a1a1a;
-  --accent: #d4af37; /* dourado metálico */
+  --accent: #fffefd; /* dourado metálico */
   --destructive: #ef4444;
-  --border: #d4af37; /* borda dourada padrão */
+  --border: #ffffff; /* borda dourada padrão */
   --radius: 0.75rem;
   --font-body-family:
     "Poppins", -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Ubuntu,
@@ -65,6 +68,11 @@
   --font-body-weight: 400;
   --font-body-weight-bold: 700;
   --font-heading-family: "Playfair Display", "Poppins", serif;
+  --color-primary: #b689e0;
+  --color-secondary: #fe53b3;
+  --color-border: #e0e0e0;
+  --radius: 0.75rem;
+  --font-main: "Montserrat", Arial, sans-serif;
 }
 
 .dark {
@@ -86,12 +94,16 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    border-radius: var(--radius);
+    font-family: var(--font-main);
   }
   body {
     @apply bg-background text-foreground;
-    font-family: var(--font-body-family);
+    font-family: var(--font-main);
     font-style: var(--font-body-style);
-    font-weight: var(--font-body-weight);
+    font-weight: 300;
+    background: #faf7fd;
+    color: #222;
   }
   h1,
   h2,
@@ -105,7 +117,8 @@
   button,
   .btn,
   .Button {
-    font-family: var(--font-body-family);
+    font-family: var(--font-main);
+    font-weight: 300;
     border-radius: var(--radius);
     box-shadow: 0 2px 8px 0 #d4af3720;
     border: 2px solid var(--border);
@@ -137,5 +150,30 @@
   .btn:hover {
     filter: brightness(0.95) saturate(1.1);
     box-shadow: 0 4px 16px 0 #d4af3730;
+  }
+  button,
+  input,
+  select,
+  textarea {
+    font-family: var(--font-main);
+    font-weight: 300;
+  }
+  .border {
+    border: 1px solid var(--color-border) !important;
+    border-radius: var(--radius) !important;
+  }
+  .bg-primary {
+    background: var(--color-primary) !important;
+    color: #fff !important;
+  }
+  .bg-secondary {
+    background: var(--color-secondary) !important;
+    color: #fff !important;
+  }
+  .text-primary {
+    color: var(--color-primary) !important;
+  }
+  .text-secondary {
+    color: var(--color-secondary) !important;
   }
 }

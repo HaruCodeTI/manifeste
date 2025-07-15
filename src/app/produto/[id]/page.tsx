@@ -56,7 +56,7 @@ export default function ProductPage({ params }: ProductPageProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-[#e1e1e1]">
         <Header
           onCartClick={() => setIsCartOpen(true)}
           onTrackOrderClick={() => {}}
@@ -65,9 +65,9 @@ export default function ProductPage({ params }: ProductPageProps) {
           onCategoryChange={() => {}}
         />
         <main className="py-8 sm:py-12">
-          <div className="text-center">
+          <div className="text-center flex flex-col items-center justify-center" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-4 text-muted-foreground">Carregando produto...</p>
+            <p className="mt-4 text-primary font-medium text-base">Carregando produto...</p>
           </div>
         </main>
       </div>

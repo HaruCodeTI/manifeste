@@ -70,7 +70,7 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
                   {cart.map((item) => (
                     <div
                       key={item.id}
-                      className="flex gap-4 p-3 border rounded-2xl border-transparent bg-card hover:bg-muted/40 transition-colors"
+                      className="flex gap-4 p-3 border rounded-2xl border-transparent bg-card hover:bg-primary/40 transition-colors"
                     >
                       <div className="w-16 h-16 bg-muted/40 rounded-2xl overflow-hidden flex-shrink-0 relative border border-muted/30">
                         {item.image ? (
@@ -83,7 +83,7 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
                             priority={false}
                           />
                         ) : (
-                          <div className="w-full h-full flex flex-col items-center justify-center bg-neutral-900 text-white gap-2">
+                          <div className="w-full h-full flex flex-col items-center justify-center bg-white text-primary gap-1 rounded-2xl border border-primary/40">
                             <span style={{ fontSize: 28, lineHeight: 1 }}>
                               🤫
                             </span>
@@ -92,22 +92,32 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
                       </div>
                       <div className="flex-1 min-w-0 space-y-2">
                         <div>
-                          <h4 className="font-semibold text-sm truncate font-sans text-foreground">
+                          <h4
+                            className="font-semibold text-sm truncate font-sans text-foreground"
+                            style={{
+                              fontFamily: "Montserrat, Arial, sans-serif",
+                            }}
+                          >
                             {item.name}
                           </h4>
-                          <p className="text-sm text-muted-foreground font-sans">
+                          <p
+                            className="text-sm font-sans text-green-600"
+                            style={{
+                              fontFamily: "Montserrat, Arial, sans-serif",
+                            }}
+                          >
                             R$ {item.price.toFixed(2).replace(".", ",")}
                           </p>
                         </div>
                         <div className="flex items-center gap-3">
-                          <div className="flex items-center gap-2 bg-background border border-muted rounded-xl px-2 py-1">
+                          <div className="flex items-center gap-2 bg-white border border-muted rounded-xl px-2 py-1">
                             <Button
                               variant="ghost"
                               size="sm"
                               onClick={() =>
                                 updateQuantity(item.id, item.quantity - 1)
                               }
-                              className="h-7 w-7 p-0 hover:bg-secondary/20 rounded-full"
+                              className="h-7 w-7 p-0 rounded-full bg-primary text-white hover:bg-primary/90"
                             >
                               <Minus className="h-4 w-4" />
                             </Button>
@@ -120,7 +130,7 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
                               onClick={() =>
                                 updateQuantity(item.id, item.quantity + 1)
                               }
-                              className="h-7 w-7 p-0 hover:bg-secondary/20 rounded-full"
+                              className="h-7 w-7 p-0 rounded-full bg-primary text-white hover:bg-primary/90"
                             >
                               <Plus className="h-4 w-4" />
                             </Button>
@@ -129,9 +139,9 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
                             variant="ghost"
                             size="sm"
                             onClick={() => removeFromCart(item.id)}
-                            className="h-8 w-8 p-0 hover:bg-destructive/10 hover:text-destructive rounded-full"
+                            className="h-8 w-8 p-0 rounded-full bg-destructive hover:bg-destructive/90"
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="h-4 w-4 text-white" />
                           </Button>
                         </div>
                       </div>
@@ -140,17 +150,24 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
                 </div>
                 <div className="border-t border-muted pt-6 space-y-4 bg-card sticky bottom-0 z-10 pb-4">
                   <div className="flex justify-between items-center">
-                    <span className="font-semibold font-sans text-lg text-foreground">
+                    <span
+                      className="font-semibold font-sans text-lg text-foreground"
+                      style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
+                    >
                       Total:
                     </span>
-                    <span className="text-2xl font-bold text-secondary font-sans">
+                    <span
+                      className="text-2xl font-bold text-green-600 font-sans"
+                      style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
+                    >
                       R$ {getTotalPrice().toFixed(2).replace(".", ",")}
                     </span>
                   </div>
                   <div className="space-y-3">
                     <Button
                       onClick={handleCheckout}
-                      className="w-full font-semibold py-5 text-base rounded-2xl bg-primary text-primary-foreground hover:bg-primary/90 hover:animate-pulse shadow-md hover:shadow-lg transition-all duration-300"
+                      className="w-full font-semibold py-5 text-base rounded-2xl bg-green-600 text-white hover:bg-green-600/90 hover:animate-pulse shadow-md hover:shadow-lg transition-all duration-300"
+                      style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
                       disabled={cart.length === 0}
                     >
                       Finalizar Compra

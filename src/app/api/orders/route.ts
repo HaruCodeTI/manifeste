@@ -27,7 +27,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Cria pedido
+    const initialStatus =
+      shippingMethod === "retirada" && paymentMethod === "cash"
+        ? "aguardando_retirada"
+        : "pending_payment";
+
     const { data: order, error } = await supabase
       .from("orders")
       .insert([
@@ -44,8 +48,7 @@ export async function POST(req: NextRequest) {
             0
           ),
           total_price: total,
-          status:
-            paymentMethod === "card" ? "pending_payment" : "pending_payment",
+          status: initialStatus,
         },
       ])
       .select("id")
@@ -71,8 +74,7 @@ export async function POST(req: NextRequest) {
     await supabase.from("order_status_history").insert([
       {
         order_id: order.id,
-        status:
-          paymentMethod === "card" ? "pending_payment" : "pending_payment",
+        status: initialStatus,
         changed_by: customerInfo.email,
       },
     ]);

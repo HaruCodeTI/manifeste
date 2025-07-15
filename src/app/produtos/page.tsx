@@ -114,7 +114,7 @@ export default function ProdutosPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#ede3f6]">
+    <div className="min-h-screen bg-[#e1e1e1]">
       <Header
         onCartClick={() => setIsCartOpen(true)}
         onTrackOrderClick={() => (window.location.href = "/acompanhar")}
@@ -122,13 +122,10 @@ export default function ProdutosPage() {
         selectedCategory={selectedCategory}
         onCategoryChange={handleCategoryChange}
       />
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 font-sans" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
         <div className="mb-12">
           <div className="flex flex-wrap items-center justify-between gap-4 mb-8 px-1">
-            <div
-              className="flex items-center gap-2 text-primary text-lg font-sans"
-              style={{ fontFamily: "Poppins, sans-serif" }}
-            >
+            <div className="flex items-center gap-2 text-primary text-lg font-sans" style={{ fontFamily: "Montserrat, Arial, sans-serif" }}>
               <span className="font-medium">Ordenar por:</span>
               <select
                 value={sort}
@@ -136,8 +133,8 @@ export default function ProdutosPage() {
                   setSort(e.target.value as typeof sort);
                   setPage(1);
                 }}
-                className="bg-transparent border-none outline-none font-medium text-lg cursor-pointer font-sans"
-                style={{ minWidth: 120, fontFamily: "Poppins, sans-serif" }}
+                className="bg-white border border-primary rounded-lg outline-none font-medium text-base px-4 py-2 min-h-[40px] cursor-pointer font-sans focus:ring-2 focus:ring-secondary transition shadow-sm"
+                style={{ minWidth: 120, fontFamily: "Montserrat, Arial, sans-serif" }}
               >
                 <option value="featured">Em destaque</option>
                 <option value="price_asc">Menor preço</option>
@@ -146,10 +143,7 @@ export default function ProdutosPage() {
                 <option value="za">Z-A</option>
               </select>
             </div>
-            <div
-              className="flex items-center gap-2 text-primary text-lg font-sans"
-              style={{ fontFamily: "Poppins, sans-serif" }}
-            >
+            <div className="flex items-center gap-2 text-primary text-lg font-sans" style={{ fontFamily: "Montserrat, Arial, sans-serif" }}>
               <span className="font-medium">Exibir:</span>
               <select
                 value={itemsPerPage}
@@ -157,8 +151,8 @@ export default function ProdutosPage() {
                   setItemsPerPage(Number(e.target.value));
                   setPage(1);
                 }}
-                className="bg-transparent border-none outline-none font-medium text-lg cursor-pointer font-sans"
-                style={{ minWidth: 60, fontFamily: "Poppins, sans-serif" }}
+                className="bg-white border border-primary rounded-lg outline-none font-medium text-base px-4 py-2 min-h-[40px] cursor-pointer font-sans focus:ring-2 focus:ring-secondary transition shadow-sm"
+                style={{ minWidth: 60, fontFamily: "Montserrat, Arial, sans-serif" }}
               >
                 {[4, 8, 12, 20, 40].map((n) => (
                   <option key={n} value={n}>
@@ -166,10 +160,7 @@ export default function ProdutosPage() {
                   </option>
                 ))}
               </select>
-              <span
-                className="ml-4 text-primary text-lg font-medium font-sans"
-                style={{ fontFamily: "Poppins, sans-serif" }}
-              >
+              <span className="ml-4 text-primary text-lg font-medium font-sans" style={{ fontFamily: "Montserrat, Arial, sans-serif" }}>
                 {products.length} produto{products.length !== 1 ? "s" : ""}
               </span>
             </div>
@@ -180,39 +171,26 @@ export default function ProdutosPage() {
             <div className="flex flex-col items-center justify-center py-24">
               <p
                 className="text-muted-foreground text-lg font-sans"
-                style={{ fontFamily: "Poppins, sans-serif" }}
+                style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
               >
                 Nenhum produto disponível no momento.
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-7">
               {products.map((product, idx) => (
                 <Link
                   key={product.id}
                   href={`/produto/${product.id}`}
-                  className="group block bg-white rounded-[0.75rem] overflow-hidden transition-transform hover:-translate-y-1 shadow-md border border-[#d4af37]/80 hover:shadow-xl hover:border-[#d4af37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37]/40"
+                  className="group block bg-white rounded-2xl overflow-hidden transition-transform hover:-translate-y-1 shadow-md border border-primary/60 hover:shadow-xl hover:border-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary p-4 flex flex-col min-h-[340px]"
                   style={{
-                    boxShadow: "0 2px 12px 0 #d4af3720",
-                    border: "1.5px solid #d4af37",
+                    boxShadow: "0 2px 12px 0 #b689e01a",
+                    border: "1px solid #b689e099",
                   }}
                   onClick={() => handleProductClick(product, idx)}
                 >
-                  <div
-                    className="relative w-full aspect-[4/5] bg-white overflow-hidden flex items-center justify-center"
-                    style={{ borderBottom: "1.5px solid #d4af37" }}
-                  >
-                    {product.is_offer && (
-                      <span
-                        className="absolute top-2 left-2 z-10 bg-[#6d348b] text-white text-[11px] font-medium rounded-full px-3 py-0.5 tracking-wide font-sans shadow-md"
-                        style={{
-                          fontFamily: "Poppins, sans-serif",
-                          boxShadow: "0 1px 4px 0 #d4af3720",
-                        }}
-                      >
-                        Oferta
-                      </span>
-                    )}
+                  {/* Imagem e placeholder */}
+                  <div className="w-full aspect-[4/5] flex items-center justify-center mb-4">
                     {product.image_urls && product.image_urls.length > 0 ? (
                       <Image
                         src={product.image_urls[0]}
@@ -250,52 +228,16 @@ export default function ProdutosPage() {
                       />
                     )}
                   </div>
-                  <div className="pt-4 pb-6 px-1 text-center">
-                    <h3
-                      className="text-lg mb-1 leading-tight tracking-tight font-serif"
-                      style={{
-                        fontFamily: "Playfair Display, serif",
-                        fontWeight: 700,
-                        color: "#1a1a1a",
-                      }}
-                    >
-                      {product.name}
-                    </h3>
-                    <div className="flex flex-col items-center gap-0.5">
-                      {typeof product.original_price === "number" &&
-                      product.original_price > product.price ? (
-                        <span
-                          className="text-sm text-muted-foreground line-through font-sans"
-                          style={{ fontFamily: "Poppins, sans-serif" }}
-                        >
-                          {product.original_price.toLocaleString("pt-BR", {
-                            style: "currency",
-                            currency: "BRL",
-                          })}
-                        </span>
-                      ) : null}
-                      <span
-                        className="flex items-end justify-center gap-1 font-sans"
-                        style={{
-                          fontFamily: "Poppins, sans-serif",
-                          fontWeight: 700,
-                        }}
-                      >
-                        <span
-                          className="text-base align-bottom"
-                          style={{ color: "#1a1a1a", fontWeight: 600 }}
-                        >
-                          R$
-                        </span>
-                        <span
-                          className="text-2xl align-bottom"
-                          style={{ color: "#6d348b", fontWeight: 700 }}
-                        >
-                          {product.price.toLocaleString("pt-BR", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
-                        </span>
+                  <div className="flex-1 flex flex-col justify-between items-center text-center">
+                    <div className="mb-2 w-full">
+                      <div className="text-[1.05rem] font-medium text-black leading-tight mb-2 w-full text-center" style={{ fontFamily: 'Montserrat, Arial, sans-serif', fontWeight: 500 }}>
+                        {product.name}
+                      </div>
+                    </div>
+                    <div className="flex items-end justify-center gap-1 w-full">
+                      <span className="text-[1rem] font-semibold text-secondary" style={{ fontFamily: 'Montserrat, Arial, sans-serif', fontWeight: 600 }}>R$</span>
+                      <span className="text-[1.1rem] font-semibold text-secondary" style={{ fontFamily: 'Montserrat, Arial, sans-serif', fontWeight: 600 }}>
+                        {Number(product.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </span>
                     </div>
                   </div>

@@ -43,59 +43,45 @@ export async function POST(request: NextRequest) {
       const session = event.data.object as Stripe.Checkout.Session;
 
       try {
-        const items = JSON.parse(session.metadata?.items || "[]");
-        const total = parseFloat(session.metadata?.total || "0");
-        const customerEmail = session.customer_details?.email;
-        const shippingAddress = session.customer_details?.address;
-
-        if (!customerEmail || !shippingAddress) {
-          throw new Error("Dados do cliente incompletos");
-        }
-
-        const { data: order, error: orderError } = await supabase
+        const sessionId = session.id;
+        // Busca pedido existente pela sessão do Stripe
+        const { data: existingOrder, error: findError } = await supabase
           .from("orders")
-          .insert({
-            customer_email: customerEmail,
-            shipping_address: {
-              name: session.customer_details?.name || "",
-              address: `${shippingAddress.line1}${shippingAddress.line2 ? `, ${shippingAddress.line2}` : ""}`,
-              city: shippingAddress.city || "",
-              state: shippingAddress.state || "",
-              zip_code: shippingAddress.postal_code || "",
-              country: shippingAddress.country || "BR",
-            },
-            subtotal: total,
-            shipping_cost: 0,
-            discount_amount: 0,
-            total_price: total,
-            status: "paid",
-            stripe_payment_intent_id: session.payment_intent as string,
-            stripe_checkout_session_id: session.id,
-          })
-          .select()
+          .select("id, status")
+          .eq("stripe_checkout_session_id", sessionId)
           .single();
 
-        if (orderError) {
-          throw orderError;
+        if (findError || !existingOrder) {
+          console.error(
+            "Pedido não encontrado para atualizar status após pagamento.",
+            findError
+          );
+          return NextResponse.json(
+            { error: "Pedido não encontrado para atualizar." },
+            { status: 404 }
+          );
         }
 
-        const orderItems = items.map(
-          (item: { id: string; quantity: number; price: number }) => ({
-            order_id: order.id,
-            product_id: item.id,
-            quantity: item.quantity,
-            price_at_purchase: item.price,
-          })
-        );
+        // Atualiza status para 'paid'
+        const { error: updateError } = await supabase
+          .from("orders")
+          .update({ status: "paid" })
+          .eq("id", existingOrder.id);
 
-        const { error: itemsError } = await supabase
-          .from("order_items")
-          .insert(orderItems);
-
-        if (itemsError) {
-          throw itemsError;
+        if (updateError) {
+          throw updateError;
         }
 
+        // Registra no histórico
+        await supabase.from("order_status_history").insert([
+          {
+            order_id: existingOrder.id,
+            status: "paid",
+            changed_by: "stripe_webhook",
+          },
+        ]);
+
+        // (Opcional) Envia e-mail de confirmação, se necessário
         if (process.env.RESEND_API_KEY) {
           try {
             const { Resend } = await import("resend");
@@ -103,13 +89,13 @@ export async function POST(request: NextRequest) {
 
             await resend.emails.send({
               from: "Manifeste <noreply@onrender.email>",
-              to: customerEmail,
+              to: session.customer_details?.email || "",
               subject: "Pedido Confirmado - Manifeste",
               html: `
                 <h1>Pedido Confirmado!</h1>
                 <p>Obrigado por sua compra. Seu pedido foi processado com sucesso.</p>
-                <p>Número do pedido: ${order.id}</p>
-                <p>Total: R$ ${total.toFixed(2).replace(".", ",")}</p>
+                <p>Número do pedido: ${existingOrder.id}</p>
+                <p>Total: R$ ${session.amount_total! / 100.0}</p>
               `,
             });
           } catch (emailError) {
@@ -117,11 +103,14 @@ export async function POST(request: NextRequest) {
           }
         }
 
-        console.log("Pedido processado com sucesso:", order.id);
+        console.log(
+          "Status do pedido atualizado para 'paid':",
+          existingOrder.id
+        );
       } catch (error) {
-        console.error("Erro ao processar pedido:", error);
+        console.error("Erro ao atualizar status do pedido:", error);
         return NextResponse.json(
-          { error: "Erro ao processar pedido" },
+          { error: "Erro ao atualizar status do pedido" },
           { status: 500 }
         );
       }

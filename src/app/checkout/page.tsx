@@ -82,11 +82,18 @@ export default function CheckoutPage() {
   const handleCheckout = async () => {
     try {
       if (paymentMethod === "card") {
-        // Cria sessão Stripe e redireciona
         const response = await fetch("/api/checkout", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ items: cart }),
+          body: JSON.stringify({
+            items: cart,
+            customerInfo,
+            shippingInfo,
+            shippingCost: shippingMethod === "pickup" ? 0 : shippingCost,
+            shippingMethod,
+            paymentMethod,
+            total,
+          }),
         });
         const data = await response.json();
         if (!response.ok || !data.url)
@@ -120,7 +127,7 @@ export default function CheckoutPage() {
 
   if (cart.length === 0) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-[#e1e1e1]">
         <Header
           onCartClick={() => {}}
           onTrackOrderClick={() => {}}
@@ -130,13 +137,13 @@ export default function CheckoutPage() {
         />
         <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           <div className="text-center">
-            <Package className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-            <h1 className="text-2xl font-bold mb-4">Carrinho Vazio</h1>
-            <p className="text-muted-foreground mb-6">
+            <Package className="w-16 h-16 mx-auto mb-4 text-primary" />
+            <h1 className="text-2xl font-bold mb-4" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>Carrinho Vazio</h1>
+            <p className="text-muted-foreground mb-6" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
               Adicione produtos ao carrinho para continuar com a compra.
             </p>
-            <Button asChild>
-              <Link href="/">
+            <Button asChild className="text-primary hover:text-secondary focus:text-secondary font-sans font-medium" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
+              <Link href="/produtos">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Voltar aos Produtos
               </Link>
@@ -148,7 +155,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#ede3f6]">
+    <div className="min-h-screen bg-[#e1e1e1]">
       <Header
         onCartClick={() => {}}
         onTrackOrderClick={() => {}}
@@ -158,8 +165,8 @@ export default function CheckoutPage() {
       />
       <main className="max-w-6xl mx-auto px-2 sm:px-6 lg:px-8 py-8 sm:py-12">
         <div className="mb-8">
-          <Button asChild variant="ghost" size="sm">
-            <Link href="/">
+          <Button asChild variant="ghost" size="sm" className="text-primary hover:text-secondary focus:text-secondary font-sans font-medium" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
+            <Link href="/produtos">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Voltar aos Produtos
             </Link>
@@ -169,41 +176,20 @@ export default function CheckoutPage() {
           {/* Formulário de Checkout */}
           <div className="space-y-8">
             {/* Informações do Cliente */}
-            <Card
-              className="bg-white border border-[#d4af37]/60 rounded-2xl shadow-md"
-              style={{ boxShadow: "0 2px 8px 0 #d4af3720" }}
-            >
+            <Card className="bg-white border border-primary/60 rounded-2xl shadow-md" style={{ boxShadow: '0 2px 8px 0 #b689e01a' }}>
               <CardHeader>
-                <CardTitle
-                  className="flex items-center gap-2 text-[#1a1a1a] font-bold text-2xl font-serif"
-                  style={{ fontFamily: "Playfair Display, serif" }}
-                >
-                  <MapPin className="w-5 h-5" style={{ color: "#d4af37" }} />
+                <CardTitle className="flex items-center gap-2 text-black font-bold text-2xl font-sans" style={{ fontFamily: 'Montserrat, Arial, sans-serif', fontWeight: 700 }}>
+                  <MapPin className="w-5 h-5 text-primary" />
                   Informações Pessoais
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <Label
-                      htmlFor="name"
-                      className="text-foreground font-medium"
-                    >
+                    <Label htmlFor="name" className="text-foreground font-medium font-sans" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
                       Nome Completo
                     </Label>
-                    <Input
-                      id="name"
-                      value={customerInfo.name}
-                      onChange={(e) =>
-                        setCustomerInfo((prev) => ({
-                          ...prev,
-                          name: e.target.value,
-                        }))
-                      }
-                      placeholder="Seu nome completo"
-                      className="border border-[#d4af37]/60 rounded-[0.75rem] bg-white text-[#1a1a1a] font-sans focus:ring-2 focus:ring-[#6d348b]/40 focus:border-[#6d348b] placeholder:text-[#bfaecb] placeholder:font-normal"
-                      style={{ fontFamily: "Poppins, sans-serif" }}
-                    />
+                    <Input id="name" name="name" className="bg-white border border-primary/60 rounded-lg px-4 py-2 font-sans focus:border-primary focus:ring-2 focus:ring-primary/30 transition" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }} />
                   </div>
                   <div>
                     <Label
@@ -259,10 +245,8 @@ export default function CheckoutPage() {
             >
               <CardHeader>
                 <CardTitle
-                  className="flex items-center gap-2 text-[#1a1a1a] font-bold text-2xl font-serif"
-                  style={{ fontFamily: "Playfair Display, serif" }}
-                >
-                  <Truck className="w-5 h-5" style={{ color: "#d4af37" }} />
+                  className="flex items-center gap-2 text-black font-bold text-2xl font-sans" style={{ fontFamily: 'Montserrat, Arial, sans-serif', fontWeight: 700 }}>
+                  <Truck className="w-5 h-5 text-primary" />
                   Entrega ou Retirada
                 </CardTitle>
               </CardHeader>
@@ -306,10 +290,8 @@ export default function CheckoutPage() {
               >
                 <CardHeader>
                   <CardTitle
-                    className="flex items-center gap-2 text-[#1a1a1a] font-bold text-2xl font-serif"
-                    style={{ fontFamily: "Playfair Display, serif" }}
-                  >
-                    <Package className="w-5 h-5" style={{ color: "#d4af37" }} />
+                    className="flex items-center gap-2 text-black font-bold text-2xl font-sans" style={{ fontFamily: 'Montserrat, Arial, sans-serif', fontWeight: 700 }}>
+                    <Package className="w-5 h-5 text-primary" />
                     Endereço de Entrega
                   </CardTitle>
                 </CardHeader>
@@ -466,8 +448,8 @@ export default function CheckoutPage() {
               style={{ boxShadow: "0 2px 8px 0 #d4af3720" }}
             >
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-secondary font-semibold text-xl">
-                  <CreditCard className="w-5 h-5 text-secondary" />
+                <CardTitle className="flex items-center gap-2 text-black font-bold text-2xl font-sans" style={{ fontFamily: 'Montserrat, Arial, sans-serif', fontWeight: 700 }}>
+                  <CreditCard className="w-5 h-5 text-primary" />
                   Método de Pagamento
                 </CardTitle>
               </CardHeader>
@@ -525,9 +507,7 @@ export default function CheckoutPage() {
             >
               <CardHeader>
                 <CardTitle
-                  className="text-[#1a1a1a] font-bold text-2xl font-serif"
-                  style={{ fontFamily: "Playfair Display, serif" }}
-                >
+                  className="text-black font-bold text-2xl font-sans" style={{ fontFamily: 'Montserrat, Arial, sans-serif', fontWeight: 700 }}>
                   Resumo do Pedido
                 </CardTitle>
               </CardHeader>
