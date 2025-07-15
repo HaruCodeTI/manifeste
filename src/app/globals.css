@@ -44,44 +44,43 @@
 }
 
 :root {
-  --background: #000000;
-  --foreground: #ffffff;
-  --primary: #22c55e;
+  --background: #f4eae6; /* nude claro */
+  --foreground: #1a1a1a; /* preto */
+  --primary: #8e44ad; /* lilás médio */
   --primary-foreground: #ffffff;
-  --secondary: #ffffff;
-  --secondary-foreground: #000000;
-  --muted: #737373;
-  --card: #1a1a1a;
-  --card-foreground: #ffffff;
-  --accent: #d4af37;
+  --secondary: #ff6f61; /* coral rosado */
+  --secondary-foreground: #1a1a1a;
+  --muted: #f8e5d8; /* champanhe/nude suave */
+  --card: #ffffff;
+  --card-foreground: #1a1a1a;
+  --accent: #d4af37; /* dourado metálico */
   --destructive: #ef4444;
-  --border: #262626;
-  --radius: 0.5rem;
+  --border: #d4af37; /* borda dourada padrão */
+  --radius: 0.75rem;
   --font-body-family:
-    -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Ubuntu, Helvetica Neue,
-    sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+    "Poppins", -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Ubuntu,
+    Helvetica Neue, sans-serif, Apple Color Emoji, Segoe UI Emoji,
+    Segoe UI Symbol;
   --font-body-style: normal;
   --font-body-weight: 400;
   --font-body-weight-bold: 700;
-  --font-heading-family:
-    -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Ubuntu, Helvetica Neue,
-    sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
+  --font-heading-family: "Playfair Display", "Poppins", serif;
 }
 
 .dark {
-  --background: #000000;
-  --foreground: #ffffff;
-  --primary: #22c55e;
+  --background: #1a1a1a;
+  --foreground: #f4eae6;
+  --primary: #8e44ad;
   --primary-foreground: #ffffff;
-  --secondary: #1a1a1a;
-  --secondary-foreground: #ffffff;
-  --muted: #737373;
-  --card: #1a1a1a;
-  --card-foreground: #ffffff;
+  --secondary: #ff6f61;
+  --secondary-foreground: #f4eae6;
+  --muted: #232323;
+  --card: #232323;
+  --card-foreground: #f4eae6;
   --accent: #d4af37;
   --destructive: #ef4444;
-  --border: #262626;
-  --radius: 0.5rem;
+  --border: #d4af37;
+  --radius: 0.75rem;
 }
 
 @layer base {
@@ -102,5 +101,41 @@
   h6 {
     font-family: var(--font-heading-family);
     font-weight: var(--font-body-weight-bold);
+  }
+  button,
+  .btn,
+  .Button {
+    font-family: var(--font-body-family);
+    border-radius: var(--radius);
+    box-shadow: 0 2px 8px 0 #d4af3720;
+    border: 2px solid var(--border);
+    transition:
+      background 0.2s,
+      color 0.2s,
+      border 0.2s,
+      box-shadow 0.2s;
+  }
+  button.bg-primary,
+  .btn-primary {
+    background: var(--primary);
+    color: var(--primary-foreground);
+    border-color: var(--border);
+  }
+  button.bg-secondary,
+  .btn-secondary {
+    background: var(--secondary);
+    color: var(--secondary-foreground);
+    border-color: var(--border);
+  }
+  button.bg-accent,
+  .btn-accent {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--border);
+  }
+  button:hover,
+  .btn:hover {
+    filter: brightness(0.95) saturate(1.1);
+    box-shadow: 0 4px 16px 0 #d4af3730;
   }
 }

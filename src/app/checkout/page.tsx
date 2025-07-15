@@ -148,7 +148,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#ede3f6]">
       <Header
         onCartClick={() => {}}
         onTrackOrderClick={() => {}}
@@ -165,14 +165,20 @@ export default function CheckoutPage() {
             </Link>
           </Button>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14">
           {/* Formulário de Checkout */}
           <div className="space-y-8">
             {/* Informações do Cliente */}
-            <Card className="rounded-2xl shadow-lg border-none bg-card">
+            <Card
+              className="bg-white border border-[#d4af37]/60 rounded-2xl shadow-md"
+              style={{ boxShadow: "0 2px 8px 0 #d4af3720" }}
+            >
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-secondary font-semibold text-xl">
-                  <MapPin className="w-5 h-5 text-secondary" />
+                <CardTitle
+                  className="flex items-center gap-2 text-[#1a1a1a] font-bold text-2xl font-serif"
+                  style={{ fontFamily: "Playfair Display, serif" }}
+                >
+                  <MapPin className="w-5 h-5" style={{ color: "#d4af37" }} />
                   Informações Pessoais
                 </CardTitle>
               </CardHeader>
@@ -195,7 +201,8 @@ export default function CheckoutPage() {
                         }))
                       }
                       placeholder="Seu nome completo"
-                      className="border border-muted rounded-xl bg-background text-foreground focus:ring-2 focus:ring-secondary/40 focus:border-secondary placeholder:text-muted"
+                      className="border border-[#d4af37]/60 rounded-[0.75rem] bg-white text-[#1a1a1a] font-sans focus:ring-2 focus:ring-[#6d348b]/40 focus:border-[#6d348b] placeholder:text-[#bfaecb] placeholder:font-normal"
+                      style={{ fontFamily: "Poppins, sans-serif" }}
                     />
                   </div>
                   <div>
@@ -216,7 +223,8 @@ export default function CheckoutPage() {
                         }))
                       }
                       placeholder="seu@email.com"
-                      className="border border-muted rounded-xl bg-background text-foreground focus:ring-2 focus:ring-secondary/40 focus:border-secondary placeholder:text-muted"
+                      className="border border-[#d4af37]/60 rounded-[0.75rem] bg-white text-[#1a1a1a] font-sans focus:ring-2 focus:ring-[#6d348b]/40 focus:border-[#6d348b] placeholder:text-[#bfaecb] placeholder:font-normal"
+                      style={{ fontFamily: "Poppins, sans-serif" }}
                     />
                   </div>
                 </div>
@@ -237,17 +245,24 @@ export default function CheckoutPage() {
                       }))
                     }
                     placeholder="(11) 99999-9999"
-                    className="border border-muted rounded-xl bg-background text-foreground focus:ring-2 focus:ring-secondary/40 focus:border-secondary placeholder:text-muted"
+                    className="border border-[#d4af37]/60 rounded-[0.75rem] bg-white text-[#1a1a1a] font-sans focus:ring-2 focus:ring-[#6d348b]/40 focus:border-[#6d348b] placeholder:text-[#bfaecb] placeholder:font-normal"
+                    style={{ fontFamily: "Poppins, sans-serif" }}
                   />
                 </div>
               </CardContent>
             </Card>
 
             {/* Método de Entrega */}
-            <Card className="rounded-2xl shadow-lg border-none bg-card">
+            <Card
+              className="bg-white border border-[#d4af37]/60 rounded-2xl shadow-md"
+              style={{ boxShadow: "0 2px 8px 0 #d4af3720" }}
+            >
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-secondary font-semibold text-xl">
-                  <Truck className="w-5 h-5 text-secondary" />
+                <CardTitle
+                  className="flex items-center gap-2 text-[#1a1a1a] font-bold text-2xl font-serif"
+                  style={{ fontFamily: "Playfair Display, serif" }}
+                >
+                  <Truck className="w-5 h-5" style={{ color: "#d4af37" }} />
                   Entrega ou Retirada
                 </CardTitle>
               </CardHeader>
@@ -285,10 +300,16 @@ export default function CheckoutPage() {
 
             {/* Endereço de Entrega */}
             {shippingMethod === "delivery" && (
-              <Card className="rounded-2xl shadow-lg border-none bg-card">
+              <Card
+                className="bg-white border border-[#d4af37]/60 rounded-2xl shadow-md"
+                style={{ boxShadow: "0 2px 8px 0 #d4af3720" }}
+              >
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-secondary font-semibold text-xl">
-                    <Truck className="w-5 h-5 text-secondary" />
+                  <CardTitle
+                    className="flex items-center gap-2 text-[#1a1a1a] font-bold text-2xl font-serif"
+                    style={{ fontFamily: "Playfair Display, serif" }}
+                  >
+                    <Package className="w-5 h-5" style={{ color: "#d4af37" }} />
                     Endereço de Entrega
                   </CardTitle>
                 </CardHeader>
@@ -323,7 +344,8 @@ export default function CheckoutPage() {
                           }}
                           placeholder="00000-000"
                           maxLength={9}
-                          className="border border-muted rounded-xl bg-background text-foreground focus:ring-2 focus:ring-secondary/40 focus:border-secondary placeholder:text-muted"
+                          className="border border-[#d4af37]/60 rounded-[0.75rem] bg-white text-[#1a1a1a] font-sans focus:ring-2 focus:ring-[#6d348b]/40 focus:border-[#6d348b] placeholder:text-[#bfaecb] placeholder:font-normal"
+                          style={{ fontFamily: "Poppins, sans-serif" }}
                         />
                         <Button
                           onClick={calculateShipping}
@@ -344,7 +366,8 @@ export default function CheckoutPage() {
                           setShippingInfo((prev) => ({ ...prev, state: value }))
                         }
                         required
-                        className="border border-muted rounded-xl bg-background text-foreground focus:ring-2 focus:ring-secondary/40 focus:border-secondary"
+                        className="border border-[#d4af37]/60 rounded-[0.75rem] bg-white text-[#1a1a1a] font-sans focus:ring-2 focus:ring-[#6d348b]/40 focus:border-[#6d348b]"
+                        style={{ fontFamily: "Poppins, sans-serif" }}
                       >
                         <SelectValue placeholder="Selecione o estado" />
                         <SelectItem value="MS">Mato Grosso do Sul</SelectItem>
@@ -363,7 +386,8 @@ export default function CheckoutPage() {
                         }))
                       }
                       placeholder="Rua, Avenida, etc."
-                      className="border border-muted rounded-xl bg-background text-foreground focus:ring-2 focus:ring-secondary/40 focus:border-secondary placeholder:text-muted"
+                      className="border border-[#d4af37]/60 rounded-[0.75rem] bg-white text-[#1a1a1a] font-sans focus:ring-2 focus:ring-[#6d348b]/40 focus:border-[#6d348b] placeholder:text-[#bfaecb] placeholder:font-normal"
+                      style={{ fontFamily: "Poppins, sans-serif" }}
                     />
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -379,7 +403,8 @@ export default function CheckoutPage() {
                           }))
                         }
                         placeholder="123"
-                        className="border border-muted rounded-xl bg-background text-foreground focus:ring-2 focus:ring-secondary/40 focus:border-secondary placeholder:text-muted"
+                        className="border border-[#d4af37]/60 rounded-[0.75rem] bg-white text-[#1a1a1a] font-sans focus:ring-2 focus:ring-[#6d348b]/40 focus:border-[#6d348b] placeholder:text-[#bfaecb] placeholder:font-normal"
+                        style={{ fontFamily: "Poppins, sans-serif" }}
                       />
                     </div>
                     <div className="sm:col-span-2">
@@ -394,7 +419,8 @@ export default function CheckoutPage() {
                           }))
                         }
                         placeholder="Apartamento, bloco, etc."
-                        className="border border-muted rounded-xl bg-background text-foreground focus:ring-2 focus:ring-secondary/40 focus:border-secondary placeholder:text-muted"
+                        className="border border-[#d4af37]/60 rounded-[0.75rem] bg-white text-[#1a1a1a] font-sans focus:ring-2 focus:ring-[#6d348b]/40 focus:border-[#6d348b] placeholder:text-[#bfaecb] placeholder:font-normal"
+                        style={{ fontFamily: "Poppins, sans-serif" }}
                       />
                     </div>
                   </div>
@@ -410,7 +436,8 @@ export default function CheckoutPage() {
                         }))
                       }
                       placeholder="Nome do bairro"
-                      className="border border-muted rounded-xl bg-background text-foreground focus:ring-2 focus:ring-secondary/40 focus:border-secondary placeholder:text-muted"
+                      className="border border-[#d4af37]/60 rounded-[0.75rem] bg-white text-[#1a1a1a] font-sans focus:ring-2 focus:ring-[#6d348b]/40 focus:border-[#6d348b] placeholder:text-[#bfaecb] placeholder:font-normal"
+                      style={{ fontFamily: "Poppins, sans-serif" }}
                     />
                   </div>
                   <div>
@@ -425,7 +452,8 @@ export default function CheckoutPage() {
                         }))
                       }
                       placeholder="Nome da cidade"
-                      className="border border-muted rounded-xl bg-background text-foreground focus:ring-2 focus:ring-secondary/40 focus:border-secondary placeholder:text-muted"
+                      className="border border-[#d4af37]/60 rounded-[0.75rem] bg-white text-[#1a1a1a] font-sans focus:ring-2 focus:ring-[#6d348b]/40 focus:border-[#6d348b] placeholder:text-[#bfaecb] placeholder:font-normal"
+                      style={{ fontFamily: "Poppins, sans-serif" }}
                     />
                   </div>
                 </CardContent>
@@ -433,7 +461,10 @@ export default function CheckoutPage() {
             )}
 
             {/* Método de Pagamento */}
-            <Card className="rounded-2xl shadow-lg border-none bg-card">
+            <Card
+              className="bg-white border border-[#d4af37]/60 rounded-2xl shadow-md"
+              style={{ boxShadow: "0 2px 8px 0 #d4af3720" }}
+            >
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-secondary font-semibold text-xl">
                   <CreditCard className="w-5 h-5 text-secondary" />
@@ -488,9 +519,15 @@ export default function CheckoutPage() {
 
           {/* Resumo do Pedido */}
           <div className="space-y-6">
-            <Card className="rounded-2xl shadow-lg border-none bg-card">
+            <Card
+              className="bg-white border border-[#d4af37]/60 rounded-2xl shadow-md"
+              style={{ boxShadow: "0 2px 8px 0 #d4af3720" }}
+            >
               <CardHeader>
-                <CardTitle className="text-foreground font-semibold text-xl">
+                <CardTitle
+                  className="text-[#1a1a1a] font-bold text-2xl font-serif"
+                  style={{ fontFamily: "Playfair Display, serif" }}
+                >
                   Resumo do Pedido
                 </CardTitle>
               </CardHeader>
@@ -543,7 +580,11 @@ export default function CheckoutPage() {
             </Card>
             <Button
               onClick={handleCheckout}
-              className="w-full py-6 text-lg font-semibold rounded-2xl shadow-md hover:bg-secondary/10 focus:ring-2 focus:ring-secondary/40 focus:border-secondary transition-colors"
+              className="w-full py-4 rounded-[0.75rem] text-lg font-bold bg-[#6d348b] text-white hover:bg-[#4b206b] transition-all duration-300 shadow-md font-sans"
+              style={{
+                fontFamily: "Poppins, sans-serif",
+                boxShadow: "0 2px 8px 0 #d4af3720",
+              }}
               disabled={
                 !customerInfo.name ||
                 !customerInfo.email ||

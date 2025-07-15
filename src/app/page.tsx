@@ -9,7 +9,7 @@ export default function HomePage() {
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#f4f0db] flex flex-col">
+    <div className="min-h-screen bg-[#ede3f6] flex flex-col">
       <Header
         onCartClick={() => setIsCartOpen(true)}
         onTrackOrderClick={() => (window.location.href = "/acompanhar")}
@@ -21,7 +21,7 @@ export default function HomePage() {
         <section className="w-full flex justify-center py-10 md:py-20 animate-fadein">
           <div className="w-full max-w-screen-lg flex flex-col md:flex-row items-center justify-center gap-10 md:gap-16">
             <div className="w-full md:w-1/2 flex flex-col items-center md:items-start justify-center text-center md:text-left">
-              <h1 className="text-4xl md:text-6xl font-extrabold text-black mb-4 tracking-tight animate-slidein">
+              <h1 className="text-4xl md:text-6xl font-extrabold mb-4 tracking-tight animate-slidein text-black">
                 Manifeste
               </h1>
               <p className="text-lg md:text-2xl text-black mb-6 max-w-xl animate-fadein delay-100">
@@ -35,14 +35,18 @@ export default function HomePage() {
               </p>
               <Link
                 href="/produtos"
-                className="inline-block bg-black text-white px-8 py-3 text-base md:text-lg font-medium rounded transition-all duration-300 hover:scale-105 hover:bg-neutral-800 shadow-lg animate-fadein delay-300"
+                className="inline-block bg-primary text-white px-8 py-3 text-base md:text-lg font-medium rounded-[0.75rem] transition-all duration-300 hover:scale-105 hover:bg-[#6d348b] shadow-lg animate-fadein delay-300"
+                style={{ boxShadow: "0 2px 8px 0 #d4af3720" }}
               >
                 Explorar Produtos
               </Link>
             </div>
             <div className="w-full md:w-1/2 flex items-center justify-center animate-fadein delay-400 mt-8 md:mt-0">
-              <div className="w-64 h-64 md:w-80 md:h-80 bg-neutral-200 rounded-xl flex items-center justify-center shadow-inner">
-                <span className="text-5xl text-neutral-400">IMG</span>
+              <div
+                className="w-64 h-64 md:w-80 md:h-80 bg-white rounded-xl flex items-center justify-center shadow-lg border-2 border-[#d4af37]"
+                style={{ boxShadow: "0 2px 16px 0 #d4af3720" }}
+              >
+                <span className="text-5xl text-[#d4af37] font-serif">IMG</span>
               </div>
             </div>
           </div>
@@ -50,14 +54,13 @@ export default function HomePage() {
 
         <section className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-20 items-center py-10 md:py-16 animate-fadein delay-300">
           <div className="flex flex-col items-start md:items-start text-left md:text-left">
-            <h2 className="text-2xl md:text-3xl font-bold text-black mb-3">
+            <h2 className="text-2xl md:text-3xl font-bold mb-3 text-black font-serif">
               Curadoria Cuidadosa
             </h2>
             <p className="text-base md:text-lg text-black/90 leading-relaxed mb-4">
-              Cada produto em nossa coleção foi selecionado com propósito.
-              <br />
-              Não vendemos apenas objetos, vendemos experiências que elevam sua
-              qualidade de vida.
+              Cada produto em nossa coleção foi escolhido para inspirar e
+              transformar. Não vendemos apenas objetos, vendemos experiências
+              que elevam sua qualidade de vida.
             </p>
             <p className="text-lg md:text-xl font-semibold text-black animate-fadein delay-350">
               <span className="text-black">Manifeste</span> o extraordinário no
@@ -71,15 +74,18 @@ export default function HomePage() {
             <span className="text-base md:text-lg text-black font-medium">
               Qualidade que se manifesta
             </span>
-            <div className="w-40 h-40 md:w-56 md:h-56 bg-neutral-200 rounded-xl flex items-center justify-center shadow-inner mt-4">
-              <span className="text-3xl text-neutral-400">IMG</span>
+            <div
+              className="w-40 h-40 md:w-56 md:h-56 bg-white rounded-xl flex items-center justify-center shadow-lg border-2 border-[#d4af37] mt-4"
+              style={{ boxShadow: "0 2px 16px 0 #d4af3720" }}
+            >
+              <span className="text-3xl text-[#d4af37] font-serif">IMG</span>
             </div>
           </div>
         </section>
 
         <section className="w-full max-w-6xl py-10 md:py-16 animate-fadein delay-400">
           <div className="text-center mb-10">
-            <h2 className="text-2xl md:text-3xl font-bold text-black mb-3">
+            <h2 className="text-2xl md:text-3xl font-bold mb-3 text-black font-serif">
               Nossa Filosofia
             </h2>
             <p className="text-base md:text-lg text-black/90 max-w-2xl mx-auto">
@@ -88,18 +94,24 @@ export default function HomePage() {
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="flex flex-col items-center text-center p-4 animate-fadein delay-500">
+            <div
+              className="flex flex-col items-center text-center p-4 animate-fadein delay-500 bg-white rounded-xl shadow-lg border-2 border-[#d4af37]"
+              style={{ boxShadow: "0 2px 12px 0 #d4af3720" }}
+            >
               <span className="text-4xl md:text-5xl mb-2">🎯</span>
-              <h3 className="text-lg md:text-xl font-bold text-black mb-2">
+              <h3 className="text-lg md:text-xl font-bold mb-2 text-black font-serif">
                 Propósito
               </h3>
               <p className="text-black/80 text-sm md:text-base">
                 Cada produto tem uma razão de ser, uma história para contar.
               </p>
             </div>
-            <div className="flex flex-col items-center text-center p-4 animate-fadein delay-600">
+            <div
+              className="flex flex-col items-center text-center p-4 animate-fadein delay-600 bg-white rounded-xl shadow-lg border-2 border-[#d4af37]"
+              style={{ boxShadow: "0 2px 12px 0 #d4af3720" }}
+            >
               <span className="text-4xl md:text-5xl mb-2">🌟</span>
-              <h3 className="text-lg md:text-xl font-bold text-black mb-2">
+              <h3 className="text-lg md:text-xl font-bold mb-2 text-black font-serif">
                 Qualidade
               </h3>
               <p className="text-black/80 text-sm md:text-base">
@@ -107,9 +119,12 @@ export default function HomePage() {
                 comprovada.
               </p>
             </div>
-            <div className="flex flex-col items-center text-center p-4 animate-fadein delay-700">
+            <div
+              className="flex flex-col items-center text-center p-4 animate-fadein delay-700 bg-white rounded-xl shadow-lg border-2 border-[#d4af37]"
+              style={{ boxShadow: "0 2px 12px 0 #d4af3720" }}
+            >
               <span className="text-4xl md:text-5xl mb-2">💫</span>
-              <h3 className="text-lg md:text-xl font-bold text-black mb-2">
+              <h3 className="text-lg md:text-xl font-bold mb-2 text-black font-serif">
                 Experiência
               </h3>
               <p className="text-black/80 text-sm md:text-base">
@@ -120,7 +135,7 @@ export default function HomePage() {
         </section>
 
         <section className="w-full text-center py-10 md:py-16 animate-fadein delay-800">
-          <h2 className="text-2xl md:text-3xl font-bold text-black mb-4">
+          <h2 className="text-2xl md:text-3xl font-bold mb-4 text-black font-serif">
             Descubra o Extraordinário
           </h2>
           <p className="text-base md:text-lg text-black/90 mb-8 max-w-xl mx-auto font-semibold">
@@ -129,7 +144,8 @@ export default function HomePage() {
           </p>
           <Link
             href="/produtos"
-            className="inline-block bg-black text-white px-8 py-3 text-base md:text-lg font-medium rounded transition-all duration-300 hover:scale-105 hover:bg-neutral-800 shadow-lg"
+            className="inline-block bg-primary text-white px-8 py-3 text-base md:text-lg font-medium rounded-[0.75rem] transition-all duration-300 hover:scale-105 hover:bg-[#6d348b] shadow-lg"
+            style={{ boxShadow: "0 2px 8px 0 #d4af3720" }}
           >
             Ver Catálogo Completo
           </Link>

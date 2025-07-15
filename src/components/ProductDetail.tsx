@@ -8,13 +8,9 @@ import { useCartContext } from "@/contexts/CartContext";
 import { Product } from "@/lib/supabaseClient";
 import {
   ArrowLeft,
-  CheckCircle,
   Heart,
   Info,
-  Package,
-  Ruler,
   Share2,
-  Shield,
   ShoppingCart,
   Truck,
 } from "lucide-react";
@@ -73,7 +69,13 @@ export function ProductDetail({ product }: ProductDetailProps) {
           {/* Galeria de Imagens */}
           <div className="space-y-4">
             {/* Imagem Principal */}
-            <div className="aspect-square bg-gradient-to-br from-muted/20 to-muted/40 rounded-2xl overflow-hidden relative border border-muted/30 shadow-lg">
+            <div
+              className="aspect-square bg-white rounded-2xl overflow-hidden relative border border-[#d4af37] shadow-lg"
+              style={{
+                boxShadow: "0 2px 16px 0 #d4af3720",
+                border: "1.5px solid #d4af37",
+              }}
+            >
               {product.image_urls && product.image_urls[selectedImage] ? (
                 <Image
                   src={product.image_urls[selectedImage]}
@@ -84,10 +86,29 @@ export function ProductDetail({ product }: ProductDetailProps) {
                   priority={true}
                 />
               ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center bg-neutral-900 text-white gap-2">
-                  <span style={{ fontSize: 44, lineHeight: 1 }}>🤫</span>
-                  <span className="text-xs font-medium text-white/80">
-                    Surpresa! Imagem indisponível 😏
+                <div
+                  className="w-full h-full flex flex-col items-center justify-center bg-white text-[#6d348b] gap-2 rounded-2xl border-none"
+                  style={{ boxShadow: "none" }}
+                >
+                  <span
+                    style={{
+                      fontSize: 48,
+                      lineHeight: 1,
+                      color: "#6d348b",
+                      marginBottom: 8,
+                    }}
+                  >
+                    ❤
+                  </span>
+                  <span
+                    className="text-xs font-medium font-sans text-[#6d348b] text-center px-2"
+                    style={{
+                      fontFamily: "Poppins, sans-serif",
+                      fontWeight: 500,
+                    }}
+                  >
+                    Em breve a foto do produto com todo o cuidado que você
+                    merece!
                   </span>
                 </div>
               )}
@@ -138,7 +159,13 @@ export function ProductDetail({ product }: ProductDetailProps) {
             <div className="space-y-4">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold font-serif leading-tight mb-2 text-foreground">
+                  <h1
+                    className="text-2xl sm:text-3xl lg:text-4xl font-bold font-serif leading-tight mb-2"
+                    style={{
+                      fontFamily: "Playfair Display, serif",
+                      color: "#1a1a1a",
+                    }}
+                  >
                     {product.name}
                   </h1>
                   {product.sku && (
@@ -168,22 +195,48 @@ export function ProductDetail({ product }: ProductDetailProps) {
               {/* Preço e Status */}
               <div className="flex items-center gap-4 flex-wrap">
                 <div className="flex items-baseline gap-2">
-                  <span className="text-3xl sm:text-4xl font-bold text-foreground">
-                    R$ {formatPrice(product.price)}
+                  <span
+                    className="text-3xl sm:text-4xl font-bold font-sans"
+                    style={{
+                      color: "#6d348b",
+                      fontFamily: "Poppins, sans-serif",
+                      fontWeight: 700,
+                    }}
+                  >
+                    <span
+                      className="text-lg align-bottom mr-1"
+                      style={{ color: "#1a1a1a", fontWeight: 600 }}
+                    >
+                      R$
+                    </span>
+                    {formatPrice(product.price)}
                   </span>
-                  <span className="text-sm text-muted-foreground line-through">
+                  <span
+                    className="text-sm text-muted-foreground line-through font-sans"
+                    style={{ fontFamily: "Poppins, sans-serif" }}
+                  >
                     R$ {formatPrice(product.price * 1.2)}
                   </span>
                 </div>
                 <Badge
                   variant="secondary"
-                  className="rounded-full px-3 py-1 font-medium border-0"
-                  style={{ background: "#ffacc2", color: "#000" }}
+                  className="rounded-full px-3 py-1 font-medium border-0 font-sans shadow-md flex items-center gap-1"
+                  style={{
+                    background: "#6d348b",
+                    color: "#fff",
+                    fontFamily: "Poppins, sans-serif",
+                    boxShadow: "0 1px 4px 0 #d4af3720",
+                  }}
                 >
-                  <CheckCircle
-                    className="w-3 h-3 mr-1"
-                    style={{ color: "#ffacc2" }}
-                  />
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="#d4af37"
+                    style={{ marginRight: 4 }}
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                  </svg>
                   {product.stock_quantity > 0
                     ? `${product.stock_quantity} em estoque`
                     : "Indisponível"}
@@ -198,23 +251,28 @@ export function ProductDetail({ product }: ProductDetailProps) {
                   <label className="text-sm font-medium text-foreground">
                     Quantidade:
                   </label>
-                  <div className="flex items-center border border-muted/40 rounded-xl overflow-hidden">
+                  <div className="flex items-center gap-2 bg-white border border-[#d4af37]/80 rounded-[0.75rem] px-3 py-2 shadow-sm">
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className="rounded-none hover:bg-muted/50 text-foreground"
+                      className="rounded-full hover:bg-[#ede3f6] hover:text-[#6d348b] text-[#6d348b] font-bold text-lg transition-all duration-200"
+                      style={{ fontFamily: "Poppins, sans-serif" }}
                     >
                       -
                     </Button>
-                    <span className="px-4 py-2 text-foreground font-medium min-w-[3rem] text-center">
+                    <span
+                      className="text-xl font-bold w-8 text-center text-[#6d348b] font-sans"
+                      style={{ fontFamily: "Poppins, sans-serif" }}
+                    >
                       {quantity}
                     </span>
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => setQuantity(quantity + 1)}
-                      className="rounded-none hover:bg-muted/50 text-foreground"
+                      className="rounded-full hover:bg-[#ede3f6] hover:text-[#6d348b] text-[#6d348b] font-bold text-lg transition-all duration-200"
+                      style={{ fontFamily: "Poppins, sans-serif" }}
                     >
                       +
                     </Button>
@@ -226,7 +284,11 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 onClick={handleAddToCart}
                 disabled={product.stock_quantity === 0}
                 size="lg"
-                className="w-full bg-secondary hover:bg-secondary/90 text-secondary-foreground font-semibold text-base py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
+                className="w-full bg-primary hover:bg-[#6d348b] text-white font-semibold text-base py-4 rounded-[0.75rem] shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] font-sans"
+                style={{
+                  fontFamily: "Poppins, sans-serif",
+                  boxShadow: "0 2px 8px 0 #d4af3720",
+                }}
               >
                 <ShoppingCart className="w-5 h-5 mr-3" />
                 Adicionar ao Carrinho
@@ -234,24 +296,24 @@ export function ProductDetail({ product }: ProductDetailProps) {
             </div>
 
             {/* Informações de Entrega */}
-            <Card className="bg-gradient-to-r from-[#ffacc2]/10 to-[#ffacc2]/20 border border-0 rounded-2xl">
+            <Card
+              className="bg-gradient-to-r from-[#ffacc2]/10 to-[#ffacc2]/20 border border-0 rounded-2xl shadow-md"
+              style={{ boxShadow: "0 2px 8px 0 #d4af3720" }}
+            >
               <CardContent className="p-4">
                 <div
                   className="flex items-center gap-3"
-                  style={{ color: "#ffacc2" }}
+                  style={{ color: "#6d348b" }}
                 >
-                  <Truck className="w-5 h-5" style={{ color: "#ffacc2" }} />
+                  <Truck className="w-5 h-5" style={{ color: "#6d348b" }} />
                   <div>
                     <p
                       className="font-medium text-sm"
-                      style={{ color: "#ffacc2" }}
+                      style={{ color: "#6d348b" }}
                     >
                       Entrega em até 1 hora
                     </p>
-                    <p
-                      className="text-xs text-muted-foreground"
-                      style={{ color: "#ffacc2" }}
-                    >
+                    <p className="text-xs text-[#6d348b]/80">
                       Consulte disponibilidade para sua região
                     </p>
                   </div>
@@ -261,96 +323,119 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
             {/* Descrição */}
             {product.description && (
-              <Card className="bg-background border border-muted/30 rounded-2xl shadow-sm">
+              <Card
+                className="bg-white border border-[#d4af37]/60 rounded-2xl shadow-md mt-4"
+                style={{ boxShadow: "0 2px 8px 0 #d4af3720" }}
+              >
                 <CardContent className="p-6">
-                  <h3 className="font-bold text-lg font-serif mb-4 flex items-center gap-2 text-foreground">
-                    <Info className="w-5 h-5 text-secondary" />
-                    Descrição do Produto
-                  </h3>
-                  <div className="prose prose-sm max-w-none">
-                    <p className="text-foreground/80 leading-relaxed whitespace-pre-wrap">
-                      {product.description}
-                    </p>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Info className="w-5 h-5 text-[#e65a4d]" />
+                    <span
+                      className="font-bold text-base text-[#1a1a1a] font-serif"
+                      style={{ fontFamily: "Playfair Display, serif" }}
+                    >
+                      Descrição do Produto
+                    </span>
+                  </div>
+                  <div
+                    className="text-[#1a1a1a] text-sm font-sans"
+                    style={{ fontFamily: "Poppins, sans-serif" }}
+                  >
+                    {product.description}
                   </div>
                 </CardContent>
               </Card>
             )}
 
-            {/* Tags */}
+            {/* Características */}
             {product.tags && product.tags.length > 0 && (
-              <Card className="bg-background border border-muted/30 rounded-2xl shadow-sm">
+              <Card
+                className="bg-white border border-[#d4af37]/60 rounded-2xl shadow-md mt-4"
+                style={{ boxShadow: "0 2px 8px 0 #d4af3720" }}
+              >
                 <CardContent className="p-6">
-                  <h3 className="font-bold text-lg text-foreground mb-4">
+                  <h3
+                    className="font-bold text-lg mb-4 text-[#1a1a1a] font-serif"
+                    style={{ fontFamily: "Playfair Display, serif" }}
+                  >
                     Características
                   </h3>
                   <div className="flex flex-wrap gap-2">
                     {product.tags.map((tag, index) => (
-                      <Badge
+                      <span
                         key={index}
-                        variant="outline"
-                        className="bg-muted/20 text-foreground border-muted/40 rounded-full px-3 py-1 font-medium hover:bg-secondary/10 hover:border-secondary/30 transition-colors"
+                        className="bg-[#ede3f6] border border-[#d4af37]/60 rounded-[0.75rem] px-3 py-1 font-sans text-[#6d348b] text-sm font-medium"
+                        style={{
+                          fontFamily: "Poppins, sans-serif",
+                          marginBottom: 4,
+                        }}
                       >
                         {tag}
-                      </Badge>
+                      </span>
                     ))}
                   </div>
                 </CardContent>
               </Card>
             )}
 
-            {/* Especificações */}
-            {(product.weight_grams || product.dimensions_cm) && (
-              <Card className="bg-background border border-muted/30 rounded-2xl shadow-sm">
+            {/* Especificações Técnicas */}
+            {(product.weight_grams !== null ||
+              product.dimensions_cm !== null) && (
+              <Card
+                className="bg-white border border-[#d4af37]/60 rounded-2xl shadow-md mt-4"
+                style={{ boxShadow: "0 2px 8px 0 #d4af3720" }}
+              >
                 <CardContent className="p-6">
-                  <h3 className="font-bold text-lg text-foreground mb-4">
+                  <h3
+                    className="font-bold text-lg mb-4 text-[#1a1a1a] font-serif"
+                    style={{ fontFamily: "Playfair Display, serif" }}
+                  >
                     Especificações Técnicas
                   </h3>
-                  <div className="space-y-3">
-                    {product.weight_grams && (
-                      <div className="flex items-center gap-3 text-muted-foreground">
-                        <Package className="w-4 h-4 text-secondary" />
-                        <span className="font-medium">Peso:</span>
-                        <span>{product.weight_grams}g</span>
-                      </div>
-                    )}
-                    {product.dimensions_cm && (
-                      <div className="flex items-center gap-3 text-muted-foreground">
-                        <Ruler className="w-4 h-4 text-secondary" />
-                        <span className="font-medium">Dimensões:</span>
-                        <span>
-                          {product.dimensions_cm.height}cm x{" "}
-                          {product.dimensions_cm.width}cm x{" "}
-                          {product.dimensions_cm.length}cm
-                        </span>
-                      </div>
-                    )}
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                      <svg
+                        width="18"
+                        height="18"
+                        fill="#d4af37"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
+                        <circle cx="12" cy="12" r="5" />
+                      </svg>
+                      <span
+                        className="text-base text-[#1a1a1a] font-sans"
+                        style={{ fontFamily: "Poppins, sans-serif" }}
+                      >
+                        <b>Peso:</b>{" "}
+                        {product.weight_grams !== null
+                          ? `${product.weight_grams}g`
+                          : "-"}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <svg
+                        width="18"
+                        height="18"
+                        fill="#d4af37"
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M3 17v2h6v-2H3zm0-4v2h12v-2H3zm0-4v2h18V9H3z" />
+                      </svg>
+                      <span
+                        className="text-base text-[#1a1a1a] font-sans"
+                        style={{ fontFamily: "Poppins, sans-serif" }}
+                      >
+                        <b>Dimensões:</b>{" "}
+                        {product.dimensions_cm !== null
+                          ? `${product.dimensions_cm.height}cm x ${product.dimensions_cm.width}cm x ${product.dimensions_cm.length}cm`
+                          : "-"}
+                      </span>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
             )}
-
-            {/* Garantia */}
-            <Card className="bg-gradient-to-r from-[#ffacc2]/10 to-[#ffacc2]/20 border-0 rounded-2xl">
-              <CardContent className="p-4">
-                <div
-                  className="flex items-center gap-3"
-                  style={{ color: "#ffacc2" }}
-                >
-                  <Shield className="w-5 h-5" style={{ color: "#ffacc2" }} />
-                  <div>
-                    <p
-                      className="font-medium text-sm"
-                      style={{ color: "#ffacc2" }}
-                    >
-                      Garantia de 30 dias
-                    </p>
-                    <p className="text-xs" style={{ color: "#ffacc2" }}>
-                      Devolução gratuita
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </div>

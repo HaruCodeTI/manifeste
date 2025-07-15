@@ -79,7 +79,7 @@ export default function ProductPage({ params }: ProductPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#ede3f6]">
       <Header
         onCartClick={() => setIsCartOpen(true)}
         onTrackOrderClick={() => {}}

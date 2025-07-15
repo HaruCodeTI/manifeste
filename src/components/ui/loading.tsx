@@ -20,11 +20,11 @@ export function LoadingGrid() {
       {Array.from({ length: 10 }).map((_, index) => (
         <div key={index} className="animate-pulse">
           {/* Skeleton da imagem */}
-          <div className="w-full aspect-[4/5] bg-neutral-200 mb-4"></div>
+          <div className="w-full aspect-[4/5] bg-[#e0d7f3] mb-4"></div>
           {/* Skeleton do título */}
-          <div className="h-4 bg-neutral-200 mb-2"></div>
+          <div className="h-4 bg-[#e0d7f3] mb-2"></div>
           {/* Skeleton do preço */}
-          <div className="h-3 bg-neutral-200 w-2/3"></div>
+          <div className="h-3 bg-[#e0d7f3] w-2/3"></div>
         </div>
       ))}
     </div>

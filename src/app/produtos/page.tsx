@@ -114,7 +114,7 @@ export default function ProdutosPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f4f0db]">
+    <div className="min-h-screen bg-[#ede3f6]">
       <Header
         onCartClick={() => setIsCartOpen(true)}
         onTrackOrderClick={() => (window.location.href = "/acompanhar")}
@@ -125,7 +125,10 @@ export default function ProdutosPage() {
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="mb-12">
           <div className="flex flex-wrap items-center justify-between gap-4 mb-8 px-1">
-            <div className="flex items-center gap-2 text-neutral-700 text-lg">
+            <div
+              className="flex items-center gap-2 text-primary text-lg font-sans"
+              style={{ fontFamily: "Poppins, sans-serif" }}
+            >
               <span className="font-medium">Ordenar por:</span>
               <select
                 value={sort}
@@ -133,8 +136,8 @@ export default function ProdutosPage() {
                   setSort(e.target.value as typeof sort);
                   setPage(1);
                 }}
-                className="bg-transparent border-none outline-none font-medium text-lg cursor-pointer"
-                style={{ minWidth: 120 }}
+                className="bg-transparent border-none outline-none font-medium text-lg cursor-pointer font-sans"
+                style={{ minWidth: 120, fontFamily: "Poppins, sans-serif" }}
               >
                 <option value="featured">Em destaque</option>
                 <option value="price_asc">Menor preço</option>
@@ -143,7 +146,10 @@ export default function ProdutosPage() {
                 <option value="za">Z-A</option>
               </select>
             </div>
-            <div className="flex items-center gap-2 text-neutral-700 text-lg">
+            <div
+              className="flex items-center gap-2 text-primary text-lg font-sans"
+              style={{ fontFamily: "Poppins, sans-serif" }}
+            >
               <span className="font-medium">Exibir:</span>
               <select
                 value={itemsPerPage}
@@ -151,8 +157,8 @@ export default function ProdutosPage() {
                   setItemsPerPage(Number(e.target.value));
                   setPage(1);
                 }}
-                className="bg-transparent border-none outline-none font-medium text-lg cursor-pointer"
-                style={{ minWidth: 60 }}
+                className="bg-transparent border-none outline-none font-medium text-lg cursor-pointer font-sans"
+                style={{ minWidth: 60, fontFamily: "Poppins, sans-serif" }}
               >
                 {[4, 8, 12, 20, 40].map((n) => (
                   <option key={n} value={n}>
@@ -160,7 +166,10 @@ export default function ProdutosPage() {
                   </option>
                 ))}
               </select>
-              <span className="ml-4 text-neutral-700 text-lg font-medium">
+              <span
+                className="ml-4 text-primary text-lg font-medium font-sans"
+                style={{ fontFamily: "Poppins, sans-serif" }}
+              >
                 {products.length} produto{products.length !== 1 ? "s" : ""}
               </span>
             </div>
@@ -169,7 +178,10 @@ export default function ProdutosPage() {
             <LoadingGrid />
           ) : products.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24">
-              <p className="text-muted-foreground text-lg">
+              <p
+                className="text-muted-foreground text-lg font-sans"
+                style={{ fontFamily: "Poppins, sans-serif" }}
+              >
                 Nenhum produto disponível no momento.
               </p>
             </div>
@@ -179,13 +191,25 @@ export default function ProdutosPage() {
                 <Link
                   key={product.id}
                   href={`/produto/${product.id}`}
-                  className="group block bg-white rounded-none overflow-hidden transition-transform hover:-translate-y-1"
-                  style={{ boxShadow: "none", border: "none" }}
+                  className="group block bg-white rounded-[0.75rem] overflow-hidden transition-transform hover:-translate-y-1 shadow-md border border-[#d4af37]/80 hover:shadow-xl hover:border-[#d4af37] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#d4af37]/40"
+                  style={{
+                    boxShadow: "0 2px 12px 0 #d4af3720",
+                    border: "1.5px solid #d4af37",
+                  }}
                   onClick={() => handleProductClick(product, idx)}
                 >
-                  <div className="relative w-full aspect-[4/5] bg-white overflow-hidden flex items-center justify-center">
+                  <div
+                    className="relative w-full aspect-[4/5] bg-white overflow-hidden flex items-center justify-center"
+                    style={{ borderBottom: "1.5px solid #d4af37" }}
+                  >
                     {product.is_offer && (
-                      <span className="absolute top-2 left-2 z-10 bg-black text-white text-[11px] font-medium rounded-full px-3 py-0.5 tracking-wide">
+                      <span
+                        className="absolute top-2 left-2 z-10 bg-[#6d348b] text-white text-[11px] font-medium rounded-full px-3 py-0.5 tracking-wide font-sans shadow-md"
+                        style={{
+                          fontFamily: "Poppins, sans-serif",
+                          boxShadow: "0 1px 4px 0 #d4af3720",
+                        }}
+                      >
                         Oferta
                       </span>
                     )}
@@ -195,15 +219,22 @@ export default function ProdutosPage() {
                         alt={product.name}
                         width={400}
                         height={500}
-                        className="object-cover w-full h-full transition-opacity duration-300 group-hover:opacity-0"
+                        className="object-cover w-full h-full transition-opacity duration-300 group-hover:opacity-0 rounded-[0.75rem]"
                         loading="lazy"
                         style={{ objectFit: "cover" }}
                       />
                     ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center bg-neutral-900 text-white gap-2">
-                        <span style={{ fontSize: 44, lineHeight: 1 }}>🤫</span>
-                        <span className="text-xs font-medium text-white/80">
-                          Surpresa! Imagem indisponível 😏
+                      <div
+                        className="w-full h-full flex flex-col items-center justify-center bg-white text-[#6d348b] gap-2 rounded-[0.75rem] border-none"
+                        style={{ boxShadow: "none" }}
+                      >
+                        <span style={{ fontSize: 44, lineHeight: 1 }}>🤍</span>
+                        <span
+                          className="text-xs font-medium font-sans text-[#6d348b] text-center px-2"
+                          style={{ fontFamily: "Poppins, sans-serif" }}
+                        >
+                          Em breve a foto do produto com todo o cuidado que você
+                          merece!
                         </span>
                       </div>
                     )}
@@ -213,18 +244,19 @@ export default function ProdutosPage() {
                         alt={product.name}
                         width={400}
                         height={500}
-                        className="object-cover w-full h-full absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                        className="object-cover w-full h-full absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[0.75rem]"
                         loading="lazy"
                         style={{ objectFit: "cover" }}
                       />
                     )}
                   </div>
-                  <div className="pt-4 pb-4 px-1 text-center">
+                  <div className="pt-4 pb-6 px-1 text-center">
                     <h3
-                      className="text-lg mb-1 text-black leading-tight tracking-tight"
+                      className="text-lg mb-1 leading-tight tracking-tight font-serif"
                       style={{
-                        fontFamily: "var(--font-heading-family)",
-                        fontWeight: "var(--font-body-weight-bold)",
+                        fontFamily: "Playfair Display, serif",
+                        fontWeight: 700,
+                        color: "#1a1a1a",
                       }}
                     >
                       {product.name}
@@ -232,7 +264,10 @@ export default function ProdutosPage() {
                     <div className="flex flex-col items-center gap-0.5">
                       {typeof product.original_price === "number" &&
                       product.original_price > product.price ? (
-                        <span className="text-sm text-muted-foreground line-through">
+                        <span
+                          className="text-sm text-muted-foreground line-through font-sans"
+                          style={{ fontFamily: "Poppins, sans-serif" }}
+                        >
                           {product.original_price.toLocaleString("pt-BR", {
                             style: "currency",
                             currency: "BRL",
@@ -240,27 +275,26 @@ export default function ProdutosPage() {
                         </span>
                       ) : null}
                       <span
-                        className="flex items-end justify-center gap-1"
+                        className="flex items-end justify-center gap-1 font-sans"
                         style={{
-                          fontFamily: "var(--font-body-family)",
-                          fontWeight: "var(--font-body-weight)",
+                          fontFamily: "Poppins, sans-serif",
+                          fontWeight: 700,
                         }}
                       >
-                        <span className="text-base text-black">R$</span>
                         <span
-                          className="text-xl text-black"
-                          style={{ fontWeight: "var(--font-body-weight)" }}
+                          className="text-base align-bottom"
+                          style={{ color: "#1a1a1a", fontWeight: 600 }}
                         >
-                          {product.price
-                            .toLocaleString("pt-BR", {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            })
-                            .replace(/^\d{1,3}(?=(\d{3})+(?!\d))/g, "$&.")
-                            .split(",")[0]
-                            .replace("R$", "")
-                            .trim()}
-                          ,{product.price.toFixed(2).split(".")[1]}
+                          R$
+                        </span>
+                        <span
+                          className="text-2xl align-bottom"
+                          style={{ color: "#6d348b", fontWeight: 700 }}
+                        >
+                          {product.price.toLocaleString("pt-BR", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
                         </span>
                       </span>
                     </div>

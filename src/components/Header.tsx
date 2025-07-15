@@ -56,8 +56,8 @@ export function Header({
   const itemCount = cart.reduce((total, item) => total + item.quantity, 0);
 
   return (
-    <header className="w-full bg-black text-white border-b border-border">
-      <div className="w-full text-center text-xs py-1.5 bg-black/90 border-b border-border font-medium tracking-wide">
+    <header className="w-full bg-muted text-foreground border-b-2 border-accent font-sans shadow-sm">
+      <div className="w-full text-center text-xs py-1.5 bg-muted/90 border-b border-accent font-medium tracking-wide text-primary">
         Parcele em até 6x sem juros!
       </div>
       <div className="flex flex-col md:flex-row md:items-center md:justify-between max-w-7xl mx-auto w-full px-4 sm:px-8 py-4 gap-2 md:gap-0">
@@ -65,6 +65,7 @@ export function Header({
           <Link
             href="/"
             className="select-none flex items-center justify-center"
+            style={{ fontWeight: 700, letterSpacing: "0.04em", fontSize: 32 }}
           >
             <Image
               src="/logo.png"
@@ -80,13 +81,13 @@ export function Header({
         <nav className="flex justify-center items-center gap-4 md:gap-8 text-base font-medium font-sans relative w-full">
           <Link
             href="/"
-            className="hover:text-foreground/80 transition text-foreground/60"
+            className="transition-colors duration-200 text-primary px-2 py-1 rounded-md font-sans hover:text-secondary focus:text-secondary"
           >
             INÍCIO
           </Link>
           <Link
             href="/produtos"
-            className="hover:text-foreground/80 transition text-foreground/60"
+            className="transition-colors duration-200 text-primary px-2 py-1 rounded-md font-sans hover:text-secondary focus:text-secondary"
           >
             PRODUTOS
           </Link>
@@ -111,13 +112,17 @@ export function Header({
                 </svg>
               </button>
               {dropdownOpen && (
-                <div className="absolute left-0 mt-2 w-48 bg-black border border-neutral-700 rounded shadow-lg z-50 flex flex-col py-2 animate-fadein">
+                <div
+                  className="absolute left-0 mt-2 min-w-[180px] max-w-[90vw] bg-muted rounded-[0.75rem] shadow-lg z-50 flex flex-col py-2 animate-fadein"
+                  style={{ border: "none" }}
+                >
                   <button
                     onClick={() => {
                       onCategoryChange("");
                       setDropdownOpen(false);
                     }}
-                    className={`w-full text-left px-4 py-2 hover:bg-neutral-900 transition ${selectedCategory === "" ? "text-white font-bold" : "text-foreground/60"}`}
+                    className={`w-full text-left px-4 py-2 rounded-[0.75rem] font-sans font-medium text-primary text-[1rem] transition-colors duration-200 ${selectedCategory === "" ? "bg-[#ede3f6] text-[#8e44ad]" : "bg-transparent text-primary"} hover:bg-[#ede3f6] hover:text-[#8e44ad] focus:bg-[#ede3f6] focus:text-[#8e44ad]`}
+                    style={{ border: "none" }}
                   >
                     TODOS
                   </button>
@@ -128,7 +133,8 @@ export function Header({
                         onCategoryChange(category.id);
                         setDropdownOpen(false);
                       }}
-                      className={`w-full text-left px-4 py-2 hover:bg-neutral-900 transition ${selectedCategory === category.id ? "text-white font-bold" : "text-foreground/60"}`}
+                      className={`w-full text-left px-4 py-2 rounded-[0.75rem] font-sans font-medium text-primary text-[1rem] transition-colors duration-200 ${selectedCategory === category.id ? "bg-[#ede3f6] text-[#8e44ad]" : "bg-transparent text-primary"} hover:bg-[#ede3f6] hover:text-[#8e44ad] focus:bg-[#ede3f6] focus:text-[#8e44ad]`}
+                      style={{ border: "none" }}
                     >
                       {category.name}
                     </button>
@@ -143,14 +149,18 @@ export function Header({
             variant="secondary"
             size="icon"
             onClick={onCartClick}
-            className="relative ml-2 px-2 py-1.5 rounded-full font-medium text-white bg-neutral-900 border border-neutral-700 hover:bg-neutral-800 transition text-sm flex-1 min-w-0 max-w-[50%] md:max-w-none md:flex-initial md:block"
-            style={{ minWidth: 0 }}
+            className="relative ml-2 px-2 py-1.5 rounded-full font-medium font-sans bg-secondary text-white border-2 border-accent shadow-md transition-colors duration-200 hover:bg-[#e65a4d] focus:bg-[#e65a4d]"
+            style={{
+              minWidth: 0,
+              fontFamily: "Poppins, sans-serif",
+              boxShadow: "0 2px 8px 0 #d4af3720",
+            }}
             onMouseEnter={() => setIsCartHovered(true)}
             onMouseLeave={() => setIsCartHovered(false)}
             aria-label="Abrir carrinho"
           >
             <ShoppingCart
-              className={`w-5 h-5 transition-transform duration-200 text-foreground ${
+              className={`w-5 h-5 transition-transform duration-200 text-white ${
                 isCartHovered ? "scale-110" : "scale-100"
               }`}
             />
@@ -161,8 +171,8 @@ export function Header({
                   position: "absolute",
                   top: -8,
                   right: -8,
-                  background: "#ffacc2",
-                  color: "#000",
+                  background: "#d4af37", // dourado
+                  color: "#fff",
                   fontSize: "0.95rem",
                   fontWeight: 700,
                   borderRadius: "9999px",
@@ -171,9 +181,9 @@ export function Header({
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  boxShadow: "0 1px 4px 0 #0002",
+                  boxShadow: "0 1px 4px 0 #d4af3720",
                   zIndex: 10,
-                  border: "2px solid #222",
+                  border: "2px solid #fff",
                   lineHeight: 1,
                 }}
               >
@@ -183,9 +193,13 @@ export function Header({
           </Button>
           <Button
             variant="secondary"
-            className="ml-2 px-2 py-1 rounded-full font-medium text-white bg-neutral-900 border border-neutral-700 hover:bg-neutral-800 transition text-xs flex-1 min-w-0 max-w-[50%] md:max-w-none md:flex-initial md:block md:px-4 md:py-1.5 md:text-sm"
+            className="ml-2 px-2 py-1 rounded-full font-medium font-sans bg-primary text-white border-2 border-accent shadow-md transition-colors duration-200 hover:bg-[#6d348b] focus:bg-[#6d348b] md:px-4 md:py-1.5 md:text-sm"
             onClick={onTrackOrderClick}
-            style={{ minWidth: 0 }}
+            style={{
+              minWidth: 0,
+              fontFamily: "Poppins, sans-serif",
+              boxShadow: "0 2px 8px 0 #d4af3720",
+            }}
           >
             <span className="hidden xs:inline md:inline">
               Acompanhar Pedido
@@ -195,11 +209,12 @@ export function Header({
         </div>
       </div>
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-50 bg-black/90 flex flex-col">
+        <div className="fixed inset-0 z-50 bg-[#ede3f6]/95 flex flex-col">
           <div className="flex justify-end p-4">
             <button
               onClick={() => setMobileMenuOpen(false)}
               aria-label="Fechar menu"
+              className="rounded-full p-2 text-primary hover:bg-[#ede3f6] hover:text-[#8e44ad] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
             >
               <svg
                 width="24"
@@ -218,14 +233,14 @@ export function Header({
             <Link
               href="/"
               onClick={() => setMobileMenuOpen(false)}
-              className="hover:text-foreground/80 transition text-foreground/60"
+              className="px-6 py-3 rounded-[0.75rem] font-sans font-medium text-primary bg-transparent hover:bg-[#ede3f6] hover:text-[#8e44ad] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 w-[90vw] max-w-xs text-center"
             >
               INÍCIO
             </Link>
             <Link
               href="/produtos"
               onClick={() => setMobileMenuOpen(false)}
-              className="hover:text-foreground/80 transition text-foreground/60"
+              className="px-6 py-3 rounded-[0.75rem] font-sans font-medium text-primary bg-transparent hover:bg-[#ede3f6] hover:text-[#8e44ad] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 w-[90vw] max-w-xs text-center"
             >
               PRODUTOS
             </Link>
@@ -233,7 +248,7 @@ export function Header({
               <div className="w-full flex flex-col items-center">
                 <button
                   onClick={() => setDropdownOpen((v) => !v)}
-                  className="flex items-center gap-1 px-3 py-2 rounded hover:bg-neutral-800 transition select-none w-full justify-center"
+                  className="flex items-center gap-1 px-6 py-3 rounded-[0.75rem] font-sans font-medium text-primary bg-transparent hover:bg-[#ede3f6] hover:text-[#8e44ad] transition-colors duration-200 select-none w-[90vw] max-w-xs justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
                   aria-haspopup="true"
                   aria-expanded={dropdownOpen}
                 >
@@ -250,14 +265,17 @@ export function Header({
                   </svg>
                 </button>
                 {dropdownOpen && (
-                  <div className="w-full bg-black border border-neutral-700 rounded shadow-lg z-50 flex flex-col py-2 animate-fadein mt-2">
+                  <div
+                    className="w-[90vw] max-w-xs bg-[#ede3f6] rounded-[0.75rem] shadow-lg z-50 flex flex-col py-2 animate-fadein mt-2"
+                    style={{ border: "none" }}
+                  >
                     <button
                       onClick={() => {
                         onCategoryChange("");
                         setDropdownOpen(false);
                         setMobileMenuOpen(false);
                       }}
-                      className={`w-full text-left px-4 py-2 hover:bg-neutral-900 transition ${selectedCategory === "" ? "text-white font-bold" : "text-foreground/60"}`}
+                      className={`w-full text-left px-4 py-3 rounded-[0.75rem] font-sans font-medium text-primary text-[1rem] transition-colors duration-200 ${selectedCategory === "" ? "bg-[#ede3f6] text-[#8e44ad]" : "bg-transparent text-primary"} hover:bg-[#ede3f6] hover:text-[#8e44ad] focus:bg-[#ede3f6] focus:text-[#8e44ad] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40`}
                     >
                       TODOS
                     </button>
@@ -269,7 +287,7 @@ export function Header({
                           setDropdownOpen(false);
                           setMobileMenuOpen(false);
                         }}
-                        className={`w-full text-left px-4 py-2 hover:bg-neutral-900 transition ${selectedCategory === category.id ? "text-white font-bold" : "text-foreground/60"}`}
+                        className={`w-full text-left px-4 py-3 rounded-[0.75rem] font-sans font-medium text-primary text-[1rem] transition-colors duration-200 ${selectedCategory === category.id ? "bg-[#ede3f6] text-[#8e44ad]" : "bg-transparent text-primary"} hover:bg-[#ede3f6] hover:text-[#8e44ad] focus:bg-[#ede3f6] focus:text-[#8e44ad] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40`}
                       >
                         {category.name}
                       </button>
