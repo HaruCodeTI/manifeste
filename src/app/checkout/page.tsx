@@ -138,11 +138,23 @@ export default function CheckoutPage() {
         <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           <div className="text-center">
             <Package className="w-16 h-16 mx-auto mb-4 text-primary" />
-            <h1 className="text-2xl font-bold mb-4" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>Carrinho Vazio</h1>
-            <p className="text-muted-foreground mb-6" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
+            <h1
+              className="text-2xl font-bold mb-4"
+              style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
+            >
+              Carrinho Vazio
+            </h1>
+            <p
+              className="text-muted-foreground mb-6"
+              style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
+            >
               Adicione produtos ao carrinho para continuar com a compra.
             </p>
-            <Button asChild className="text-primary hover:text-secondary focus:text-secondary font-sans font-medium" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
+            <Button
+              asChild
+              className="text-primary hover:text-secondary focus:text-secondary font-sans font-medium"
+              style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
+            >
               <Link href="/produtos">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Voltar aos Produtos
@@ -155,7 +167,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#e1e1e1]">
+    <div className="min-h-screen bg-white">
       <Header
         onCartClick={() => {}}
         onTrackOrderClick={() => {}}
@@ -165,7 +177,13 @@ export default function CheckoutPage() {
       />
       <main className="max-w-6xl mx-auto px-2 sm:px-6 lg:px-8 py-8 sm:py-12">
         <div className="mb-8">
-          <Button asChild variant="ghost" size="sm" className="text-primary hover:text-secondary focus:text-secondary font-sans font-medium" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
+          <Button
+            asChild
+            variant="ghost"
+            size="sm"
+            className="text-[#b689e0] hover:text-[#6d348b] focus:text-[#6d348b] font-sans font-medium"
+            style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
+          >
             <Link href="/produtos">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Voltar aos Produtos
@@ -176,25 +194,44 @@ export default function CheckoutPage() {
           {/* Formulário de Checkout */}
           <div className="space-y-8">
             {/* Informações do Cliente */}
-            <Card className="bg-white border border-primary/60 rounded-2xl shadow-md" style={{ boxShadow: '0 2px 8px 0 #b689e01a' }}>
+            <Card
+              className="bg-white border border-[#b689e0]/40 rounded-none shadow-md"
+              style={{ boxShadow: "0 2px 8px 0 #b689e01a" }}
+            >
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-black font-bold text-2xl font-sans" style={{ fontFamily: 'Montserrat, Arial, sans-serif', fontWeight: 700 }}>
-                  <MapPin className="w-5 h-5 text-primary" />
+                <CardTitle
+                  className="flex items-center gap-2 text-black font-bold text-2xl font-sans"
+                  style={{
+                    fontFamily: "Montserrat, Arial, sans-serif",
+                    fontWeight: 700,
+                  }}
+                >
+                  <MapPin className="w-5 h-5 text-[#b689e0]" />
                   Informações Pessoais
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="name" className="text-foreground font-medium font-sans" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
+                    <Label
+                      htmlFor="name"
+                      className="text-black font-medium font-sans"
+                      style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
+                    >
                       Nome Completo
                     </Label>
-                    <Input id="name" name="name" className="bg-white border border-primary/60 rounded-lg px-4 py-2 font-sans focus:border-primary focus:ring-2 focus:ring-primary/30 transition" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }} />
+                    <Input
+                      id="name"
+                      name="name"
+                      className="bg-white border border-[#b689e0]/40 rounded-none px-4 py-2 font-sans focus:border-[#b689e0] focus:ring-2 focus:ring-[#b689e0]/30 transition"
+                      style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
+                    />
                   </div>
                   <div>
                     <Label
                       htmlFor="email"
-                      className="text-foreground font-medium"
+                      className="text-black font-medium font-sans"
+                      style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
                     >
                       E-mail
                     </Label>
@@ -209,15 +246,16 @@ export default function CheckoutPage() {
                         }))
                       }
                       placeholder="seu@email.com"
-                      className="border border-[#d4af37]/60 rounded-[0.75rem] bg-white text-[#1a1a1a] font-sans focus:ring-2 focus:ring-[#6d348b]/40 focus:border-[#6d348b] placeholder:text-[#bfaecb] placeholder:font-normal"
-                      style={{ fontFamily: "Poppins, sans-serif" }}
+                      className="bg-white border border-[#b689e0]/40 rounded-none px-4 py-2 font-sans focus:border-[#b689e0] focus:ring-2 focus:ring-[#b689e0]/30 placeholder:text-[#b689e0]/40 placeholder:font-normal"
+                      style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
                     />
                   </div>
                 </div>
                 <div>
                   <Label
                     htmlFor="phone"
-                    className="text-foreground font-medium"
+                    className="text-black font-medium font-sans"
+                    style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
                   >
                     Telefone
                   </Label>
@@ -231,8 +269,8 @@ export default function CheckoutPage() {
                       }))
                     }
                     placeholder="(11) 99999-9999"
-                    className="border border-[#d4af37]/60 rounded-[0.75rem] bg-white text-[#1a1a1a] font-sans focus:ring-2 focus:ring-[#6d348b]/40 focus:border-[#6d348b] placeholder:text-[#bfaecb] placeholder:font-normal"
-                    style={{ fontFamily: "Poppins, sans-serif" }}
+                    className="bg-white border border-[#b689e0]/40 rounded-none px-4 py-2 font-sans focus:border-[#b689e0] focus:ring-2 focus:ring-[#b689e0]/30 placeholder:text-[#b689e0]/40 placeholder:font-normal"
+                    style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
                   />
                 </div>
               </CardContent>
@@ -240,13 +278,18 @@ export default function CheckoutPage() {
 
             {/* Método de Entrega */}
             <Card
-              className="bg-white border border-[#d4af37]/60 rounded-2xl shadow-md"
-              style={{ boxShadow: "0 2px 8px 0 #d4af3720" }}
+              className="bg-white border border-[#b689e0]/40 rounded-none shadow-md"
+              style={{ boxShadow: "0 2px 8px 0 #b689e01a" }}
             >
               <CardHeader>
                 <CardTitle
-                  className="flex items-center gap-2 text-black font-bold text-2xl font-sans" style={{ fontFamily: 'Montserrat, Arial, sans-serif', fontWeight: 700 }}>
-                  <Truck className="w-5 h-5 text-primary" />
+                  className="flex items-center gap-2 text-black font-bold text-2xl font-sans"
+                  style={{
+                    fontFamily: "Montserrat, Arial, sans-serif",
+                    fontWeight: 700,
+                  }}
+                >
+                  <Truck className="w-5 h-5 text-[#b689e0]" />
                   Entrega ou Retirada
                 </CardTitle>
               </CardHeader>
@@ -285,13 +328,18 @@ export default function CheckoutPage() {
             {/* Endereço de Entrega */}
             {shippingMethod === "delivery" && (
               <Card
-                className="bg-white border border-[#d4af37]/60 rounded-2xl shadow-md"
-                style={{ boxShadow: "0 2px 8px 0 #d4af3720" }}
+                className="bg-white border border-[#b689e0]/40 rounded-none shadow-md"
+                style={{ boxShadow: "0 2px 8px 0 #b689e01a" }}
               >
                 <CardHeader>
                   <CardTitle
-                    className="flex items-center gap-2 text-black font-bold text-2xl font-sans" style={{ fontFamily: 'Montserrat, Arial, sans-serif', fontWeight: 700 }}>
-                    <Package className="w-5 h-5 text-primary" />
+                    className="flex items-center gap-2 text-black font-bold text-2xl font-sans"
+                    style={{
+                      fontFamily: "Montserrat, Arial, sans-serif",
+                      fontWeight: 700,
+                    }}
+                  >
+                    <Package className="w-5 h-5 text-[#b689e0]" />
                     Endereço de Entrega
                   </CardTitle>
                 </CardHeader>
@@ -326,7 +374,7 @@ export default function CheckoutPage() {
                           }}
                           placeholder="00000-000"
                           maxLength={9}
-                          className="border border-[#d4af37]/60 rounded-[0.75rem] bg-white text-[#1a1a1a] font-sans focus:ring-2 focus:ring-[#6d348b]/40 focus:border-[#6d348b] placeholder:text-[#bfaecb] placeholder:font-normal"
+                          className="bg-white border border-[#b689e0]/40 rounded-none px-4 py-2 font-sans focus:border-[#b689e0] focus:ring-2 focus:ring-[#b689e0]/30 placeholder:text-[#b689e0]/40 placeholder:font-normal"
                           style={{ fontFamily: "Poppins, sans-serif" }}
                         />
                         <Button
@@ -348,7 +396,7 @@ export default function CheckoutPage() {
                           setShippingInfo((prev) => ({ ...prev, state: value }))
                         }
                         required
-                        className="border border-[#d4af37]/60 rounded-[0.75rem] bg-white text-[#1a1a1a] font-sans focus:ring-2 focus:ring-[#6d348b]/40 focus:border-[#6d348b]"
+                        className="bg-white border border-[#b689e0]/40 rounded-none px-4 py-2 font-sans focus:border-[#b689e0] focus:ring-2 focus:ring-[#b689e0]/30"
                         style={{ fontFamily: "Poppins, sans-serif" }}
                       >
                         <SelectValue placeholder="Selecione o estado" />
@@ -368,7 +416,7 @@ export default function CheckoutPage() {
                         }))
                       }
                       placeholder="Rua, Avenida, etc."
-                      className="border border-[#d4af37]/60 rounded-[0.75rem] bg-white text-[#1a1a1a] font-sans focus:ring-2 focus:ring-[#6d348b]/40 focus:border-[#6d348b] placeholder:text-[#bfaecb] placeholder:font-normal"
+                      className="bg-white border border-[#b689e0]/40 rounded-none px-4 py-2 font-sans focus:border-[#b689e0] focus:ring-2 focus:ring-[#b689e0]/30 placeholder:text-[#b689e0]/40 placeholder:font-normal"
                       style={{ fontFamily: "Poppins, sans-serif" }}
                     />
                   </div>
@@ -385,7 +433,7 @@ export default function CheckoutPage() {
                           }))
                         }
                         placeholder="123"
-                        className="border border-[#d4af37]/60 rounded-[0.75rem] bg-white text-[#1a1a1a] font-sans focus:ring-2 focus:ring-[#6d348b]/40 focus:border-[#6d348b] placeholder:text-[#bfaecb] placeholder:font-normal"
+                        className="bg-white border border-[#b689e0]/40 rounded-none px-4 py-2 font-sans focus:border-[#b689e0] focus:ring-2 focus:ring-[#b689e0]/30 placeholder:text-[#b689e0]/40 placeholder:font-normal"
                         style={{ fontFamily: "Poppins, sans-serif" }}
                       />
                     </div>
@@ -401,7 +449,7 @@ export default function CheckoutPage() {
                           }))
                         }
                         placeholder="Apartamento, bloco, etc."
-                        className="border border-[#d4af37]/60 rounded-[0.75rem] bg-white text-[#1a1a1a] font-sans focus:ring-2 focus:ring-[#6d348b]/40 focus:border-[#6d348b] placeholder:text-[#bfaecb] placeholder:font-normal"
+                        className="bg-white border border-[#b689e0]/40 rounded-none px-4 py-2 font-sans focus:border-[#b689e0] focus:ring-2 focus:ring-[#b689e0]/30 placeholder:text-[#b689e0]/40 placeholder:font-normal"
                         style={{ fontFamily: "Poppins, sans-serif" }}
                       />
                     </div>
@@ -418,7 +466,7 @@ export default function CheckoutPage() {
                         }))
                       }
                       placeholder="Nome do bairro"
-                      className="border border-[#d4af37]/60 rounded-[0.75rem] bg-white text-[#1a1a1a] font-sans focus:ring-2 focus:ring-[#6d348b]/40 focus:border-[#6d348b] placeholder:text-[#bfaecb] placeholder:font-normal"
+                      className="bg-white border border-[#b689e0]/40 rounded-none px-4 py-2 font-sans focus:border-[#b689e0] focus:ring-2 focus:ring-[#b689e0]/30 placeholder:text-[#b689e0]/40 placeholder:font-normal"
                       style={{ fontFamily: "Poppins, sans-serif" }}
                     />
                   </div>
@@ -434,7 +482,7 @@ export default function CheckoutPage() {
                         }))
                       }
                       placeholder="Nome da cidade"
-                      className="border border-[#d4af37]/60 rounded-[0.75rem] bg-white text-[#1a1a1a] font-sans focus:ring-2 focus:ring-[#6d348b]/40 focus:border-[#6d348b] placeholder:text-[#bfaecb] placeholder:font-normal"
+                      className="bg-white border border-[#b689e0]/40 rounded-none px-4 py-2 font-sans focus:border-[#b689e0] focus:ring-2 focus:ring-[#b689e0]/30 placeholder:text-[#b689e0]/40 placeholder:font-normal"
                       style={{ fontFamily: "Poppins, sans-serif" }}
                     />
                   </div>
@@ -444,12 +492,18 @@ export default function CheckoutPage() {
 
             {/* Método de Pagamento */}
             <Card
-              className="bg-white border border-[#d4af37]/60 rounded-2xl shadow-md"
-              style={{ boxShadow: "0 2px 8px 0 #d4af3720" }}
+              className="bg-white border border-[#b689e0]/40 rounded-none shadow-md"
+              style={{ boxShadow: "0 2px 8px 0 #b689e01a" }}
             >
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-black font-bold text-2xl font-sans" style={{ fontFamily: 'Montserrat, Arial, sans-serif', fontWeight: 700 }}>
-                  <CreditCard className="w-5 h-5 text-primary" />
+                <CardTitle
+                  className="flex items-center gap-2 text-black font-bold text-2xl font-sans"
+                  style={{
+                    fontFamily: "Montserrat, Arial, sans-serif",
+                    fontWeight: 700,
+                  }}
+                >
+                  <CreditCard className="w-5 h-5 text-[#b689e0]" />
                   Método de Pagamento
                 </CardTitle>
               </CardHeader>
@@ -502,12 +556,17 @@ export default function CheckoutPage() {
           {/* Resumo do Pedido */}
           <div className="space-y-6">
             <Card
-              className="bg-white border border-[#d4af37]/60 rounded-2xl shadow-md"
-              style={{ boxShadow: "0 2px 8px 0 #d4af3720" }}
+              className="bg-white border border-[#b689e0]/40 rounded-none shadow-md"
+              style={{ boxShadow: "0 2px 8px 0 #b689e01a" }}
             >
               <CardHeader>
                 <CardTitle
-                  className="text-black font-bold text-2xl font-sans" style={{ fontFamily: 'Montserrat, Arial, sans-serif', fontWeight: 700 }}>
+                  className="text-black font-bold text-2xl font-sans"
+                  style={{
+                    fontFamily: "Montserrat, Arial, sans-serif",
+                    fontWeight: 700,
+                  }}
+                >
                   Resumo do Pedido
                 </CardTitle>
               </CardHeader>
@@ -545,8 +604,8 @@ export default function CheckoutPage() {
                       {shippingMethod === "pickup"
                         ? "Grátis"
                         : shippingCost > 0
-                          ? `R$ ${shippingCost.toFixed(2).replace(".", ",")}`
-                          : "Calculando..."}
+                        ? `R$ ${shippingCost.toFixed(2).replace(".", ",")}`
+                        : "Calculando..."}
                     </span>
                   </div>
                   <div className="flex justify-between text-lg font-bold text-foreground border-t pt-2">

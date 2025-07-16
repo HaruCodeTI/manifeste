@@ -122,10 +122,16 @@ export default function ProdutosPage() {
         selectedCategory={selectedCategory}
         onCategoryChange={handleCategoryChange}
       />
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 font-sans" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
+      <main
+        className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 font-sans"
+        style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
+      >
         <div className="mb-12">
           <div className="flex flex-wrap items-center justify-between gap-4 mb-8 px-1">
-            <div className="flex items-center gap-2 text-primary text-lg font-sans" style={{ fontFamily: "Montserrat, Arial, sans-serif" }}>
+            <div
+              className="flex items-center gap-2 text-primary text-lg font-sans"
+              style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
+            >
               <span className="font-medium">Ordenar por:</span>
               <select
                 value={sort}
@@ -134,7 +140,10 @@ export default function ProdutosPage() {
                   setPage(1);
                 }}
                 className="bg-white border border-primary rounded-lg outline-none font-medium text-base px-4 py-2 min-h-[40px] cursor-pointer font-sans focus:ring-2 focus:ring-secondary transition shadow-sm"
-                style={{ minWidth: 120, fontFamily: "Montserrat, Arial, sans-serif" }}
+                style={{
+                  minWidth: 120,
+                  fontFamily: "Montserrat, Arial, sans-serif",
+                }}
               >
                 <option value="featured">Em destaque</option>
                 <option value="price_asc">Menor preço</option>
@@ -143,7 +152,10 @@ export default function ProdutosPage() {
                 <option value="za">Z-A</option>
               </select>
             </div>
-            <div className="flex items-center gap-2 text-primary text-lg font-sans" style={{ fontFamily: "Montserrat, Arial, sans-serif" }}>
+            <div
+              className="flex items-center gap-2 text-primary text-lg font-sans"
+              style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
+            >
               <span className="font-medium">Exibir:</span>
               <select
                 value={itemsPerPage}
@@ -152,7 +164,10 @@ export default function ProdutosPage() {
                   setPage(1);
                 }}
                 className="bg-white border border-primary rounded-lg outline-none font-medium text-base px-4 py-2 min-h-[40px] cursor-pointer font-sans focus:ring-2 focus:ring-secondary transition shadow-sm"
-                style={{ minWidth: 60, fontFamily: "Montserrat, Arial, sans-serif" }}
+                style={{
+                  minWidth: 60,
+                  fontFamily: "Montserrat, Arial, sans-serif",
+                }}
               >
                 {[4, 8, 12, 20, 40].map((n) => (
                   <option key={n} value={n}>
@@ -160,7 +175,10 @@ export default function ProdutosPage() {
                   </option>
                 ))}
               </select>
-              <span className="ml-4 text-primary text-lg font-medium font-sans" style={{ fontFamily: "Montserrat, Arial, sans-serif" }}>
+              <span
+                className="ml-4 text-primary text-lg font-medium font-sans"
+                style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
+              >
                 {products.length} produto{products.length !== 1 ? "s" : ""}
               </span>
             </div>
@@ -178,71 +196,146 @@ export default function ProdutosPage() {
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-7">
-              {products.map((product, idx) => (
-                <Link
-                  key={product.id}
-                  href={`/produto/${product.id}`}
-                  className="group block bg-white rounded-2xl overflow-hidden transition-transform hover:-translate-y-1 shadow-md border border-primary/60 hover:shadow-xl hover:border-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary p-4 flex flex-col min-h-[340px]"
-                  style={{
-                    boxShadow: "0 2px 12px 0 #b689e01a",
-                    border: "1px solid #b689e099",
-                  }}
-                  onClick={() => handleProductClick(product, idx)}
-                >
-                  {/* Imagem e placeholder */}
-                  <div className="w-full aspect-[4/5] flex items-center justify-center mb-4">
-                    {product.image_urls && product.image_urls.length > 0 ? (
-                      <Image
-                        src={product.image_urls[0]}
-                        alt={product.name}
-                        width={400}
-                        height={500}
-                        className="object-cover w-full h-full transition-opacity duration-300 group-hover:opacity-0 rounded-[0.75rem]"
-                        loading="lazy"
-                        style={{ objectFit: "cover" }}
-                      />
-                    ) : (
-                      <div
-                        className="w-full h-full flex flex-col items-center justify-center bg-white text-[#6d348b] gap-2 rounded-[0.75rem] border-none"
-                        style={{ boxShadow: "none" }}
-                      >
-                        <span style={{ fontSize: 44, lineHeight: 1 }}>🤍</span>
-                        <span
-                          className="text-xs font-medium font-sans text-[#6d348b] text-center px-2"
-                          style={{ fontFamily: "Poppins, sans-serif" }}
-                        >
-                          Em breve a foto do produto com todo o cuidado que você
-                          merece!
+              {products.map((product, idx) => {
+                const hasDiscount =
+                  product.original_price &&
+                  product.original_price > product.price;
+                const discountPercent =
+                  hasDiscount && product.original_price
+                    ? Math.round(
+                        100 - (product.price / product.original_price) * 100
+                      )
+                    : 0;
+                const installment = 6;
+                const installmentValue = (
+                  product.price / installment
+                ).toLocaleString("pt-BR", { minimumFractionDigits: 2 });
+                const hasFreeShipping = product.price >= 250; // Exemplo: frete grátis acima de 250
+                const originalPrice =
+                  typeof product.original_price === "number" &&
+                  product.original_price > 0
+                    ? `R$ ${product.original_price.toLocaleString("pt-BR", {
+                        minimumFractionDigits: 2,
+                      })}`
+                    : "";
+                return (
+                  <Link
+                    key={product.id}
+                    href={`/produto/${product.id}`}
+                    className="group block bg-white rounded-2xl overflow-hidden transition-transform hover:-translate-y-1 shadow-md border border-primary/60 hover:shadow-xl hover:border-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary p-4 flex flex-col min-h-[340px] relative"
+                    style={{
+                      boxShadow: "0 2px 12px 0 #b689e01a",
+                      border: "1px solid #b689e099",
+                    }}
+                    onClick={() => handleProductClick(product, idx)}
+                  >
+                    {/* Badges */}
+                    <div className="absolute top-3 left-3 flex flex-col gap-2 z-10">
+                      {hasDiscount && (
+                        <span className="bg-secondary text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
+                          {discountPercent}% OFF
                         </span>
+                      )}
+                      {product.is_offer && (
+                        <span className="bg-primary text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
+                          Oferta
+                        </span>
+                      )}
+                      {hasFreeShipping && (
+                        <span className="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
+                          Frete grátis
+                        </span>
+                      )}
+                    </div>
+                    {/* Imagem e placeholder */}
+                    <div className="w-full aspect-[4/5] flex items-center justify-center mb-4">
+                      {product.image_urls && product.image_urls.length > 0 ? (
+                        <Image
+                          src={product.image_urls[0]}
+                          alt={product.name}
+                          width={400}
+                          height={500}
+                          className="object-cover w-full h-full transition-opacity duration-300 group-hover:opacity-0 rounded-[0.75rem]"
+                          loading="lazy"
+                          style={{ objectFit: "cover" }}
+                        />
+                      ) : (
+                        <div
+                          className="w-full h-full flex flex-col items-center justify-center bg-white text-[#6d348b] gap-2 rounded-[0.75rem] border-none"
+                          style={{ boxShadow: "none" }}
+                        >
+                          <span style={{ fontSize: 44, lineHeight: 1 }}>
+                            🤍
+                          </span>
+                          <span
+                            className="text-xs font-medium font-sans text-[#6d348b] text-center px-2"
+                            style={{ fontFamily: "Poppins, sans-serif" }}
+                          >
+                            Em breve a foto do produto com todo o cuidado que
+                            você merece!
+                          </span>
+                        </div>
+                      )}
+                      {product.image_urls && product.image_urls.length > 1 && (
+                        <Image
+                          src={product.image_urls[1]}
+                          alt={product.name}
+                          width={400}
+                          height={500}
+                          className="object-cover w-full h-full absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[0.75rem]"
+                          loading="lazy"
+                          style={{ objectFit: "cover" }}
+                        />
+                      )}
+                    </div>
+                    <div className="flex-1 flex flex-col justify-between items-center text-center">
+                      <div className="mb-2 w-full">
+                        <div
+                          className="text-[1.05rem] font-medium text-black leading-tight mb-2 w-full text-center"
+                          style={{
+                            fontFamily: "Montserrat, Arial, sans-serif",
+                            fontWeight: 500,
+                          }}
+                        >
+                          {product.name}
+                        </div>
                       </div>
-                    )}
-                    {product.image_urls && product.image_urls.length > 1 && (
-                      <Image
-                        src={product.image_urls[1]}
-                        alt={product.name}
-                        width={400}
-                        height={500}
-                        className="object-cover w-full h-full absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[0.75rem]"
-                        loading="lazy"
-                        style={{ objectFit: "cover" }}
-                      />
-                    )}
-                  </div>
-                  <div className="flex-1 flex flex-col justify-between items-center text-center">
-                    <div className="mb-2 w-full">
-                      <div className="text-[1.05rem] font-medium text-black leading-tight mb-2 w-full text-center" style={{ fontFamily: 'Montserrat, Arial, sans-serif', fontWeight: 500 }}>
-                        {product.name}
+                      <div className="flex flex-col items-center justify-center gap-1 w-full">
+                        <div className="flex items-end justify-center gap-1 w-full">
+                          <span
+                            className="text-[1rem] font-semibold text-secondary"
+                            style={{
+                              fontFamily: "Montserrat, Arial, sans-serif",
+                              fontWeight: 600,
+                            }}
+                          >
+                            R$
+                          </span>
+                          <span
+                            className="text-[1.1rem] font-semibold text-secondary"
+                            style={{
+                              fontFamily: "Montserrat, Arial, sans-serif",
+                              fontWeight: 600,
+                            }}
+                          >
+                            {Number(product.price).toLocaleString("pt-BR", {
+                              minimumFractionDigits: 2,
+                            })}
+                          </span>
+                          {hasDiscount && (
+                            <span className="text-xs text-gray-400 line-through ml-2">
+                              {originalPrice}
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-xs text-gray-600 mt-1">
+                          {installment}x de R$ {installmentValue} sem juros
+                        </div>
                       </div>
                     </div>
-                    <div className="flex items-end justify-center gap-1 w-full">
-                      <span className="text-[1rem] font-semibold text-secondary" style={{ fontFamily: 'Montserrat, Arial, sans-serif', fontWeight: 600 }}>R$</span>
-                      <span className="text-[1.1rem] font-semibold text-secondary" style={{ fontFamily: 'Montserrat, Arial, sans-serif', fontWeight: 600 }}>
-                        {Number(product.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                );
+              })}
             </div>
           )}
           {totalPages > 1 && (

@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useCartContext } from "@/contexts/CartContext";
-import { ShoppingCart } from "lucide-react";
+import { Menu, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -60,63 +60,62 @@ export function Header({
       className="w-full bg-primary text-white border-b"
       style={{
         fontFamily: "Montserrat, Arial, sans-serif",
-        borderRadius: "0 0 var(--radius) var(--radius)",
+        borderRadius: "0 0 0 0",
         borderBottom: "2px solid #a06cc1",
       }}
     >
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between max-w-7xl mx-auto w-full px-4 sm:px-8 py-4 gap-2 md:gap-0">
-        <div className="flex justify-center md:justify-start w-full md:w-auto mb-2 md:mb-0">
+      <div className="flex items-center justify-between max-w-7xl mx-auto w-full px-4 sm:px-8 py-3">
+        {/* Logo */}
+        <div className="flex items-center justify-center">
           <Link
             href="/"
-            className="select-none flex items-center justify-center"
+            className="flex items-center select-none"
             style={{
               fontWeight: 700,
-              letterSpacing: "0.04em",
-              fontSize: 32,
+              fontSize: 28,
               fontFamily: "Montserrat, Arial, sans-serif",
-              lineHeight: 1,
             }}
           >
             <Image
               src="/logo.svg"
               alt="Logo Manifeste"
-              width={250}
-              height={50}
+              width={160}
+              height={40}
               priority
               draggable={false}
-              style={{
-                display: 'block',
-                width: '250px',
-                height: '50px',
-                objectFit: 'contain',
-                objectPosition: 'center',
-                flexShrink: 0
-              }}
+              style={{ objectFit: "contain", objectPosition: "center" }}
+              className="h-10 w-auto max-w-[180px] p-0 m-0"
             />
           </Link>
         </div>
-        <nav className="flex justify-center items-center gap-4 md:gap-8 text-base font-medium font-sans relative w-full">
-          <Link
-            href="/"
-            className="transition-colors duration-200 text-white px-2 py-1 rounded-md font-sans hover:text-secondary focus:text-secondary"
-            style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
-          >
+        {/* Desktop Menu */}
+        <nav
+          className="hidden md:flex items-center gap-6 lg:gap-8 text-base font-bold font-sans"
+          style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
+        >
+          <Link href="/" className="hover:text-secondary transition-colors">
             INÍCIO
           </Link>
           <Link
             href="/produtos"
-            className="transition-colors duration-200 text-white px-2 py-1 rounded-md font-sans hover:text-secondary focus:text-secondary"
-            style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
+            className="hover:text-secondary transition-colors"
           >
             PRODUTOS
           </Link>
+          <Link
+            href="/quem-somos"
+            className="hover:text-secondary transition-colors"
+          >
+            SOBRE
+          </Link>
+
           {categories.length > 0 && (
-            <div className="relative" ref={dropdownRef}>
+            <div className="relative">
               <button
                 type="button"
                 onClick={() => setDropdownOpen((v) => !v)}
-                className={`transition-colors duration-200 text-white px-2 py-1 rounded-md font-sans hover:text-secondary focus:text-secondary font-medium select-none bg-transparent border-none outline-none flex items-center gap-1`}
-                style={{ fontFamily: 'Montserrat, Arial, sans-serif', fontWeight: 500 }}
+                className="flex items-center gap-1 font-bold bg-transparent border-none outline-none hover:text-secondary transition-colors"
+                style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
                 aria-haspopup="true"
                 aria-expanded={dropdownOpen}
               >
@@ -133,17 +132,18 @@ export function Header({
                 </svg>
               </button>
               {dropdownOpen && (
-                <div
-                  className="absolute left-0 mt-2 min-w-[180px] max-w-[90vw] bg-white rounded-xl shadow-lg z-50 flex flex-col py-2 animate-fadein"
-                  style={{ border: "none" }}
-                >
+                <div className="absolute left-0 mt-2 min-w-[180px] max-w-[90vw] bg-white rounded-xl shadow-lg z-50 flex flex-col py-2 animate-fadein">
                   <button
                     onClick={() => {
                       onCategoryChange("");
                       setDropdownOpen(false);
                     }}
-                    className={`w-full text-left px-4 py-2 rounded-lg font-sans font-medium text-primary text-[1rem] transition-colors duration-200 ${selectedCategory === "" ? "bg-secondary/10 text-secondary" : "bg-transparent text-primary"} hover:bg-secondary/10 hover:text-secondary focus:bg-secondary/10 focus:text-secondary`}
-                    style={{ border: "none", fontFamily: 'Montserrat, Arial, sans-serif' }}
+                    className={`w-full text-left px-4 py-2 rounded-lg font-sans font-bold text-primary text-[1rem] transition-colors duration-200 ${
+                      selectedCategory === ""
+                        ? "bg-secondary/10 text-secondary"
+                        : "bg-transparent text-primary"
+                    } hover:bg-secondary/10 hover:text-secondary focus:bg-secondary/10 focus:text-secondary`}
+                    style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
                   >
                     TODOS
                   </button>
@@ -154,8 +154,12 @@ export function Header({
                         onCategoryChange(category.id);
                         setDropdownOpen(false);
                       }}
-                      className={`w-full text-left px-4 py-2 rounded-lg font-sans font-medium text-primary text-[1rem] transition-colors duration-200 ${selectedCategory === category.id ? "bg-secondary/10 text-secondary" : "bg-transparent text-primary"} hover:bg-secondary/10 hover:text-secondary focus:bg-secondary/10 focus:text-secondary`}
-                      style={{ border: "none", fontFamily: 'Montserrat, Arial, sans-serif' }}
+                      className={`w-full text-left px-4 py-2 rounded-lg font-sans font-bold text-primary text-[1rem] transition-colors duration-200 ${
+                        selectedCategory === category.id
+                          ? "bg-secondary/10 text-secondary"
+                          : "bg-transparent text-primary"
+                      } hover:bg-secondary/10 hover:text-secondary focus:bg-secondary/10 focus:text-secondary`}
+                      style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
                     >
                       {category.name}
                     </button>
@@ -165,17 +169,14 @@ export function Header({
             </div>
           )}
         </nav>
-        <div className="flex items-center gap-3 justify-center md:justify-end w-full md:w-auto mt-2 md:mt-0">
+        {/* Carrinho e Pedido */}
+        <div className="flex items-center gap-2 md:gap-3">
           <Button
             variant="secondary"
             size="icon"
             onClick={onCartClick}
-            className="relative ml-2 px-2 py-1.5 rounded-full font-medium font-sans bg-secondary text-white border-2 border-accent shadow-md transition-colors duration-200 hover:bg-[#fe53b3] focus:bg-[#fe53b3]"
-            style={{
-              minWidth: 0,
-              fontFamily: "Poppins, sans-serif",
-              boxShadow: "0 2px 8px 0 #d4af3720",
-            }}
+            className="relative px-2 py-1.5 rounded-full font-bold font-sans bg-secondary text-white border-2 border-accent shadow-md hover:bg-[#fe53b3] focus:bg-[#fe53b3]"
+            style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
             onMouseEnter={() => setIsCartHovered(true)}
             onMouseLeave={() => setIsCartHovered(false)}
             aria-label="Abrir carrinho"
@@ -186,49 +187,30 @@ export function Header({
               }`}
             />
             {itemCount > 0 && (
-              <span
-                className="pointer-events-none select-none"
-                style={{
-                  position: "absolute",
-                  top: -8,
-                  right: -8,
-                  background: "#00ff00", 
-                  color: "#fff",
-                  fontSize: "0.95rem",
-                  fontWeight: 700,
-                  borderRadius: "9999px",
-                  width: 22,
-                  height: 22,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  boxShadow: "0 1px 4px 0 #d4af3720",
-                  zIndex: 10,
-                  border: "2px solid #fff",
-                  lineHeight: 1,
-                }}
-              >
+              <span className="pointer-events-none select-none absolute -top-2 -right-2 bg-[#00ff00] text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center border-2 border-white z-10">
                 {itemCount}
               </span>
             )}
           </Button>
           <Button
             variant="secondary"
-            className="ml-2 px-2 py-1 rounded-full font-medium font-sans bg-secondary text-white border-2 border-accent shadow-md transition-colors duration-200 hover:bg-[#fe53b3] focus:bg-[#fe53b3] md:px-4 md:py-1.5 md:text-sm"
+            className="px-3 py-1 rounded-full font-bold font-sans bg-secondary text-white border-2 border-accent shadow-md hover:bg-[#fe53b3] focus:bg-[#fe53b3] hidden md:block"
             onClick={onTrackOrderClick}
-            style={{
-              minWidth: 0,
-              fontFamily: "Poppins, sans-serif",
-              boxShadow: "0 2px 8px 0 #d4af3720",
-            }}
+            style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
           >
-            <span className="hidden xs:inline md:inline font-bold">
-              Acompanhar Pedido
-            </span>
-            <span className="inline xs:hidden md:hidden font-bold">Pedido</span>
+            <span>Acompanhar Pedido</span>
           </Button>
+          {/* Menu Mobile */}
+          <button
+            className="md:hidden ml-2 p-2 rounded-full hover:bg-secondary/20 transition"
+            onClick={() => setMobileMenuOpen(true)}
+            aria-label="Abrir menu"
+          >
+            <Menu className="w-7 h-7 text-white" />
+          </button>
         </div>
       </div>
+      {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-50 bg-[#ede3f6]/95 flex flex-col">
           <div className="flex justify-end p-4">
@@ -250,26 +232,64 @@ export function Header({
               </svg>
             </button>
           </div>
-          <nav className="flex flex-col gap-6 items-center justify-center flex-1 text-lg font-medium font-sans">
+          <nav
+            className="flex flex-col gap-4 items-center justify-center flex-1 text-lg font-bold font-sans"
+            style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
+          >
             <Link
               href="/"
               onClick={() => setMobileMenuOpen(false)}
-              className="px-6 py-3 rounded-[0.75rem] font-sans font-medium text-primary bg-transparent hover:bg-[#ede3f6] hover:text-[#8e44ad] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 w-[90vw] max-w-xs text-center"
+              className="px-6 py-3 rounded-xl font-bold text-primary bg-transparent hover:bg-[#ede3f6] hover:text-[#8e44ad] transition-colors w-[90vw] max-w-xs text-center"
             >
               INÍCIO
             </Link>
             <Link
               href="/produtos"
               onClick={() => setMobileMenuOpen(false)}
-              className="px-6 py-3 rounded-[0.75rem] font-sans font-medium text-primary bg-transparent hover:bg-[#ede3f6] hover:text-[#8e44ad] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 w-[90vw] max-w-xs text-center"
+              className="px-6 py-3 rounded-xl font-bold text-primary bg-transparent hover:bg-[#ede3f6] hover:text-[#8e44ad] transition-colors w-[90vw] max-w-xs text-center"
             >
               PRODUTOS
+            </Link>
+            <Link
+              href="/quem-somos"
+              onClick={() => setMobileMenuOpen(false)}
+              className="px-6 py-3 rounded-xl font-bold text-primary bg-transparent hover:bg-[#ede3f6] hover:text-[#8e44ad] transition-colors w-[90vw] max-w-xs text-center"
+            >
+              SOBRE
+            </Link>
+            <Link
+              href="/missao-visao-valores"
+              onClick={() => setMobileMenuOpen(false)}
+              className="px-6 py-3 rounded-xl font-bold text-primary bg-transparent hover:bg-[#ede3f6] hover:text-[#8e44ad] transition-colors w-[90vw] max-w-xs text-center"
+            >
+              PROPÓSITO
+            </Link>
+            <Link
+              href="/acompanhar"
+              onClick={() => setMobileMenuOpen(false)}
+              className="px-6 py-3 rounded-xl font-bold text-primary bg-transparent hover:bg-[#ede3f6] hover:text-[#8e44ad] transition-colors w-[90vw] max-w-xs text-center"
+            >
+              AJUDA
+            </Link>
+            <Link
+              href="/admin/login"
+              onClick={() => setMobileMenuOpen(false)}
+              className="px-6 py-3 rounded-xl font-bold text-primary bg-transparent hover:bg-[#ede3f6] hover:text-[#8e44ad] transition-colors w-[90vw] max-w-xs text-center"
+            >
+              ÁREA ADMIN
+            </Link>
+            <Link
+              href="/"
+              onClick={() => setMobileMenuOpen(false)}
+              className="px-6 py-3 rounded-xl font-bold text-primary bg-transparent hover:bg-[#ede3f6] hover:text-[#8e44ad] transition-colors w-[90vw] max-w-xs text-center"
+            >
+              CLUBE
             </Link>
             {categories.length > 0 && (
               <div className="w-full flex flex-col items-center">
                 <button
                   onClick={() => setDropdownOpen((v) => !v)}
-                  className="flex items-center gap-1 px-6 py-3 rounded-[0.75rem] font-sans font-medium text-primary bg-transparent hover:bg-[#ede3f6] hover:text-[#8e44ad] transition-colors duration-200 select-none w-[90vw] max-w-xs justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
+                  className="flex items-center gap-1 px-6 py-3 rounded-xl font-bold text-primary bg-transparent hover:bg-[#ede3f6] hover:text-[#8e44ad] transition-colors w-[90vw] max-w-xs justify-center"
                   aria-haspopup="true"
                   aria-expanded={dropdownOpen}
                 >
@@ -286,17 +306,18 @@ export function Header({
                   </svg>
                 </button>
                 {dropdownOpen && (
-                  <div
-                    className="w-[90vw] max-w-xs bg-[#ede3f6] rounded-[0.75rem] shadow-lg z-50 flex flex-col py-2 animate-fadein mt-2"
-                    style={{ border: "none" }}
-                  >
+                  <div className="w-[90vw] max-w-xs bg-[#ede3f6] rounded-xl shadow-lg z-50 flex flex-col py-2 animate-fadein mt-2">
                     <button
                       onClick={() => {
                         onCategoryChange("");
                         setDropdownOpen(false);
                         setMobileMenuOpen(false);
                       }}
-                      className={`w-full text-left px-4 py-3 rounded-[0.75rem] font-sans font-medium text-primary text-[1rem] transition-colors duration-200 ${selectedCategory === "" ? "bg-[#ede3f6] text-[#8e44ad]" : "bg-transparent text-primary"} hover:bg-[#ede3f6] hover:text-[#8e44ad] focus:bg-[#ede3f6] focus:text-[#8e44ad] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40`}
+                      className={`w-full text-left px-4 py-3 rounded-xl font-bold text-primary text-[1rem] transition-colors duration-200 ${
+                        selectedCategory === ""
+                          ? "bg-[#ede3f6] text-[#8e44ad]"
+                          : "bg-transparent text-primary"
+                      } hover:bg-[#ede3f6] hover:text-[#8e44ad] focus:bg-[#ede3f6] focus:text-[#8e44ad]`}
                     >
                       TODOS
                     </button>
@@ -308,7 +329,11 @@ export function Header({
                           setDropdownOpen(false);
                           setMobileMenuOpen(false);
                         }}
-                        className={`w-full text-left px-4 py-3 rounded-[0.75rem] font-sans font-medium text-primary text-[1rem] transition-colors duration-200 ${selectedCategory === category.id ? "bg-[#ede3f6] text-[#8e44ad]" : "bg-transparent text-primary"} hover:bg-[#ede3f6] hover:text-[#8e44ad] focus:bg-[#ede3f6] focus:text-[#8e44ad] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40`}
+                        className={`w-full text-left px-4 py-3 rounded-xl font-bold text-primary text-[1rem] transition-colors duration-200 ${
+                          selectedCategory === category.id
+                            ? "bg-[#ede3f6] text-[#8e44ad]"
+                            : "bg-transparent text-primary"
+                        } hover:bg-[#ede3f6] hover:text-[#8e44ad] focus:bg-[#ede3f6] focus:text-[#8e44ad]`}
                       >
                         {category.name}
                       </button>

@@ -1,15 +1,36 @@
 "use client";
 
+import { Banner } from "@/components/Banner";
 import { Header } from "@/components/Header";
 import { ShoppingCart } from "@/components/ShoppingCart";
+import { Category, supabase } from "@/lib/supabaseClient";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function HomePage() {
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+
+  useEffect(() => {
+    async function fetchCategories() {
+      const { data } = await supabase
+        .from("categories")
+        .select("id, name, slug");
+      setCategories(
+        (data || []).map((cat) => ({
+          ...cat,
+          description: null,
+          created_at: "",
+        }))
+      );
+      setLoadingCategories(false);
+    }
+    fetchCategories();
+  }, []);
 
   return (
-    <div className="min-h-screen bg-[#ffffff] flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col">
       <Header
         onCartClick={() => setIsCartOpen(true)}
         onTrackOrderClick={() => (window.location.href = "/acompanhar")}
@@ -17,134 +38,177 @@ export default function HomePage() {
         selectedCategory=""
         onCategoryChange={() => {}}
       />
-      <main className="flex-1 flex flex-col items-center justify-center w-full px-4 font-sans" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
-        <section className="w-full flex justify-center py-10 md:py-20 animate-fadein">
-          <div className="w-full max-w-screen-lg flex flex-col md:flex-row items-center justify-center gap-10 md:gap-16">
-            <div className="w-full md:w-1/2 flex flex-col items-center md:items-start justify-center text-center md:text-left" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
-              <h1 className="text-4xl md:text-6xl font-light mb-4 tracking-tight animate-slidein text-black" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
-                Manifeste
-              </h1>
-              <p className="text-lg md:text-2xl text-black mb-6 max-w-xl animate-fadein delay-100 font-light" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
-                Produtos que contam histórias.
-                <br className="hidden md:inline" /> Experiências que transformam
-                vidas.
-              </p>
-              <p className="text-xl md:text-2xl font-regular text-black mb-8 animate-fadein delay-200" style={{ fontFamily: 'Montserrat, Arial, sans-serif', fontWeight: 400 }}>
-                <span className="text-black">Manifeste</span> seu estilo, <span className="text-black">manifeste</span> sua essência.
-              </p>
-              <Link
-                href="/produtos"
-                className="inline-block bg-secondary text-white px-8 py-3 text-base md:text-lg font-bold rounded-xl transition-all duration-300 hover:scale-105 hover:bg-[#c13e8a] shadow-lg animate-fadein delay-300 border-2 border-secondary focus:outline focus:outline-2 focus:outline-primary"
-                style={{ boxShadow: "0 2px 12px 0 #fe53b320", fontFamily: 'Montserrat, Arial, sans-serif' }}
-              >
-                Explorar Produtos
-              </Link>
+      <Banner />
+      {/* Barra de Benefícios */}
+      <section
+        className="w-full flex flex-wrap justify-center items-center gap-10 py-7 bg-[#e5d4f7] shadow-sm z-10 animate-fadein"
+        style={{ borderBottom: "1px solid #d1b3ee", borderRadius: 0 }}
+      >
+        <div className="flex flex-col items-center gap-2 min-w-[180px]">
+          <span className="w-12 h-12 flex items-center justify-center rounded-full bg-[#b689e0] text-white text-3xl mb-1 shadow-md">
+            🚚
+          </span>
+          <span
+            className="font-bold text-[#7a3eb1] text-base"
+            style={{ fontSize: "1.1rem" }}
+          >
+            FRETE GRÁTIS
+          </span>
+          <span
+            className="text-[#7a3eb1]/90 text-sm"
+            style={{ fontWeight: 400 }}
+          >
+            acima de R$250
+          </span>
+        </div>
+        <div className="flex flex-col items-center gap-2 min-w-[180px]">
+          <span className="w-12 h-12 flex items-center justify-center rounded-full bg-[#fe53b3] text-white text-3xl mb-1 shadow-md">
+            💳
+          </span>
+          <span
+            className="font-bold text-[#7a3eb1] text-base"
+            style={{ fontSize: "1.1rem" }}
+          >
+            PAGAMENTO
+          </span>
+          <span
+            className="text-[#7a3eb1]/90 text-sm"
+            style={{ fontWeight: 400 }}
+          >
+            até 6x sem juros
+          </span>
+        </div>
+        <div className="flex flex-col items-center gap-2 min-w-[180px]">
+          <span className="w-12 h-12 flex items-center justify-center rounded-full bg-[#ffd700] text-[#7a3eb1] text-3xl mb-1 shadow-md">
+            🏬
+          </span>
+          <span
+            className="font-bold text-[#7a3eb1] text-base"
+            style={{ fontSize: "1.1rem" }}
+          >
+            RETIRADA NA LOJA
+          </span>
+          <span
+            className="text-[#7a3eb1]/90 text-sm"
+            style={{ fontWeight: 400 }}
+          >
+            grátis em Campo Grande
+          </span>
+        </div>
+      </section>
+      <main
+        className="flex-1 flex flex-col items-center justify-start w-full px-4 font-sans"
+        style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
+      >
+        {/* Carrossel/banner já existente */}
+        {/* Seção de Categorias */}
+        <section className="w-full max-w-6xl py-14 md:py-20 animate-fadein delay-200">
+          <h2
+            className="text-4xl md:text-5xl font-bold mb-6 text-black text-center"
+            style={{
+              fontFamily: "Montserrat, Arial, sans-serif",
+              fontWeight: 700,
+              letterSpacing: "-1px",
+            }}
+          >
+            Navegue por Categorias
+          </h2>
+          {loadingCategories ? (
+            <div className="text-center text-primary">
+              Carregando categorias...
             </div>
-            <div className="w-full md:w-1/2 flex items-center justify-center animate-fadein delay-400 mt-8 md:mt-0">
-              <div
-                className="w-64 h-64 md:w-80 md:h-80 bg-white rounded-2xl flex items-center justify-center shadow-lg border-2 border-primary"
-                style={{ boxShadow: "0 2px 16px 0 #b689e020" }}
-              >
-                <span className="text-5xl text-primary font-sans" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>IMG</span>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-10">
+              {categories.map((cat) => {
+                // Ícones temáticos para cada categoria
+                let icon = "🏷️";
+                if (/vibra/i.test(cat.name)) icon = "🔋";
+                else if (/lubr/i.test(cat.name)) icon = "💧";
+                else if (/acess/i.test(cat.name)) icon = "🎲";
+                else if (/brincad/i.test(cat.name)) icon = "🎉";
+                else if (/casal/i.test(cat.name)) icon = "💑";
+                else if (/anal/i.test(cat.name)) icon = "🍑";
+                else if (/gel/i.test(cat.name)) icon = "🧴";
+                else if (/preserv/i.test(cat.name)) icon = "🛡️";
+                return (
+                  <Link
+                    key={cat.id}
+                    href={`/produtos?categoria=${cat.slug}`}
+                    className="group block bg-white rounded-2xl shadow-md border border-[#b689e0]/20 p-10 text-center hover:shadow-lg hover:scale-[1.03] transition-all duration-200 cursor-pointer"
+                    style={{ minHeight: 180 }}
+                  >
+                    <div className="flex justify-center mb-4">
+                      <span className="inline-flex items-center justify-center mx-auto w-20 aspect-square bg-[#b689e0]/8 rounded-full text-[2.5rem] text-[#b689e0] group-hover:bg-secondary/10 group-hover:text-secondary transition-all">
+                        {icon}
+                      </span>
+                    </div>
+                    <span
+                      className="block text-lg font-bold text-black group-hover:text-secondary transition-all mt-2"
+                      style={{
+                        fontFamily: "Montserrat, Arial, sans-serif",
+                        fontWeight: 700,
+                      }}
+                    >
+                      {cat.name}
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </section>
+        {/* Banners institucionais (placeholders) */}
+        <section className="w-full max-w-6xl flex flex-col md:flex-row gap-6 md:gap-10 py-6 md:py-10 animate-fadein delay-350">
+          <a
+            href="#"
+            className="flex-1 bg-white rounded-2xl shadow-lg border-2 border-primary/10 flex items-center gap-4 p-6 hover:scale-105 hover:shadow-2xl transition-all"
+          >
+            <img
+              src="/banner/flower.png"
+              alt="Conheça nossa loja"
+              className="w-16 h-16 rounded-xl object-cover"
+            />
+            <div>
+              <div className="font-bold text-lg text-primary">
+                Conheça nossa loja
+              </div>
+              <div className="text-black/70 text-sm">
+                Visite nossa unidade física em Campo Grande
               </div>
             </div>
-          </div>
-        </section>
-
-        <section className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-20 items-center py-16 md:py-24 animate-fadein delay-300">
-          <div className="flex flex-col items-start md:items-start text-left md:text-left" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
-            <h2 className="text-2xl md:text-3xl font-bold mb-3 text-black" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
-              Curadoria Cuidadosa
-            </h2>
-            <p className="text-base md:text-lg text-black/90 leading-relaxed mb-4" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
-              Cada produto em nossa coleção foi escolhido para inspirar e
-              transformar. Não vendemos apenas objetos, vendemos experiências
-              que elevam sua qualidade de vida.
-            </p>
-            <p className="text-lg md:text-xl font-semibold text-black animate-fadein delay-350" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
-              <span className="text-black">Manifeste</span> o extraordinário no
-              seu dia a dia.
-            </p>
-          </div>
-          <div className="flex flex-col items-center md:items-end text-center md:text-right gap-4" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
-            <span className="text-6xl md:text-7xl mb-2 animate-bounce-slow">✨</span>
-            <span className="text-base md:text-lg text-black font-medium" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
-              Qualidade que se manifesta
-            </span>
-            <div
-              className="w-40 h-40 md:w-56 md:h-56 bg-white rounded-2xl flex items-center justify-center shadow-lg border-2 border-primary mt-4"
-              style={{ boxShadow: "0 2px 16px 0 #b689e020" }}
-            >
-              <span className="text-3xl text-primary font-sans" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>IMG</span>
-            </div>
-          </div>
-        </section>
-
-        <section className="w-full max-w-6xl py-16 md:py-24 animate-fadein delay-400">
-          <div className="text-center mb-10" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
-            <h2 className="text-2xl md:text-3xl font-bold mb-3 text-black" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
-              Nossa Filosofia
-            </h2>
-            <p className="text-base md:text-lg text-black/90 max-w-2xl mx-auto" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
-              Acreditamos que os objetos que nos cercam têm o poder de
-              transformar não apenas nossos espaços, mas também nossas vidas.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div
-              className="flex flex-col items-center text-center p-6 animate-fadein delay-500 bg-white rounded-2xl shadow-lg border-2 border-primary"
-              style={{ boxShadow: "0 2px 12px 0 #b689e020" }}
-            >
-              <span className="text-4xl md:text-5xl mb-2 text-primary">🎯</span>
-              <h3 className="text-lg md:text-xl font-regular mb-2 text-black" style={{ fontFamily: 'Montserrat, Arial, sans-serif', fontWeight: 400 }}>
-                Propósito
-              </h3>
-              <p className="text-black/80 text-sm md:text-base font-light" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
-                Cada produto tem uma razão de ser, uma história para contar.
-              </p>
-            </div>
-            <div
-              className="flex flex-col items-center text-center p-6 animate-fadein delay-600 bg-white rounded-2xl shadow-lg border-2 border-primary"
-              style={{ boxShadow: "0 2px 12px 0 #b689e020" }}
-            >
-              <span className="text-4xl md:text-5xl mb-2 text-secondary">🌟</span>
-              <h3 className="text-lg md:text-xl font-regular mb-2 text-black" style={{ fontFamily: 'Montserrat, Arial, sans-serif', fontWeight: 400 }}>
-                Qualidade
-              </h3>
-              <p className="text-black/80 text-sm md:text-base font-light" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
-                Materiais excepcionais, acabamentos perfeitos, durabilidade
-                comprovada.
-              </p>
-            </div>
-            <div
-              className="flex flex-col items-center text-center p-6 animate-fadein delay-700 bg-white rounded-2xl shadow-lg border-2 border-primary"
-              style={{ boxShadow: "0 2px 12px 0 #b689e020" }}
-            >
-              <span className="text-4xl md:text-5xl mb-2 text-primary">💫</span>
-              <h3 className="text-lg md:text-xl font-regular mb-2 text-black" style={{ fontFamily: 'Montserrat, Arial, sans-serif', fontWeight: 400 }}>
-                Experiência
-              </h3>
-              <p className="text-black/80 text-sm md:text-base font-light" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
-                Momentos que se transformam em memórias inesquecíveis.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <section className="w-full text-center py-16 md:py-24 animate-fadein delay-800">
-          <h2 className="text-2xl md:text-3xl font-light mb-4 text-black" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
-            Descubra o Extraordinário
-          </h2>
-          <p className="text-base md:text-lg text-black/90 mb-8 max-w-xl mx-auto font-regular" style={{ fontFamily: 'Montserrat, Arial, sans-serif', fontWeight: 400 }}>
-            <span className="text-black">Manifeste</span> qualidade, <span className="text-black">manifeste</span> experiências.
-          </p>
-          <Link
-            href="/produtos"
-            className="inline-block bg-secondary text-white px-8 py-3 text-base md:text-lg font-bold rounded-xl transition-all duration-300 hover:scale-105 hover:bg-[#c13e8a] shadow-lg border-2 border-secondary focus:outline focus:outline-2 focus:outline-primary"
-            style={{ boxShadow: "0 2px 12px 0 #fe53b320", fontFamily: 'Montserrat, Arial, sans-serif' }}
+          </a>
+          <a
+            href="#"
+            className="flex-1 bg-white rounded-2xl shadow-lg border-2 border-primary/10 flex items-center gap-4 p-6 hover:scale-105 hover:shadow-2xl transition-all"
           >
-            Ver Catálogo Completo
-          </Link>
+            <img
+              src="/banner/hands.png"
+              alt="Troca Fácil"
+              className="w-16 h-16 rounded-xl object-cover"
+            />
+            <div>
+              <div className="font-bold text-lg text-primary">Troca Fácil</div>
+              <div className="text-black/70 text-sm">
+                Facilidade e agilidade na troca dos seus produtos
+              </div>
+            </div>
+          </a>
+          <a
+            href="#"
+            className="flex-1 bg-white rounded-2xl shadow-lg border-2 border-primary/10 flex items-center gap-4 p-6 hover:scale-105 hover:shadow-2xl transition-all"
+          >
+            <img
+              src="/banner/bed.png"
+              alt="Grupo VIP"
+              className="w-16 h-16 rounded-xl object-cover"
+            />
+            <div>
+              <div className="font-bold text-lg text-primary">Grupo VIP</div>
+              <div className="text-black/70 text-sm">
+                Entre para o grupo e receba ofertas exclusivas
+              </div>
+            </div>
+          </a>
         </section>
       </main>
       <ShoppingCart isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />

@@ -60,10 +60,9 @@
   --destructive: #ef4444;
   --border: #ffffff; /* borda dourada padrão */
   --radius: 0.75rem;
-  --font-body-family:
-    "Poppins", -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Ubuntu,
-    Helvetica Neue, sans-serif, Apple Color Emoji, Segoe UI Emoji,
-    Segoe UI Symbol;
+  --font-body-family: "Poppins", -apple-system, BlinkMacSystemFont, Segoe UI,
+    Roboto, Ubuntu, Helvetica Neue, sans-serif, Apple Color Emoji,
+    Segoe UI Emoji, Segoe UI Symbol;
   --font-body-style: normal;
   --font-body-weight: 400;
   --font-body-weight-bold: 700;
@@ -89,6 +88,12 @@
   --destructive: #ef4444;
   --border: #d4af37;
   --radius: 0.75rem;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 @layer base {
@@ -122,11 +127,7 @@
     border-radius: var(--radius);
     box-shadow: 0 2px 8px 0 #d4af3720;
     border: 2px solid var(--border);
-    transition:
-      background 0.2s,
-      color 0.2s,
-      border 0.2s,
-      box-shadow 0.2s;
+    transition: background 0.2s, color 0.2s, border 0.2s, box-shadow 0.2s;
   }
   button.bg-primary,
   .btn-primary {

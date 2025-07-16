@@ -5,13 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Toast } from "@/components/ui/toast";
 import { useCartContext } from "@/contexts/CartContext";
 import { Product } from "@/lib/supabaseClient";
-import {
-  ArrowLeft,
-  Heart,
-  Info,
-  Share2,
-  ShoppingCart
-} from "lucide-react";
+import { ArrowLeft, Heart, Info, Share2, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -55,7 +49,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
             variant="ghost"
             size="sm"
             className="text-primary hover:text-secondary focus:text-secondary rounded-xl font-medium font-sans transition-colors"
-            style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}
+            style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
           >
             <Link href="/produtos">
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -106,7 +100,8 @@ export function ProductDetail({ product }: ProductDetailProps) {
                       fontWeight: 500,
                     }}
                   >
-                    Em breve a foto do produto com todo o cuidado que você merece!
+                    Em breve a foto do produto com todo o cuidado que você
+                    merece!
                   </span>
                 </div>
               )}
@@ -168,7 +163,13 @@ export function ProductDetail({ product }: ProductDetailProps) {
                     {product.name}
                   </h1>
                   {product.sku && (
-                    <p className="text-sm text-muted-foreground font-mono" style={{ fontFamily: 'Montserrat, Arial, sans-serif', color: '#888' }}>
+                    <p
+                      className="text-sm text-muted-foreground font-mono"
+                      style={{
+                        fontFamily: "Montserrat, Arial, sans-serif",
+                        color: "#888",
+                      }}
+                    >
                       SKU: {product.sku}
                     </p>
                   )}
@@ -178,7 +179,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                     variant="ghost"
                     size="sm"
                     className="rounded-full p-2 text-muted-foreground hover:text-secondary hover:bg-secondary/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-secondary font-sans"
-                    style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}
+                    style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
                   >
                     <Heart className="w-5 h-5" />
                   </Button>
@@ -186,7 +187,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                     variant="ghost"
                     size="sm"
                     className="rounded-full p-2 text-muted-foreground hover:text-secondary hover:bg-secondary/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-secondary font-sans"
-                    style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}
+                    style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
                   >
                     <Share2 className="w-5 h-5" />
                   </Button>
@@ -196,18 +197,67 @@ export function ProductDetail({ product }: ProductDetailProps) {
               {/* Preço e Status */}
               <div className="flex items-center gap-4 flex-wrap">
                 <div className="flex items-baseline gap-2">
-                  <span className="text-2xl sm:text-3xl font-semibold text-black font-sans" style={{ fontFamily: 'Montserrat, Arial, sans-serif', fontWeight: 600 }}>R$</span>
-                  <span className="text-3xl sm:text-4xl font-bold text-secondary font-sans" style={{ fontFamily: 'Montserrat, Arial, sans-serif', fontWeight: 700 }}>
-                    {formatPrice(product.price)}
+                  <span
+                    className="text-2xl sm:text-3xl font-semibold text-black font-sans"
+                    style={{
+                      fontFamily: "Montserrat, Arial, sans-serif",
+                      fontWeight: 600,
+                    }}
+                  >
+                    R$
                   </span>
                   <span
-                    className="text-sm text-muted-foreground line-through font-sans"
-                    style={{ fontFamily: "Poppins, sans-serif" }}
+                    className="text-3xl sm:text-4xl font-bold text-secondary font-sans"
+                    style={{
+                      fontFamily: "Montserrat, Arial, sans-serif",
+                      fontWeight: 700,
+                    }}
                   >
-                    R$ {formatPrice(product.price * 1.2)}
+                    {formatPrice(product.price)}
                   </span>
+                  {typeof product.original_price === "number" &&
+                    product.original_price > product.price && (
+                      <span
+                        className="text-sm text-gray-400 line-through font-sans ml-2"
+                        style={{ fontFamily: "Poppins, sans-serif" }}
+                      >
+                        R${" "}
+                        {product.original_price.toLocaleString("pt-BR", {
+                          minimumFractionDigits: 2,
+                        })}
+                      </span>
+                    )}
+                  {/* Badge de desconto */}
+                  {typeof product.original_price === "number" &&
+                    product.original_price > product.price && (
+                      <span className="ml-2 bg-secondary text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
+                        {Math.round(
+                          100 - (product.price / product.original_price) * 100
+                        )}
+                        % OFF
+                      </span>
+                    )}
+                  {/* Badge de oferta */}
+                  {product.is_offer && (
+                    <span className="ml-2 bg-primary text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
+                      Oferta
+                    </span>
+                  )}
+                  {/* Badge de frete grátis */}
+                  {product.price >= 250 && (
+                    <span className="ml-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
+                      Frete grátis
+                    </span>
+                  )}
                 </div>
-                
+                {/* Parcelamento */}
+                <div className="text-xs text-gray-600 mt-1 ml-2">
+                  6x de R${" "}
+                  {(product.price / 6).toLocaleString("pt-BR", {
+                    minimumFractionDigits: 2,
+                  })}{" "}
+                  sem juros
+                </div>
               </div>
             </div>
 
@@ -269,11 +319,17 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 <CardContent className="p-6">
                   <div className="flex items-center gap-2 mb-2">
                     <Info className="w-5 h-5 text-secondary" />
-                    <span className="font-bold text-base text-black" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
+                    <span
+                      className="font-bold text-base text-black"
+                      style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
+                    >
                       Descrição do Produto
                     </span>
                   </div>
-                  <div className="text-black text-sm font-sans" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
+                  <div
+                    className="text-black text-sm font-sans"
+                    style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
+                  >
                     {product.description}
                   </div>
                 </CardContent>
@@ -287,7 +343,10 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 style={{ boxShadow: "0 2px 8px 0 #b689e01a" }}
               >
                 <CardContent className="p-6">
-                  <h3 className="font-bold text-lg mb-4 text-black flex items-center gap-2" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
+                  <h3
+                    className="font-bold text-lg mb-4 text-black flex items-center gap-2"
+                    style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
+                  >
                     <Info className="w-5 h-5 text-secondary" /> Características
                   </h3>
                   <div className="flex flex-wrap gap-2">
@@ -295,7 +354,10 @@ export function ProductDetail({ product }: ProductDetailProps) {
                       <span
                         key={index}
                         className="bg-primary/10 border border-primary/40 rounded-xl px-3 py-1 font-sans text-primary text-sm font-medium"
-                        style={{ fontFamily: 'Montserrat, Arial, sans-serif', marginBottom: 4 }}
+                        style={{
+                          fontFamily: "Montserrat, Arial, sans-serif",
+                          marginBottom: 4,
+                        }}
                       >
                         {tag}
                       </span>
@@ -306,31 +368,68 @@ export function ProductDetail({ product }: ProductDetailProps) {
             )}
 
             {/* Especificações Técnicas */}
-            {(product.weight_grams !== null || product.dimensions_cm !== null) && (
+            {(product.weight_grams !== null ||
+              product.dimensions_cm !== null) && (
               <Card
                 className="bg-white border border-primary/60 rounded-2xl shadow-md mt-4"
                 style={{ boxShadow: "0 2px 8px 0 #b689e01a" }}
               >
                 <CardContent className="p-6">
-                  <h3 className="font-bold text-lg mb-4 text-black flex items-center gap-2" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
-                    <svg width="20" height="20" fill="#b689e0" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/><circle cx="12" cy="12" r="5"/></svg> Especificações Técnicas
+                  <h3
+                    className="font-bold text-lg mb-4 text-black flex items-center gap-2"
+                    style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
+                  >
+                    <svg
+                      width="20"
+                      height="20"
+                      fill="#b689e0"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
+                      <circle cx="12" cy="12" r="5" />
+                    </svg>{" "}
+                    Especificações Técnicas
                   </h3>
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-2">
-                      <svg width="18" height="18" fill="#b689e0" viewBox="0 0 24 24">
+                      <svg
+                        width="18"
+                        height="18"
+                        fill="#b689e0"
+                        viewBox="0 0 24 24"
+                      >
                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
                         <circle cx="12" cy="12" r="5" />
                       </svg>
-                      <span className="text-base text-black font-sans" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
-                        <b>Peso:</b> {product.weight_grams !== null ? `${product.weight_grams}g` : "-"}
+                      <span
+                        className="text-base text-black font-sans"
+                        style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
+                      >
+                        <b>Peso:</b>{" "}
+                        {product.weight_grams !== null
+                          ? `${product.weight_grams}g`
+                          : "-"}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <svg width="18" height="18" fill="#b689e0" viewBox="0 0 24 24">
+                      <svg
+                        width="18"
+                        height="18"
+                        fill="#b689e0"
+                        viewBox="0 0 24 24"
+                      >
                         <path d="M3 17v2h6v-2H3zm0-4v2h12v-2H3zm0-4v2h18V9H3z" />
                       </svg>
-                      <span className="text-base text-black font-sans" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
-                        <b>Dimensões:</b> {product.dimensions_cm && typeof product.dimensions_cm === 'object' && product.dimensions_cm.height && product.dimensions_cm.width && product.dimensions_cm.length
+                      <span
+                        className="text-base text-black font-sans"
+                        style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
+                      >
+                        <b>Dimensões:</b>{" "}
+                        {product.dimensions_cm &&
+                        typeof product.dimensions_cm === "object" &&
+                        product.dimensions_cm.height &&
+                        product.dimensions_cm.width &&
+                        product.dimensions_cm.length
                           ? `${product.dimensions_cm.height}cm x ${product.dimensions_cm.width}cm x ${product.dimensions_cm.length}cm`
                           : "-"}
                       </span>
