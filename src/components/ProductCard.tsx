@@ -88,7 +88,9 @@ export function ProductCard({ product }: ProductCardProps) {
             {product.image_urls.slice(0, 4).map((img, idx) => (
               <button
                 key={img}
-                className={`w-8 h-8 rounded-md overflow-hidden border transition-all duration-200 ${idx === 0 ? "border-primary" : "border-muted"}`}
+                className={`w-8 h-8 rounded-md overflow-hidden border transition-all duration-200 ${
+                  idx === 0 ? "border-primary" : "border-muted"
+                }`}
                 tabIndex={-1}
                 type="button"
                 aria-label={`Ver imagem ${idx + 1}`}
@@ -116,17 +118,24 @@ export function ProductCard({ product }: ProductCardProps) {
               </h3>
             </Link>
             <div className="flex items-center justify-between">
-              <span className="text-xl font-bold text-primary font-sans tracking-tight">
-                R$ {product.price.toFixed(2).replace(".", ",")}
-              </span>
-              {product.stock_quantity > 0 ? (
-                <Badge className="text-xs bg-accent text-foreground rounded-full px-3 py-1 border-none">
-                  Em estoque
-                </Badge>
+              {Number(product.stock_quantity) > 0 ? (
+                <>
+                  <span className="text-xl font-bold text-primary font-sans tracking-tight">
+                    R$ {product.price.toFixed(2).replace(".", ",")}
+                  </span>
+                  <Badge className="text-xs bg-accent text-foreground rounded-full px-3 py-1 border-none">
+                    Em estoque
+                  </Badge>
+                </>
               ) : (
-                <Badge variant="destructive" className="text-xs">
-                  Indisponível
-                </Badge>
+                <>
+                  <span className="text-xl font-bold text-red-500 font-sans tracking-tight">
+                    Fora de estoque
+                  </span>
+                  <Badge variant="destructive" className="text-xs">
+                    Indisponível
+                  </Badge>
+                </>
               )}
             </div>
           </div>
@@ -135,7 +144,11 @@ export function ProductCard({ product }: ProductCardProps) {
             <Button
               onClick={handleAddToCart}
               disabled={product.stock_quantity === 0 || isAddingToCart}
-              className={`w-full font-semibold transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] rounded-2xl py-3 bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-md hover:shadow-lg ${product.stock_quantity === 0 || isAddingToCart ? "opacity-60 cursor-not-allowed" : ""}`}
+              className={`w-full font-semibold transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] rounded-2xl py-3 bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-md hover:shadow-lg ${
+                product.stock_quantity === 0 || isAddingToCart
+                  ? "opacity-60 cursor-not-allowed"
+                  : ""
+              }`}
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
             >
@@ -153,7 +166,11 @@ export function ProductCard({ product }: ProductCardProps) {
               <Button
                 onClick={handleAddToCart}
                 disabled={product.stock_quantity === 0 || isAddingToCart}
-                className={`flex-1 font-semibold transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] rounded-2xl py-3 bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-md hover:shadow-lg ${product.stock_quantity === 0 || isAddingToCart ? "opacity-60 cursor-not-allowed" : ""}`}
+                className={`flex-1 font-semibold transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] rounded-2xl py-3 bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-md hover:shadow-lg ${
+                  product.stock_quantity === 0 || isAddingToCart
+                    ? "opacity-60 cursor-not-allowed"
+                    : ""
+                }`}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
               >
@@ -164,7 +181,9 @@ export function ProductCard({ product }: ProductCardProps) {
                 />
                 {isAddingToCart
                   ? "Adicionando..."
-                  : `Adicionar ${currentQuantity > 1 ? `${currentQuantity}x` : ""}`}
+                  : `Adicionar ${
+                      currentQuantity > 1 ? `${currentQuantity}x` : ""
+                    }`}
               </Button>
               <div className="flex items-center gap-2 bg-muted/30 rounded-lg px-3 py-2">
                 <Button
@@ -195,7 +214,9 @@ export function ProductCard({ product }: ProductCardProps) {
       </Card>
 
       <Toast
-        message={`${currentQuantity > 1 ? `${currentQuantity}x ` : ""}${product.name} adicionado ao carrinho!`}
+        message={`${currentQuantity > 1 ? `${currentQuantity}x ` : ""}${
+          product.name
+        } adicionado ao carrinho!`}
         isVisible={showToast}
         onClose={() => setShowToast(false)}
       />

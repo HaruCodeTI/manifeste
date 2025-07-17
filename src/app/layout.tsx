@@ -1,4 +1,5 @@
 import { Footer } from "@/components/Footer";
+import { StagewiseDevToolbar } from "@/components/StagewiseDevToolbar";
 import { CartProvider } from "@/contexts/CartContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import type { Metadata } from "next";
@@ -53,6 +54,7 @@ export default function RootLayout({
         <ThemeProvider>
           <CartProvider>{children}</CartProvider>
           <Footer />
+          <StagewiseDevToolbar />
         </ThemeProvider>
       </body>
     </html>

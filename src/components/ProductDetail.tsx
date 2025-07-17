@@ -19,8 +19,14 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [showToast, setShowToast] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const [stockAlert, setStockAlert] = useState(false);
 
   const handleAddToCart = () => {
+    if (quantity > product.stock_quantity) {
+      setStockAlert(true);
+      setTimeout(() => setStockAlert(false), 2000);
+      return;
+    }
     addToCart(
       {
         id: product.id,
@@ -198,66 +204,28 @@ export function ProductDetail({ product }: ProductDetailProps) {
               <div className="flex items-center gap-4 flex-wrap">
                 <div className="flex items-baseline gap-2">
                   <span
-                    className="text-2xl sm:text-3xl font-semibold text-black font-sans"
-                    style={{
-                      fontFamily: "Montserrat, Arial, sans-serif",
-                      fontWeight: 600,
-                    }}
+                    className="text-3xl font-bold text-secondary"
+                    style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
                   >
-                    R$
+                    R$ {formatPrice(product.price)}
                   </span>
-                  <span
-                    className="text-3xl sm:text-4xl font-bold text-secondary font-sans"
-                    style={{
-                      fontFamily: "Montserrat, Arial, sans-serif",
-                      fontWeight: 700,
-                    }}
-                  >
-                    {formatPrice(product.price)}
-                  </span>
-                  {typeof product.original_price === "number" &&
+                  {product.original_price &&
                     product.original_price > product.price && (
-                      <span
-                        className="text-sm text-gray-400 line-through font-sans ml-2"
-                        style={{ fontFamily: "Poppins, sans-serif" }}
-                      >
-                        R${" "}
-                        {product.original_price.toLocaleString("pt-BR", {
-                          minimumFractionDigits: 2,
-                        })}
+                      <span className="text-base text-gray-400 line-through ml-2">
+                        R$ {formatPrice(product.original_price)}
                       </span>
                     )}
-                  {/* Badge de desconto */}
-                  {typeof product.original_price === "number" &&
-                    product.original_price > product.price && (
-                      <span className="ml-2 bg-secondary text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
-                        {Math.round(
-                          100 - (product.price / product.original_price) * 100
-                        )}
-                        % OFF
-                      </span>
-                    )}
-                  {/* Badge de oferta */}
-                  {product.is_offer && (
-                    <span className="ml-2 bg-primary text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
-                      Oferta
-                    </span>
-                  )}
-                  {/* Badge de frete grátis */}
-                  {product.price >= 250 && (
-                    <span className="ml-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
-                      Frete grátis
-                    </span>
-                  )}
                 </div>
-                {/* Parcelamento */}
-                <div className="text-xs text-gray-600 mt-1 ml-2">
-                  6x de R${" "}
-                  {(product.price / 6).toLocaleString("pt-BR", {
-                    minimumFractionDigits: 2,
-                  })}{" "}
-                  sem juros
-                </div>
+                {/* Badge de estoque */}
+                {product.stock_quantity > 0 ? (
+                  <span className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full border border-green-300">
+                    {product.stock_quantity} em estoque
+                  </span>
+                ) : (
+                  <span className="inline-block bg-red-100 text-red-700 text-xs font-semibold px-3 py-1 rounded-full border border-red-300">
+                    Indisponível
+                  </span>
+                )}
               </div>
             </div>
 
@@ -287,29 +255,46 @@ export function ProductDetail({ product }: ProductDetailProps) {
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={() => setQuantity(quantity + 1)}
+                      onClick={() => {
+                        if (quantity < product.stock_quantity) {
+                          setQuantity(quantity + 1);
+                        } else {
+                          setStockAlert(true);
+                          setTimeout(() => setStockAlert(false), 2000);
+                        }
+                      }}
                       className="rounded-full hover:bg-[#ede3f6] hover:text-[#6d348b] text-[#6d348b] font-bold text-lg transition-all duration-200"
                       style={{ fontFamily: "Poppins, sans-serif" }}
                     >
                       +
                     </Button>
                   </div>
+                  {stockAlert && (
+                    <div className="text-xs text-red-600 font-semibold mt-1">
+                      Estoque máximo disponível!
+                    </div>
+                  )}
                 </div>
               </div>
 
-              <Button
-                onClick={handleAddToCart}
-                disabled={product.stock_quantity === 0}
-                size="lg"
-                className="w-full bg-secondary hover:bg-[#6d348b] text-white font-semibold text-base py-4 rounded-[0.75rem] shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] font-sans"
-                style={{
-                  fontFamily: "Poppins, sans-serif",
-                  boxShadow: "0 2px 8px 0 #d4af3720",
-                }}
-              >
-                <ShoppingCart className="w-5 h-5 mr-3" />
-                Adicionar ao Carrinho
-              </Button>
+              {/* Botão de compra */}
+              <div className="flex flex-col gap-4 mt-6">
+                <Button
+                  onClick={handleAddToCart}
+                  disabled={product.stock_quantity === 0}
+                  className={`w-full font-semibold transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] rounded-2xl py-3 bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-md hover:shadow-lg ${
+                    product.stock_quantity === 0
+                      ? "opacity-60 cursor-not-allowed"
+                      : ""
+                  }`}
+                  style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
+                >
+                  <ShoppingCart className="w-4 h-4 mr-2" />
+                  {product.stock_quantity === 0
+                    ? "Indisponível"
+                    : "Adicionar ao Carrinho"}
+                </Button>
+              </div>
             </div>
             {product.description && (
               <Card

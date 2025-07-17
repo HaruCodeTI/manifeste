@@ -32,6 +32,43 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Carrinho vazio" }, { status: 400 });
     }
 
+    // Validação de estoque
+    const { createClient } = await import("@supabase/supabase-js");
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+    // Buscar os produtos do carrinho
+    const { data: products, error: productsError } = await supabase
+      .from("products")
+      .select("id, stock_quantity, name")
+      .in(
+        "id",
+        items.map((item: CartItem) => item.id)
+      );
+    if (productsError || !products) {
+      return NextResponse.json(
+        { error: "Erro ao validar estoque" },
+        { status: 500 }
+      );
+    }
+    // Verificar se todos têm estoque suficiente
+    const insufficientStock = items.find((item) => {
+      const product = products.find((p: any) => p.id === item.id);
+      return !product || product.stock_quantity < item.quantity;
+    });
+    if (insufficientStock) {
+      const product = products.find((p: any) => p.id === insufficientStock.id);
+      return NextResponse.json(
+        {
+          error: `Estoque insuficiente para o produto: ${
+            product ? product.name : "Produto não encontrado"
+          }`,
+        },
+        { status: 400 }
+      );
+    }
+
     const baseUrl =
       process.env.NEXT_PUBLIC_BASE_URL ||
       (process.env.NODE_ENV === "production"
@@ -70,11 +107,6 @@ export async function POST(request: NextRequest) {
       customer_email: undefined,
     });
 
-    const { createClient } = await import("@supabase/supabase-js");
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
     const { data: order, error } = await supabase
       .from("orders")
       .insert([
@@ -111,6 +143,29 @@ export async function POST(request: NextRequest) {
       price_at_purchase: item.price,
     }));
     await supabase.from("order_items").insert(orderItems);
+
+    // Debitar estoque
+    for (const item of items) {
+      const { error: stockError } = await supabase
+        .from("products")
+        .update({
+          stock_quantity: supabase.rpc("decrement_stock", {
+            product_id: item.id,
+            amount: item.quantity,
+          }),
+        })
+        .eq("id", item.id);
+      // Se não houver função RPC, faz update direto:
+      // .update({ stock_quantity: (produto.stock_quantity - item.quantity) })
+      // .eq("id", item.id);
+      if (stockError) {
+        // Opcional: desfazer pedido e itens se falhar
+        return NextResponse.json(
+          { error: `Erro ao debitar estoque do produto: ${item.id}` },
+          { status: 500 }
+        );
+      }
+    }
 
     await supabase.from("order_status_history").insert([
       {

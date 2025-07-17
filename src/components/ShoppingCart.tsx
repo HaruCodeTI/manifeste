@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { Minus, Plus, ShoppingBag, Trash2, X } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface ShoppingCartProps {
   isOpen: boolean;
@@ -17,10 +18,46 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
   const { cart, removeFromCart, updateQuantity, getTotalPrice, clearCart } =
     useCartContext();
   const router = useRouter();
+  const [stockAlertId, setStockAlertId] = useState<string | null>(null);
+  const [stockMap, setStockMap] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    async function fetchStock() {
+      if (!isOpen || cart.length === 0) return;
+      const ids = cart.map((item) => item.id);
+      const { createClient } = await import("@supabase/supabase-js");
+      const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      );
+      const { data, error } = await supabase
+        .from("products")
+        .select("id, stock_quantity")
+        .in("id", ids);
+      if (!error && data) {
+        const map: Record<string, number> = {};
+        data.forEach((p: any) => {
+          map[p.id] = p.stock_quantity;
+        });
+        setStockMap(map);
+      }
+    }
+    fetchStock();
+  }, [isOpen, cart]);
 
   const handleCheckout = () => {
     onClose();
     router.push("/checkout");
+  };
+
+  const handleIncrease = (item: any) => {
+    const maxStock = stockMap[item.id] ?? 99;
+    if (item.quantity >= maxStock) {
+      setStockAlertId(item.id);
+      setTimeout(() => setStockAlertId(null), 2000);
+      return;
+    }
+    updateQuantity(item.id, item.quantity + 1);
   };
 
   return (
@@ -92,7 +129,7 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
                         ) : (
                           <div className="w-full h-full flex flex-col items-center justify-center bg-white text-[#b689e0] gap-1 rounded-lg border border-[#e5d4f7]">
                             <span style={{ fontSize: 24, lineHeight: 1 }}>
-                              🤫
+                              🛫
                             </span>
                           </div>
                         )}
@@ -125,6 +162,7 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
                                 updateQuantity(item.id, item.quantity - 1)
                               }
                               className="h-6 w-6 p-0 rounded-full text-[#b689e0] hover:bg-[#b689e0]/10"
+                              disabled={item.quantity <= 1}
                             >
                               <Minus className="h-4 w-4" />
                             </Button>
@@ -134,14 +172,20 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() =>
-                                updateQuantity(item.id, item.quantity + 1)
-                              }
+                              onClick={() => handleIncrease(item)}
                               className="h-6 w-6 p-0 rounded-full text-[#b689e0] hover:bg-[#b689e0]/10"
+                              disabled={
+                                item.quantity >= (stockMap[item.id] ?? 99)
+                              }
                             >
                               <Plus className="h-4 w-4" />
                             </Button>
                           </div>
+                          {stockAlertId === item.id && (
+                            <div className="text-xs text-red-600 font-semibold mt-1">
+                              Estoque máximo disponível!
+                            </div>
+                          )}
                           <Button
                             variant="ghost"
                             size="sm"

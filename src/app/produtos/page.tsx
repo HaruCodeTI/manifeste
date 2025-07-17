@@ -69,7 +69,12 @@ export default function ProdutosPage() {
       query = query.range((page - 1) * itemsPerPage, page * itemsPerPage - 1);
       const { data, count, error } = await query;
       if (!error) {
-        setProducts(data || []);
+        setProducts(
+          (data || []).map((p) => ({
+            ...p,
+            stock_quantity: Number(p.stock_quantity) || 0,
+          }))
+        );
         setTotalPages(count ? Math.ceil(count / itemsPerPage) : 1);
       }
       setLoading(false);
