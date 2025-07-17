@@ -13,6 +13,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+type Coupon = {
+  id: string;
+  code: string;
+  type: string;
+  value: number;
+};
+
 // Função utilitária para buscar dados do CEP
 async function fetchCepData(cep: string) {
   const cleanCep = cep.replace(/\D/g, "");
@@ -65,9 +72,44 @@ export default function CheckoutPage() {
   });
   const [shippingCost, setShippingCost] = useState(0);
   const [isCalculatingShipping, setIsCalculatingShipping] = useState(false);
-
   const subtotal = getTotalPrice();
-  const total = subtotal + (shippingMethod === "pickup" ? 0 : shippingCost);
+  const [couponCode, setCouponCode] = useState("");
+  const [coupon, setCoupon] = useState<Coupon | null>(null);
+  const [couponError, setCouponError] = useState("");
+  const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
+  const discount = coupon
+    ? coupon.type === "percentage"
+      ? (subtotal * coupon.value) / 100
+      : coupon.value
+    : 0;
+  const totalWithDiscount = Math.max(
+    0,
+    subtotal - discount + (shippingMethod === "pickup" ? 0 : shippingCost)
+  );
+
+  const handleValidateCoupon = async () => {
+    setIsValidatingCoupon(true);
+    setCouponError("");
+    setCoupon(null);
+    try {
+      const res = await fetch("/api/validate-coupon", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: couponCode.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Cupom inválido");
+      setCoupon(data.coupon);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setCouponError(err.message || "Erro ao validar cupom");
+      } else {
+        setCouponError("Erro ao validar cupom");
+      }
+    } finally {
+      setIsValidatingCoupon(false);
+    }
+  };
 
   const calculateShipping = async () => {
     if (!shippingInfo.cep || shippingInfo.cep.length < 8) return;
@@ -92,7 +134,8 @@ export default function CheckoutPage() {
             shippingCost: shippingMethod === "pickup" ? 0 : shippingCost,
             shippingMethod,
             paymentMethod,
-            total,
+            total: totalWithDiscount,
+            coupon: coupon ? { id: coupon.id, code: coupon.code } : undefined,
           }),
         });
         const data = await response.json();
@@ -113,7 +156,8 @@ export default function CheckoutPage() {
           shippingCost: shippingMethod === "pickup" ? 0 : shippingCost,
           shippingMethod,
           paymentMethod,
-          total: total,
+          total: totalWithDiscount,
+          coupon: coupon ? { id: coupon.id, code: coupon.code } : undefined,
         }),
       });
       const data = await response.json();
@@ -193,6 +237,44 @@ export default function CheckoutPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14">
           {/* Formulário de Checkout */}
           <div className="space-y-8">
+            {/* Campo de cupom */}
+            <Card className="bg-white border border-[#b689e0]/40 rounded-none shadow-md">
+              <CardHeader>
+                <CardTitle className="text-black font-bold text-lg font-sans">
+                  Cupom de desconto
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-3">
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Digite o código do cupom"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value)}
+                    className="max-w-xs"
+                  />
+                  <Button
+                    onClick={handleValidateCoupon}
+                    disabled={isValidatingCoupon || !couponCode.trim()}
+                  >
+                    {isValidatingCoupon ? "Validando..." : "Aplicar"}
+                  </Button>
+                </div>
+                {coupon && (
+                  <div className="text-green-700 text-sm font-semibold">
+                    Cupom aplicado: {coupon.code} (
+                    {coupon.type === "percentage"
+                      ? `${coupon.value}%`
+                      : `R$ ${coupon.value}`}
+                    )
+                  </div>
+                )}
+                {couponError && (
+                  <div className="text-red-600 text-sm font-semibold">
+                    {couponError}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
             {/* Informações do Cliente */}
             <Card
               className="bg-white border border-[#b689e0]/40 rounded-none shadow-md"
@@ -605,6 +687,12 @@ export default function CheckoutPage() {
                       R$ {subtotal.toFixed(2).replace(".", ",")}
                     </span>
                   </div>
+                  {coupon && (
+                    <div className="flex justify-between text-green-700">
+                      <span>Desconto ({coupon.code}):</span>
+                      <span>- R$ {discount.toFixed(2).replace(".", ",")}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between">
                     <span className="text-foreground">Frete:</span>
                     <span className="text-foreground">
@@ -618,7 +706,7 @@ export default function CheckoutPage() {
                   <div className="flex justify-between text-lg font-bold text-foreground border-t pt-2">
                     <span className="text-foreground">Total:</span>
                     <span className="text-foreground">
-                      R$ {total.toFixed(2).replace(".", ",")}
+                      R$ {totalWithDiscount.toFixed(2).replace(".", ",")}
                     </span>
                   </div>
                 </div>

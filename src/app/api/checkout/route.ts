@@ -17,15 +17,16 @@ export async function POST(request: NextRequest) {
       shippingMethod,
       paymentMethod,
       total,
+      coupon,
     }: {
       items: CartItem[];
       customerInfo: { name: string; email: string; phone: string };
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      shippingInfo: any;
+      shippingInfo: Record<string, unknown>;
       shippingCost: number;
       shippingMethod: string;
       paymentMethod: string;
       total: number;
+      coupon?: { id: string; code: string };
     } = body;
 
     if (!items || items.length === 0) {
@@ -54,11 +55,15 @@ export async function POST(request: NextRequest) {
     }
     // Verificar se todos têm estoque suficiente
     const insufficientStock = items.find((item) => {
-      const product = products.find((p: any) => p.id === item.id);
+      const product = products.find(
+        (p: { id: string; stock_quantity: number }) => p.id === item.id
+      );
       return !product || product.stock_quantity < item.quantity;
     });
     if (insufficientStock) {
-      const product = products.find((p: any) => p.id === insufficientStock.id);
+      const product = products.find(
+        (p: { id: string; name: string }) => p.id === insufficientStock.id
+      );
       return NextResponse.json(
         {
           error: `Estoque insuficiente para o produto: ${
@@ -77,17 +82,48 @@ export async function POST(request: NextRequest) {
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
-      line_items: items.map((item: CartItem) => ({
-        price_data: {
-          currency: "brl",
-          product_data: {
-            name: item.name,
-            images: item.image ? [item.image] : undefined,
-          },
-          unit_amount: Math.round(item.price * 100),
-        },
-        quantity: item.quantity,
-      })),
+      line_items: (() => {
+        if (!coupon) {
+          // Sem cupom: usar preços originais
+          return items.map((item: CartItem) => ({
+            price_data: {
+              currency: "brl",
+              product_data: {
+                name: item.name,
+                images: item.image ? [item.image] : undefined,
+              },
+              unit_amount: Math.round(item.price * 100),
+            },
+            quantity: item.quantity,
+          }));
+        } else {
+          // Com cupom: ajustar preços proporcionalmente
+          const subtotal = items.reduce(
+            (sum, item) => sum + item.price * item.quantity,
+            0
+          );
+          const discount = subtotal - total;
+          const discountRatio = discount / subtotal;
+
+          return items.map((item: CartItem) => {
+            const itemTotal = item.price * item.quantity;
+            const itemDiscount = itemTotal * discountRatio;
+            const adjustedPrice = (itemTotal - itemDiscount) / item.quantity;
+
+            return {
+              price_data: {
+                currency: "brl",
+                product_data: {
+                  name: `${item.name}${coupon ? ` (${coupon.code})` : ""}`,
+                  images: item.image ? [item.image] : undefined,
+                },
+                unit_amount: Math.round(adjustedPrice * 100),
+              },
+              quantity: item.quantity,
+            };
+          });
+        }
+      })(),
       mode: "payment",
       success_url: `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/`,
@@ -100,6 +136,7 @@ export async function POST(request: NextRequest) {
           }))
         ),
         total: total.toString(),
+        coupon: coupon ? JSON.stringify(coupon) : "",
       },
       shipping_address_collection: {
         allowed_countries: ["BR"],
@@ -122,7 +159,12 @@ export async function POST(request: NextRequest) {
             (sum: number, item: CartItem) => sum + item.price * item.quantity,
             0
           ),
-          total_price: total,
+          total_price: total, // Usar o total com desconto enviado do frontend
+          discount_amount: coupon
+            ? items.reduce((sum, item) => sum + item.price * item.quantity, 0) -
+              total
+            : 0,
+          coupon_id: coupon?.id || null,
           status: "pending_payment",
           stripe_checkout_session_id: session.id,
         },
@@ -144,22 +186,37 @@ export async function POST(request: NextRequest) {
     }));
     await supabase.from("order_items").insert(orderItems);
 
+    // Atualizar uso do cupom se aplicável
+    if (coupon?.id) {
+      await supabase
+        .from("coupons")
+        .update({ times_used: supabase.rpc("increment", { x: 1 }) })
+        .eq("id", coupon.id);
+    }
+
     // Debitar estoque
     for (const item of items) {
+      // Buscar estoque atual
+      const { data: prod, error: prodError } = await supabase
+        .from("products")
+        .select("stock_quantity")
+        .eq("id", item.id)
+        .single();
+      if (prodError || !prod) {
+        return NextResponse.json(
+          { error: `Erro ao buscar estoque do produto: ${item.id}` },
+          { status: 500 }
+        );
+      }
+      const novoEstoque = Math.max(
+        0,
+        (prod.stock_quantity || 0) - item.quantity
+      );
       const { error: stockError } = await supabase
         .from("products")
-        .update({
-          stock_quantity: supabase.rpc("decrement_stock", {
-            product_id: item.id,
-            amount: item.quantity,
-          }),
-        })
+        .update({ stock_quantity: novoEstoque })
         .eq("id", item.id);
-      // Se não houver função RPC, faz update direto:
-      // .update({ stock_quantity: (produto.stock_quantity - item.quantity) })
-      // .eq("id", item.id);
       if (stockError) {
-        // Opcional: desfazer pedido e itens se falhar
         return NextResponse.json(
           { error: `Erro ao debitar estoque do produto: ${item.id}` },
           { status: 500 }

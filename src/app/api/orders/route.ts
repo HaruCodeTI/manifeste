@@ -18,6 +18,7 @@ export async function POST(req: NextRequest) {
       shippingMethod,
       paymentMethod,
       total,
+      coupon,
     } = body;
 
     if (!items || !customerInfo?.email || !total) {
@@ -48,6 +49,14 @@ export async function POST(req: NextRequest) {
             0
           ),
           total_price: total,
+          discount_amount: coupon
+            ? items.reduce(
+                (sum: number, item: CartItem) =>
+                  sum + item.price * item.quantity,
+                0
+              ) - total
+            : 0,
+          coupon_id: coupon?.id || null,
           status: initialStatus,
         },
       ])
@@ -69,6 +78,14 @@ export async function POST(req: NextRequest) {
       price_at_purchase: item.price,
     }));
     await supabase.from("order_items").insert(orderItems);
+
+    // Atualizar uso do cupom se aplicável
+    if (coupon?.id) {
+      await supabase
+        .from("coupons")
+        .update({ times_used: supabase.rpc("increment", { x: 1 }) })
+        .eq("id", coupon.id);
+    }
 
     // Cria histórico inicial
     await supabase.from("order_status_history").insert([
