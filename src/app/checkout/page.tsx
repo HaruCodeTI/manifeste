@@ -102,7 +102,7 @@ export default function CheckoutPage() {
         window.location.href = data.url;
         return;
       }
-      // Outros métodos: cria pedido local
+
       const response = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -223,6 +223,13 @@ export default function CheckoutPage() {
                     <Input
                       id="name"
                       name="name"
+                      value={customerInfo.name}
+                      onChange={(e) =>
+                        setCustomerInfo((prev) => ({
+                          ...prev,
+                          name: e.target.value,
+                        }))
+                      }
                       className="bg-white border border-[#b689e0]/40 rounded-none px-4 py-2 font-sans focus:border-[#b689e0] focus:ring-2 focus:ring-[#b689e0]/30 transition"
                       style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
                     />

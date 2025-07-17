@@ -77,10 +77,10 @@ export function Header({
             }}
           >
             <Image
-              src="/logo.svg"
+              src="/logo.png"
               alt="Logo Manifeste"
-              width={160}
-              height={40}
+              width={220}
+              height={100}
               priority
               draggable={false}
               style={{ objectFit: "contain", objectPosition: "center" }}
