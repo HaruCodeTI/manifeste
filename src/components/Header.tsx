@@ -30,7 +30,6 @@ export function Header({
 }: HeaderProps) {
   const { cart } = useCartContext();
   const [isCartHovered, setIsCartHovered] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
