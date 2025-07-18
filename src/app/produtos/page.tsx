@@ -96,22 +96,6 @@ export default function ProdutosPage() {
     }
   }, [products, selectedCategory]);
 
-  // Evento GA4: clique em produto
-  function handleProductClick(product: Product, idx: number) {
-    gtagEvent("select_item", {
-      item_list_id: selectedCategory || "catalogo",
-      item_list_name: selectedCategory || "Catálogo Principal",
-      items: [
-        {
-          item_id: product.id,
-          item_name: product.name,
-          index: idx + 1,
-          price: product.price,
-        },
-      ],
-    });
-  }
-
   const handleCategoryChange = (categoryId: string) => {
     setSelectedCategory(categoryId);
     setPage(1);
@@ -200,8 +184,8 @@ export default function ProdutosPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-7">
-              {products.map((product, idx) => (
-                <ProductCard key={product.id} product={product} idx={idx} />
+              {products.map((product) => (
+                <ProductCard key={product.id} product={product} />
               ))}
             </div>
           )}

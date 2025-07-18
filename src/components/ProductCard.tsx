@@ -5,17 +5,10 @@ import Link from "next/link";
 
 interface ProductCardProps {
   product: Product;
-  bgColor?: string;
-  idx?: number;
   small?: boolean;
 }
 
-export function ProductCard({
-  product,
-  bgColor,
-  idx = 0,
-  small = false,
-}: ProductCardProps) {
+export function ProductCard({ product, small = false }: ProductCardProps) {
   return (
     <div
       className={`relative flex flex-col items-center rounded-[2.5rem] shadow-xl border border-[#ececec] p-0 overflow-hidden group transition-all duration-300

@@ -115,12 +115,12 @@ export default function ProductPage({ params }: ProductPageProps) {
               Produtos relacionados
             </h2>
             <div className="flex gap-4 md:gap-6 overflow-x-auto pb-2 hide-scrollbar w-full max-w-full justify-center px-2">
-              {related.map((prod, idx) => (
+              {related.map((prod) => (
                 <div
                   key={prod.id}
                   className="flex-shrink-0 flex items-center justify-center"
                 >
-                  <ProductCard product={prod} idx={idx} small />
+                  <ProductCard product={prod} small />
                 </div>
               ))}
             </div>

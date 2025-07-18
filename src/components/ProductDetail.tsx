@@ -30,7 +30,6 @@ export function ProductDetail({ product }: ProductDetailProps) {
     hasDiscount && product.original_price
       ? Math.round(100 - (product.price / product.original_price) * 100)
       : 0;
-  const hasFreeShipping = product.price >= 250;
 
   const handleAddToCart = () => {
     if (quantity > product.stock_quantity) {
