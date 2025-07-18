@@ -11,7 +11,7 @@ import { useCartContext } from "@/contexts/CartContext";
 import { ArrowLeft, CreditCard, MapPin, Package, Truck } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type Coupon = {
   id: string;
@@ -111,15 +111,24 @@ export default function CheckoutPage() {
     }
   };
 
-  const calculateShipping = async () => {
-    if (!shippingInfo.cep || shippingInfo.cep.length < 8) return;
-    setIsCalculatingShipping(true);
-    setTimeout(() => {
-      const cost = Math.random() * 20 + 10; // Entre R$ 10 e R$ 30
-      setShippingCost(cost);
-      setIsCalculatingShipping(false);
-    }, 1000);
+  const calculateShipping = () => {
+    // Frete grátis acima de 100 reais
+    if (subtotal > 100) {
+      setShippingCost(0);
+    } else {
+      setShippingCost(15);
+    }
+    setIsCalculatingShipping(false);
   };
+
+  // Atualizar frete sempre que subtotal ou método mudar
+  useEffect(() => {
+    if (shippingMethod === "pickup") {
+      setShippingCost(0);
+    } else {
+      calculateShipping();
+    }
+  }, [subtotal, shippingMethod]);
 
   const handleCheckout = async () => {
     try {
@@ -698,9 +707,9 @@ export default function CheckoutPage() {
                     <span className="text-foreground">
                       {shippingMethod === "pickup"
                         ? "Grátis"
-                        : shippingCost > 0
-                        ? `R$ ${shippingCost.toFixed(2).replace(".", ",")}`
-                        : "Calculando..."}
+                        : shippingCost === 0
+                        ? "Grátis"
+                        : `R$ ${shippingCost.toFixed(2).replace(".", ",")}`}
                     </span>
                   </div>
                   <div className="flex justify-between text-lg font-bold text-foreground border-t pt-2">
