@@ -708,8 +708,8 @@ export default function CheckoutPage() {
                       {shippingMethod === "pickup"
                         ? "Grátis"
                         : shippingCost === 0
-                        ? "Grátis"
-                        : `R$ ${shippingCost.toFixed(2).replace(".", ",")}`}
+                          ? "Grátis"
+                          : `R$ ${shippingCost.toFixed(2).replace(".", ",")}`}
                     </span>
                   </div>
                   <div className="flex justify-between text-lg font-bold text-foreground border-t pt-2">

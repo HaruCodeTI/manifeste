@@ -2,6 +2,9 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Toast } from "@/components/ui/toast";
 import { CheckCircle, Clipboard, Package } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -11,6 +14,36 @@ function SuccessPageInner() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("order");
   const [copied, setCopied] = useState(false);
+  const [comChannel, setComChannel] = useState<string>("");
+  const whatsNumber = "5567999587200";
+  const [emailStatus, setEmailStatus] = useState<
+    "idle" | "sending" | "success" | "error"
+  >("idle");
+  const [toastMsg, setToastMsg] = useState("");
+
+  function gerarMensagemPedido() {
+    let msg = `Olá! Acabei de fazer um pedido no site.\n`;
+    msg += `Meu código de pedido é: ${orderId}`;
+    return msg;
+  }
+
+  async function handleSendEmail() {
+    setEmailStatus("sending");
+    setToastMsg("");
+    try {
+      const res = await fetch("/api/send-order-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId }),
+      });
+      if (!res.ok) throw new Error("Erro ao enviar e-mail");
+      setEmailStatus("success");
+      setToastMsg("E-mail enviado com sucesso!");
+    } catch {
+      setEmailStatus("error");
+      setToastMsg("Erro ao enviar e-mail. Tente novamente.");
+    }
+  }
 
   if (!orderId) {
     return (
@@ -84,6 +117,84 @@ function SuccessPageInner() {
               <span className="text-xs text-[#6d348b] ml-2">Copiado!</span>
             )}
           </div>
+
+          <div className="mb-6">
+            <Label className="text-black font-medium font-sans mb-2 block">
+              Como deseja receber os dados do pedido?
+            </Label>
+            <RadioGroup
+              value={comChannel}
+              onChange={(e) =>
+                setComChannel((e.target as HTMLInputElement).value)
+              }
+              className="flex flex-col gap-2 items-start justify-center mx-auto max-w-xs"
+            >
+              <label className="flex items-center gap-2 cursor-pointer w-full p-2 rounded-lg border border-[#b689e0]/30 hover:bg-[#f4eae6] transition">
+                <RadioGroupItem
+                  value="none"
+                  checked={comChannel === "none"}
+                  onChange={() => setComChannel("none")}
+                  className="border border-muted rounded-full"
+                />
+                <span className="text-foreground">
+                  Não quero receber, vou acompanhar pelo site
+                </span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer w-full p-2 rounded-lg border border-[#b689e0]/30 hover:bg-[#f4eae6] transition">
+                <RadioGroupItem
+                  value="email"
+                  checked={comChannel === "email"}
+                  onChange={() => setComChannel("email")}
+                  className="border border-muted rounded-full"
+                />
+                <span className="text-foreground">Receber por e-mail</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer w-full p-2 rounded-lg border border-[#b689e0]/30 hover:bg-[#f4eae6] transition">
+                <RadioGroupItem
+                  value="whatsapp"
+                  checked={comChannel === "whatsapp"}
+                  onChange={() => setComChannel("whatsapp")}
+                  className="border border-muted rounded-full"
+                />
+                <span className="text-foreground">Receber por WhatsApp</span>
+              </label>
+            </RadioGroup>
+            {comChannel === "whatsapp" && (
+              <a
+                href={`https://wa.me/${whatsNumber}?text=${encodeURIComponent(gerarMensagemPedido())}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 inline-block w-full"
+              >
+                <Button className="w-full mt-2 bg-[#25D366] text-white font-bold">
+                  Enviar pedido por WhatsApp
+                </Button>
+              </a>
+            )}
+            {comChannel === "email" && (
+              <Button
+                className="w-full mt-2 bg-[#b689e0] text-white font-bold"
+                onClick={handleSendEmail}
+                disabled={emailStatus === "sending"}
+              >
+                {emailStatus === "sending"
+                  ? "Enviando..."
+                  : "Enviar pedido por e-mail"}
+              </Button>
+            )}
+            {comChannel === "none" && (
+              <div className="text-sm text-muted-foreground mt-2">
+                Você pode acompanhar seu pedido pela tela{" "}
+                <b>Acompanhar Pedido</b> no site.
+              </div>
+            )}
+          </div>
+          <Toast
+            message={toastMsg}
+            isVisible={!!toastMsg}
+            onClose={() => setToastMsg("")}
+          />
+
           <Button
             asChild
             className="w-full mb-2 bg-[#6d348b] text-white font-bold rounded-[0.75rem] shadow-md hover:bg-[#4b206b] font-sans"
