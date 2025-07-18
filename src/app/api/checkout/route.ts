@@ -83,9 +83,11 @@ export async function POST(request: NextRequest) {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: (() => {
+        let lineItems = [];
+
         if (!coupon) {
           // Sem cupom: usar preços originais
-          return items.map((item: CartItem) => ({
+          lineItems = items.map((item: CartItem) => ({
             price_data: {
               currency: "brl",
               product_data: {
@@ -102,10 +104,12 @@ export async function POST(request: NextRequest) {
             (sum, item) => sum + item.price * item.quantity,
             0
           );
-          const discount = subtotal - total;
+          const totalWithoutShipping =
+            total - (shippingMethod === "delivery" ? shippingCost : 0);
+          const discount = subtotal - totalWithoutShipping;
           const discountRatio = discount / subtotal;
 
-          return items.map((item: CartItem) => {
+          lineItems = items.map((item: CartItem) => {
             const itemTotal = item.price * item.quantity;
             const itemDiscount = itemTotal * discountRatio;
             const adjustedPrice = (itemTotal - itemDiscount) / item.quantity;
@@ -123,9 +127,26 @@ export async function POST(request: NextRequest) {
             };
           });
         }
+
+        // Adicionar frete se aplicável
+        if (shippingMethod === "delivery" && shippingCost > 0) {
+          lineItems.push({
+            price_data: {
+              currency: "brl",
+              product_data: {
+                name: "Frete - Custo de entrega",
+                images: undefined,
+              },
+              unit_amount: Math.round(shippingCost * 100),
+            },
+            quantity: 1,
+          });
+        }
+
+        return lineItems;
       })(),
       mode: "payment",
-      success_url: `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${baseUrl}/sucesso?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/`,
       metadata: {
         items: JSON.stringify(
