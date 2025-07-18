@@ -1,11 +1,10 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Toast } from "@/components/ui/toast";
 import { useCartContext } from "@/contexts/CartContext";
 import { Product } from "@/lib/supabaseClient";
-import { ArrowLeft, Heart, Info, Share2, ShoppingCart } from "lucide-react";
+import { ArrowLeft, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -20,6 +19,18 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const [showToast, setShowToast] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [stockAlert, setStockAlert] = useState(false);
+
+  // Mock de avaliações (fixo)
+  const rating = 5;
+  const reviews = 32; // valor fixo para não variar
+  // Todos os outros dados vêm de product (backend)
+  const hasDiscount =
+    product.original_price && product.original_price > product.price;
+  const discountPercent =
+    hasDiscount && product.original_price
+      ? Math.round(100 - (product.price / product.original_price) * 100)
+      : 0;
+  const hasFreeShipping = product.price >= 250;
 
   const handleAddToCart = () => {
     if (quantity > product.stock_quantity) {
@@ -54,8 +65,8 @@ export function ProductDetail({ product }: ProductDetailProps) {
             asChild
             variant="ghost"
             size="sm"
-            className="text-primary hover:text-secondary focus:text-secondary rounded-xl font-medium font-sans transition-colors"
-            style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
+            className="text-primary hover:text-secondary focus:text-secondary rounded-xl font-medium font-[Poppins] transition-colors"
+            style={{ fontFamily: "Poppins, Arial, sans-serif" }}
           >
             <Link href="/produtos">
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -63,82 +74,20 @@ export function ProductDetail({ product }: ProductDetailProps) {
             </Link>
           </Button>
         </div>
-
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
           {/* Galeria de Imagens */}
-          <div className="space-y-4">
-            {/* Imagem Principal */}
-            <div
-              className="aspect-square bg-white rounded-2xl overflow-hidden relative border border-primary shadow-lg"
-              style={{
-                boxShadow: "0 2px 16px 0 #b689e020",
-                border: "1.5px solid #b689e0",
-              }}
-            >
-              {product.image_urls && product.image_urls[selectedImage] ? (
-                <Image
-                  src={product.image_urls[selectedImage]}
-                  alt={product.name}
-                  fill
-                  className="object-cover transition-all duration-500 hover:scale-110"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 40vw"
-                  priority={true}
-                />
-              ) : (
-                <div
-                  className="w-full h-full flex flex-col items-center justify-center bg-white text-primary gap-2 rounded-2xl border-none"
-                  style={{ boxShadow: "none" }}
-                >
-                  <span
-                    style={{
-                      fontSize: 48,
-                      lineHeight: 1,
-                      color: "#b689e0",
-                      marginBottom: 8,
-                    }}
-                  >
-                    ❤
-                  </span>
-                  <span
-                    className="text-xs font-medium font-sans text-primary text-center px-2"
-                    style={{
-                      fontFamily: "Montserrat, Arial, sans-serif",
-                      fontWeight: 500,
-                    }}
-                  >
-                    Em breve a foto do produto com todo o cuidado que você
-                    merece!
-                  </span>
-                </div>
-              )}
-              {/* Dots de galeria */}
-              {product.image_urls && product.image_urls.length > 1 && (
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-                  {product.image_urls.map((_, idx) => (
-                    <span
-                      key={idx}
-                      className="block w-3 h-3 rounded-full transition-all duration-200"
-                      style={{
-                        background:
-                          selectedImage === idx ? "#ffacc2" : "#e5e5e5",
-                        opacity: selectedImage === idx ? 1 : 0.6,
-                      }}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-
+          <div className="flex flex-row lg:flex-col gap-4 items-start">
+            {/* Miniaturas verticais */}
             {product.image_urls && product.image_urls.length > 1 && (
-              <div className="grid grid-cols-5 gap-3">
+              <div className="flex lg:flex-col flex-row gap-3">
                 {product.image_urls.map((image, index) => (
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
-                    className={`aspect-square bg-muted/30 rounded-xl overflow-hidden border-2 transition-all duration-300 hover:scale-105 ${
+                    className={`aspect-square bg-white rounded-xl overflow-hidden border-2 transition-all duration-300 hover:scale-105 ${
                       selectedImage === index
-                        ? "border-secondary shadow-lg scale-105"
-                        : "border-muted/40 hover:border-secondary/50"
+                        ? "border-[#fe53b3] shadow-lg scale-105"
+                        : "border-[#ede3f6] hover:border-[#fe53b3]"
                     }`}
                   >
                     <Image
@@ -152,283 +101,145 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 ))}
               </div>
             )}
-          </div>
-
-          <div className="space-y-6">
-            <div className="space-y-4">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <h1
-                    className="text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight mb-2"
-                    style={{
-                      fontFamily: "Montserrat, Arial, sans-serif",
-                      fontWeight: 700,
-                      color: "#1a1a1a",
-                    }}
-                  >
-                    {product.name}
-                  </h1>
-                  {product.sku && (
-                    <p
-                      className="text-sm text-muted-foreground font-mono"
-                      style={{
-                        fontFamily: "Montserrat, Arial, sans-serif",
-                        color: "#888",
-                      }}
-                    >
-                      SKU: {product.sku}
-                    </p>
-                  )}
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="rounded-full p-2 text-muted-foreground hover:text-secondary hover:bg-secondary/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-secondary font-sans"
-                    style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
-                  >
-                    <Heart className="w-5 h-5" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="rounded-full p-2 text-muted-foreground hover:text-secondary hover:bg-secondary/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-secondary font-sans"
-                    style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
-                  >
-                    <Share2 className="w-5 h-5" />
-                  </Button>
-                </div>
-              </div>
-
-              {/* Preço e Status */}
-              <div className="flex items-center gap-4 flex-wrap">
-                <div className="flex items-baseline gap-2">
+            {/* Imagem Principal */}
+            <div
+              className="aspect-square bg-white rounded-2xl overflow-hidden relative border border-[#ede3f6] shadow-lg flex-1 min-w-[260px] max-w-[480px] mx-auto"
+              style={{ boxShadow: "0 2px 16px 0 #b689e020" }}
+            >
+              {product.image_urls && product.image_urls[selectedImage] ? (
+                <Image
+                  src={product.image_urls[selectedImage]}
+                  alt={product.name}
+                  fill
+                  className="object-contain transition-all duration-500 hover:scale-110"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 40vw"
+                  priority={true}
+                />
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center bg-white text-[#b689e0] gap-2 rounded-2xl border-none">
                   <span
-                    className="text-3xl font-bold text-secondary"
-                    style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
+                    style={{ fontSize: 48, lineHeight: 1, marginBottom: 8 }}
                   >
-                    R$ {formatPrice(product.price)}
+                    ❤
                   </span>
-                  {product.original_price &&
-                    product.original_price > product.price && (
-                      <span className="text-base text-gray-400 line-through ml-2">
-                        R$ {formatPrice(product.original_price)}
-                      </span>
-                    )}
+                  <span className="text-xs font-medium font-[Poppins] text-[#b689e0] text-center px-2">
+                    Em breve a foto do produto com todo o cuidado que você
+                    merece!
+                  </span>
                 </div>
-                {/* Badge de estoque */}
-                {product.stock_quantity > 0 ? (
-                  <span className="inline-block bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full border border-green-300">
-                    {product.stock_quantity} em estoque
-                  </span>
-                ) : (
-                  <span className="inline-block bg-red-100 text-red-700 text-xs font-semibold px-3 py-1 rounded-full border border-red-300">
-                    Indisponível
+              )}
+            </div>
+          </div>
+          {/* Informações do Produto */}
+          <div className="space-y-6 flex flex-col justify-center">
+            <div className="space-y-4">
+              <h1
+                className="text-3xl md:text-4xl font-extrabold leading-tight mb-2 text-[#7b61ff] font-[Poppins]"
+                style={{ fontFamily: "Poppins, Arial, sans-serif" }}
+              >
+                {product.name}
+              </h1>
+              {/* Avaliação */}
+              <div className="flex items-center gap-1 mb-1">
+                {Array.from({ length: rating }).map((_, i) => (
+                  <Star key={i} size={20} fill="#FFD600" stroke="#FFD600" />
+                ))}
+                <span className="ml-1 text-gray-700 text-base font-semibold">
+                  ({reviews})
+                </span>
+              </div>
+              {/* Preço e descontos */}
+              <div className="flex items-center gap-3 flex-wrap mb-2">
+                {hasDiscount && (
+                  <span className="text-base text-gray-400 line-through">
+                    R$ {formatPrice(product.original_price!)}
                   </span>
                 )}
+                {hasDiscount && (
+                  <span className="bg-[#00d26a] text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                    {discountPercent}%OFF
+                  </span>
+                )}
+                <span className="text-3xl font-bold text-[#fe53b3] font-[Poppins]">
+                  R$ {formatPrice(product.price)}
+                </span>
               </div>
-            </div>
-
-            {/* Quantidade e Botão */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <label className="text-sm font-medium text-foreground">
-                    Quantidade:
-                  </label>
-                  <div className="flex items-center gap-2 bg-white border border-[#d4af37]/80 rounded-[0.75rem] px-3 py-2 shadow-sm">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className="rounded-full hover:bg-[#ede3f6] hover:text-[#6d348b] text-[#6d348b] font-bold text-lg transition-all duration-200"
-                      style={{ fontFamily: "Poppins, sans-serif" }}
-                    >
-                      -
-                    </Button>
-                    <span
-                      className="text-xl font-bold w-8 text-center text-[#6d348b] font-sans"
-                      style={{ fontFamily: "Poppins, sans-serif" }}
-                    >
-                      {quantity}
-                    </span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        if (quantity < product.stock_quantity) {
-                          setQuantity(quantity + 1);
-                        } else {
-                          setStockAlert(true);
-                          setTimeout(() => setStockAlert(false), 2000);
-                        }
-                      }}
-                      className="rounded-full hover:bg-[#ede3f6] hover:text-[#6d348b] text-[#6d348b] font-bold text-lg transition-all duration-200"
-                      style={{ fontFamily: "Poppins, sans-serif" }}
-                    >
-                      +
-                    </Button>
-                  </div>
-                  {stockAlert && (
-                    <div className="text-xs text-red-600 font-semibold mt-1">
-                      Estoque máximo disponível!
-                    </div>
-                  )}
+              {/* Parcelamento */}
+              <div className="text-base text-gray-700 font-semibold mb-2">
+                6x de R${" "}
+                {(product.price / 6).toLocaleString("pt-BR", {
+                  minimumFractionDigits: 2,
+                })}{" "}
+                sem juros
+              </div>
+              {/* Seletor de quantidade e botão comprar */}
+              <div className="flex items-center gap-4 mb-4">
+                <div className="flex items-center gap-2 bg-white border border-[#ede3f6] rounded-full px-3 py-2 shadow-sm">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    className="rounded-full hover:bg-[#ede3f6] hover:text-[#7b61ff] text-[#7b61ff] font-bold text-lg transition-all duration-200"
+                    style={{ fontFamily: "Poppins, sans-serif" }}
+                    disabled={quantity <= 1 || product.stock_quantity === 0}
+                  >
+                    -
+                  </Button>
+                  <span className="text-xl font-bold w-8 text-center text-[#7b61ff] font-[Poppins]">
+                    {quantity}
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      if (quantity < product.stock_quantity) {
+                        setQuantity(quantity + 1);
+                      } else {
+                        setStockAlert(true);
+                        setTimeout(() => setStockAlert(false), 2000);
+                      }
+                    }}
+                    className="rounded-full hover:bg-[#ede3f6] hover:text-[#7b61ff] text-[#7b61ff] font-bold text-lg transition-all duration-200"
+                    style={{ fontFamily: "Poppins, sans-serif" }}
+                    disabled={
+                      quantity >= product.stock_quantity ||
+                      product.stock_quantity === 0
+                    }
+                  >
+                    +
+                  </Button>
                 </div>
-              </div>
-
-              {/* Botão de compra */}
-              <div className="flex flex-col gap-4 mt-6">
                 <Button
                   onClick={handleAddToCart}
+                  className="px-10 py-3 rounded-full font-bold text-white bg-[#00d26a] text-lg font-[Poppins] hover:bg-[#00b85b] hover:scale-105 transition-all duration-200 shadow-lg"
+                  style={{ fontFamily: "Poppins, Arial, sans-serif" }}
                   disabled={product.stock_quantity === 0}
-                  className={`w-full font-semibold transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] rounded-2xl py-3 bg-secondary text-secondary-foreground hover:bg-secondary/90 shadow-md hover:shadow-lg ${
-                    product.stock_quantity === 0
-                      ? "opacity-60 cursor-not-allowed"
-                      : ""
-                  }`}
-                  style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
                 >
-                  <ShoppingCart className="w-4 h-4 mr-2" />
-                  {product.stock_quantity === 0
-                    ? "Indisponível"
-                    : "Adicionar ao Carrinho"}
+                  COMPRAR
                 </Button>
               </div>
+              {/* Mensagem de erro ao tentar passar do estoque */}
+              {stockAlert && (
+                <div className="text-xs text-red-600 font-semibold mt-1">
+                  Estoque máximo disponível!
+                </div>
+              )}
             </div>
-            {product.description && (
-              <Card
-                className="bg-white border border-primary/60 rounded-2xl shadow-md mt-4"
-                style={{ boxShadow: "0 2px 8px 0 #b689e01a" }}
-              >
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Info className="w-5 h-5 text-secondary" />
-                    <span
-                      className="font-bold text-base text-black"
-                      style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
-                    >
-                      Descrição do Produto
-                    </span>
-                  </div>
-                  <div
-                    className="text-black text-sm font-sans"
-                    style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
-                  >
-                    {product.description}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Características */}
-            {product.tags && product.tags.length > 0 && (
-              <Card
-                className="bg-white border border-primary/60 rounded-2xl shadow-md mt-4"
-                style={{ boxShadow: "0 2px 8px 0 #b689e01a" }}
-              >
-                <CardContent className="p-6">
-                  <h3
-                    className="font-bold text-lg mb-4 text-black flex items-center gap-2"
-                    style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
-                  >
-                    <Info className="w-5 h-5 text-secondary" /> Características
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {product.tags.map((tag, index) => (
-                      <span
-                        key={index}
-                        className="bg-primary/10 border border-primary/40 rounded-xl px-3 py-1 font-sans text-primary text-sm font-medium"
-                        style={{
-                          fontFamily: "Montserrat, Arial, sans-serif",
-                          marginBottom: 4,
-                        }}
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Especificações Técnicas */}
-            {(product.weight_grams !== null ||
-              product.dimensions_cm !== null) && (
-              <Card
-                className="bg-white border border-primary/60 rounded-2xl shadow-md mt-4"
-                style={{ boxShadow: "0 2px 8px 0 #b689e01a" }}
-              >
-                <CardContent className="p-6">
-                  <h3
-                    className="font-bold text-lg mb-4 text-black flex items-center gap-2"
-                    style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
-                  >
-                    <svg
-                      width="20"
-                      height="20"
-                      fill="#b689e0"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
-                      <circle cx="12" cy="12" r="5" />
-                    </svg>{" "}
-                    Especificações Técnicas
-                  </h3>
-                  <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-2">
-                      <svg
-                        width="18"
-                        height="18"
-                        fill="#b689e0"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
-                        <circle cx="12" cy="12" r="5" />
-                      </svg>
-                      <span
-                        className="text-base text-black font-sans"
-                        style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
-                      >
-                        <b>Peso:</b>{" "}
-                        {product.weight_grams !== null
-                          ? `${product.weight_grams}g`
-                          : "-"}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <svg
-                        width="18"
-                        height="18"
-                        fill="#b689e0"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M3 17v2h6v-2H3zm0-4v2h12v-2H3zm0-4v2h18V9H3z" />
-                      </svg>
-                      <span
-                        className="text-base text-black font-sans"
-                        style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
-                      >
-                        <b>Dimensões:</b>{" "}
-                        {product.dimensions_cm &&
-                        typeof product.dimensions_cm === "object" &&
-                        product.dimensions_cm.height &&
-                        product.dimensions_cm.width &&
-                        product.dimensions_cm.length
-                          ? `${product.dimensions_cm.height}cm x ${product.dimensions_cm.width}cm x ${product.dimensions_cm.length}cm`
-                          : "-"}
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+            {/* Frete e extras - pode ser implementado depois */}
+          </div>
+        </div>
+        {/* Descrição */}
+        <div className="mt-12 bg-[#f5f5f5] rounded-2xl p-8">
+          <h2 className="text-2xl font-bold text-[#222] mb-4 font-[Poppins]">
+            Descrição
+          </h2>
+          <div className="text-base text-[#222] font-[Poppins]">
+            {product.description}
           </div>
         </div>
       </div>
-
       <Toast
-        message={`${product.name} adicionado ao carrinho!`}
+        message={`${quantity > 1 ? `${quantity}x ` : ""}${product.name} adicionado ao carrinho!`}
         isVisible={showToast}
         onClose={() => setShowToast(false)}
       />

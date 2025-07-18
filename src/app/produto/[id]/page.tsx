@@ -1,6 +1,7 @@
 "use client";
 
 import { Header } from "@/components/Header";
+import { ProductCard } from "@/components/ProductCard";
 import { ProductDetail } from "@/components/ProductDetail";
 import { ShoppingCart } from "@/components/ShoppingCart";
 import { gtagEvent } from "@/lib/gtag";
@@ -16,6 +17,7 @@ interface ProductPageProps {
 
 export default function ProductPage({ params }: ProductPageProps) {
   const [product, setProduct] = useState<Product | null>(null);
+  const [related, setRelated] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
@@ -33,10 +35,22 @@ export default function ProductPage({ params }: ProductPageProps) {
         setProduct(null);
       } else {
         setProduct(data);
+        // Buscar relacionados
+        if (data.category_id) {
+          const { data: relatedData } = await supabase
+            .from("products")
+            .select("*")
+            .eq("category_id", data.category_id)
+            .eq("status", "active")
+            .neq("id", id)
+            .limit(10);
+          setRelated(relatedData || []);
+        } else {
+          setRelated([]);
+        }
       }
       setLoading(false);
     }
-
     getProduct();
   }, [params]);
 
@@ -65,9 +79,14 @@ export default function ProductPage({ params }: ProductPageProps) {
           onCategoryChange={() => {}}
         />
         <main className="py-8 sm:py-12">
-          <div className="text-center flex flex-col items-center justify-center" style={{ fontFamily: 'Montserrat, Arial, sans-serif' }}>
+          <div
+            className="text-center flex flex-col items-center justify-center"
+            style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
+          >
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-4 text-primary font-medium text-base">Carregando produto...</p>
+            <p className="mt-4 text-primary font-medium text-base">
+              Carregando produto...
+            </p>
           </div>
         </main>
       </div>
@@ -87,12 +106,37 @@ export default function ProductPage({ params }: ProductPageProps) {
         selectedCategory={""}
         onCategoryChange={() => {}}
       />
-
       <main className="py-8 sm:py-12">
         <ProductDetail product={product} />
+        {/* Produtos relacionados */}
+        {related.length > 0 && (
+          <section className="mt-16 w-full flex flex-col items-center justify-center">
+            <h2 className="text-2xl md:text-3xl font-bold text-[#7b61ff] mb-6 font-[Poppins] text-center">
+              Produtos relacionados
+            </h2>
+            <div className="flex gap-4 md:gap-6 overflow-x-auto pb-2 hide-scrollbar w-full max-w-full justify-center px-2">
+              {related.map((prod, idx) => (
+                <div
+                  key={prod.id}
+                  className="flex-shrink-0 flex items-center justify-center"
+                >
+                  <ProductCard product={prod} idx={idx} small />
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
       </main>
-
       <ShoppingCart isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      <style jsx global>{`
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .hide-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
     </div>
   );
 }
