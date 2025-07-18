@@ -1,12 +1,11 @@
 "use client";
 
 import { Header } from "@/components/Header";
+import { ProductCard } from "@/components/ProductCard";
 import { ShoppingCart } from "@/components/ShoppingCart";
 import { LoadingGrid } from "@/components/ui/loading";
 import { gtagEvent } from "@/lib/gtag";
 import { Product, supabase } from "@/lib/supabaseClient";
-import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 interface Category {
@@ -200,147 +199,10 @@ export default function ProdutosPage() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-7">
-              {products.map((product, idx) => {
-                const hasDiscount =
-                  product.original_price &&
-                  product.original_price > product.price;
-                const discountPercent =
-                  hasDiscount && product.original_price
-                    ? Math.round(
-                        100 - (product.price / product.original_price) * 100
-                      )
-                    : 0;
-                const installment = 6;
-                const installmentValue = (
-                  product.price / installment
-                ).toLocaleString("pt-BR", { minimumFractionDigits: 2 });
-                const hasFreeShipping = product.price >= 250; // Exemplo: frete grátis acima de 250
-                const originalPrice =
-                  typeof product.original_price === "number" &&
-                  product.original_price > 0
-                    ? `R$ ${product.original_price.toLocaleString("pt-BR", {
-                        minimumFractionDigits: 2,
-                      })}`
-                    : "";
-                return (
-                  <Link
-                    key={product.id}
-                    href={`/produto/${product.id}`}
-                    className="group block bg-white rounded-2xl overflow-hidden transition-transform hover:-translate-y-1 shadow-md border border-primary/60 hover:shadow-xl hover:border-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary p-4 flex flex-col min-h-[340px] relative"
-                    style={{
-                      boxShadow: "0 2px 12px 0 #b689e01a",
-                      border: "1px solid #b689e099",
-                    }}
-                    onClick={() => handleProductClick(product, idx)}
-                  >
-                    {/* Badges */}
-                    <div className="absolute top-3 left-3 flex flex-col gap-2 z-10">
-                      {hasDiscount && (
-                        <span className="bg-secondary text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
-                          {discountPercent}% OFF
-                        </span>
-                      )}
-                      {product.is_offer && (
-                        <span className="bg-primary text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
-                          Oferta
-                        </span>
-                      )}
-                      {hasFreeShipping && (
-                        <span className="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-md">
-                          Frete grátis
-                        </span>
-                      )}
-                    </div>
-                    {/* Imagem e placeholder */}
-                    <div className="w-full aspect-[4/5] flex items-center justify-center mb-4">
-                      {product.image_urls && product.image_urls.length > 0 ? (
-                        <Image
-                          src={product.image_urls[0]}
-                          alt={product.name}
-                          width={400}
-                          height={500}
-                          className="object-cover w-full h-full transition-opacity duration-300 group-hover:opacity-0 rounded-[0.75rem]"
-                          loading="lazy"
-                          style={{ objectFit: "cover" }}
-                        />
-                      ) : (
-                        <div
-                          className="w-full h-full flex flex-col items-center justify-center bg-white text-[#6d348b] gap-2 rounded-[0.75rem] border-none"
-                          style={{ boxShadow: "none" }}
-                        >
-                          <span style={{ fontSize: 44, lineHeight: 1 }}>
-                            🤍
-                          </span>
-                          <span
-                            className="text-xs font-medium font-sans text-[#6d348b] text-center px-2"
-                            style={{ fontFamily: "Poppins, sans-serif" }}
-                          >
-                            Em breve a foto do produto com todo o cuidado que
-                            você merece!
-                          </span>
-                        </div>
-                      )}
-                      {product.image_urls && product.image_urls.length > 1 && (
-                        <Image
-                          src={product.image_urls[1]}
-                          alt={product.name}
-                          width={400}
-                          height={500}
-                          className="object-cover w-full h-full absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-[0.75rem]"
-                          loading="lazy"
-                          style={{ objectFit: "cover" }}
-                        />
-                      )}
-                    </div>
-                    <div className="flex-1 flex flex-col justify-between items-center text-center">
-                      <div className="mb-2 w-full">
-                        <div
-                          className="text-[1.05rem] font-medium text-black leading-tight mb-2 w-full text-center"
-                          style={{
-                            fontFamily: "Montserrat, Arial, sans-serif",
-                            fontWeight: 500,
-                          }}
-                        >
-                          {product.name}
-                        </div>
-                      </div>
-                      <div className="flex flex-col items-center justify-center gap-1 w-full">
-                        <div className="flex items-end justify-center gap-1 w-full">
-                          <span
-                            className="text-[1rem] font-semibold text-secondary"
-                            style={{
-                              fontFamily: "Montserrat, Arial, sans-serif",
-                              fontWeight: 600,
-                            }}
-                          >
-                            R$
-                          </span>
-                          <span
-                            className="text-[1.1rem] font-semibold text-secondary"
-                            style={{
-                              fontFamily: "Montserrat, Arial, sans-serif",
-                              fontWeight: 600,
-                            }}
-                          >
-                            {Number(product.price).toLocaleString("pt-BR", {
-                              minimumFractionDigits: 2,
-                            })}
-                          </span>
-                          {hasDiscount && (
-                            <span className="text-xs text-gray-400 line-through ml-2">
-                              {originalPrice}
-                            </span>
-                          )}
-                        </div>
-                        <div className="text-xs text-gray-600 mt-1">
-                          {installment}x de R$ {installmentValue} sem juros
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-7">
+              {products.map((product, idx) => (
+                <ProductCard key={product.id} product={product} idx={idx} />
+              ))}
             </div>
           )}
           {totalPages > 1 && (
@@ -348,7 +210,8 @@ export default function ProdutosPage() {
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="px-4 py-2 rounded-lg bg-white border border-neutral-200 text-black hover:bg-neutral-100 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                className="px-4 py-2 rounded-full border-2 border-[#7b61ff] bg-white text-[#7b61ff] font-bold font-[Poppins] transition-all duration-200 hover:bg-[#fe53b3] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed text-base"
+                style={{ fontFamily: "Poppins, Arial, sans-serif" }}
               >
                 Anterior
               </button>
@@ -357,11 +220,12 @@ export default function ProdutosPage() {
                   <button
                     key={pageNumber}
                     onClick={() => setPage(pageNumber)}
-                    className={`w-10 h-10 rounded-lg border font-medium transition-all duration-200 ${
+                    className={`w-10 h-10 rounded-full border-2 font-bold font-[Poppins] transition-all duration-200 text-base ${
                       page === pageNumber
-                        ? "bg-black text-white border-black"
-                        : "bg-white text-black border-neutral-200 hover:bg-neutral-100"
+                        ? "bg-[#7b61ff] text-white border-[#7b61ff]"
+                        : "bg-white text-[#7b61ff] border-[#7b61ff] hover:bg-[#fe53b3] hover:text-white hover:border-[#fe53b3]"
                     }`}
+                    style={{ fontFamily: "Poppins, Arial, sans-serif" }}
                   >
                     {pageNumber}
                   </button>
@@ -370,7 +234,8 @@ export default function ProdutosPage() {
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="px-4 py-2 rounded-lg bg-white border border-neutral-200 text-black hover:bg-neutral-100 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                className="px-4 py-2 rounded-full border-2 border-[#7b61ff] bg-white text-[#7b61ff] font-bold font-[Poppins] transition-all duration-200 hover:bg-[#fe53b3] hover:text-white disabled:opacity-50 disabled:cursor-not-allowed text-base"
+                style={{ fontFamily: "Poppins, Arial, sans-serif" }}
               >
                 Próxima
               </button>
