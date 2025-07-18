@@ -2,7 +2,12 @@
 
 import { Header } from "@/components/Header";
 import { ShoppingCart } from "@/components/ShoppingCart";
-import { Category, Product, supabase } from "@/lib/supabaseClient";
+import {
+  Category,
+  getProductImageUrls,
+  Product,
+  supabase,
+} from "@/lib/supabaseClient";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
@@ -81,7 +86,12 @@ export default function HomePage() {
         .eq("status", "active")
         .order("stock_quantity", { ascending: false })
         .limit(3);
-      setOffers(data || []);
+      setOffers(
+        (data || []).map((p) => ({
+          ...p,
+          image_urls: getProductImageUrls(p.image_urls || []),
+        }))
+      );
     }
     fetchOffers();
   }, []);
