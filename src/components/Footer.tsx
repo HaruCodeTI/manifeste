@@ -7,10 +7,12 @@ export function Footer() {
       <footer
         className="w-full pt-12 pb-6 px-4 font-sans shadow-sm border-t"
         style={{
-          background: "linear-gradient(90deg, #a06cc1 0%, #b689e0 100%)",
-          borderTop: "2px solid #a06cc1",
-          borderRadius: "0 0 0 0",
-          fontFamily: "Montserrat, Arial, sans-serif",
+          background:
+            "linear-gradient(90deg, var(--background) 0%, var(--secondary) 100%)",
+          borderTop:
+            "2px solid linear-gradient(90deg, var(--background) 0%, var(--secondary) 100%)",
+          borderRadius: 0,
+          fontFamily: "Poppins, Arial, sans-serif",
         }}
       >
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
@@ -19,7 +21,7 @@ export function Footer() {
               className="text-2xl font-bold mb-6 text-white"
               style={{
                 letterSpacing: "0.02em",
-                fontFamily: "Montserrat, Arial, sans-serif",
+                fontFamily: "Poppins, Arial, sans-serif",
               }}
             >
               Informações
@@ -29,7 +31,7 @@ export function Footer() {
                 <Link
                   href="/quem-somos"
                   className="transition-colors duration-200 text-white hover:text-secondary focus:text-white font-sans"
-                  style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
+                  style={{ fontFamily: "Poppins, Arial, sans-serif" }}
                 >
                   Quem Somos
                 </Link>
@@ -38,7 +40,7 @@ export function Footer() {
                 <Link
                   href="/missao-visao-valores"
                   className="transition-colors duration-200 text-white hover:text-secondary focus:text-white font-sans"
-                  style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
+                  style={{ fontFamily: "Poppins, Arial, sans-serif" }}
                 >
                   Missão, Visão e Valores
                 </Link>
@@ -47,34 +49,16 @@ export function Footer() {
                 <Link
                   href="/trocas-e-devolucoes"
                   className="transition-colors duration-200 text-white hover:text-secondary focus:text-white font-sans"
-                  style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
+                  style={{ fontFamily: "Poppins, Arial, sans-serif" }}
                 >
                   Trocas e Devoluções
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/acompanhar"
-                  className="transition-colors duration-200 text-white hover:text-secondary focus:text-white font-sans"
-                  style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
-                >
-                  Ajuda
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/"
-                  className="transition-colors duration-200 text-white hover:text-secondary focus:text-white font-sans"
-                  style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
-                >
-                  Clube
-                </Link>
-              </li>
-              <li>
-                <Link
                   href="#"
                   className="transition-colors duration-200 text-white hover:text-secondary focus:text-white font-sans"
-                  style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
+                  style={{ fontFamily: "Poppins, Arial, sans-serif" }}
                 >
                   Política de Privacidade
                 </Link>
@@ -83,7 +67,7 @@ export function Footer() {
                 <Link
                   href="#"
                   className="transition-colors duration-200 text-white hover:text-secondary focus:text-white font-sans"
-                  style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
+                  style={{ fontFamily: "Poppins, Arial, sans-serif" }}
                 >
                   Política de Entrega
                 </Link>
@@ -94,7 +78,7 @@ export function Footer() {
             <h2
               className="text-2xl font-bold mb-4 text-white text-right"
               style={{
-                fontFamily: "Montserrat, Arial, sans-serif",
+                fontFamily: "Poppins, Arial, sans-serif",
                 letterSpacing: "0.02em",
               }}
             >
@@ -102,7 +86,7 @@ export function Footer() {
             </h2>
             <div
               className="flex flex-col gap-2 text-white text-lg font-sans items-start text-left md:items-end md:text-right"
-              style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
+              style={{ fontFamily: "Poppins, Arial, sans-serif" }}
             >
               <a
                 href="mailto:manifestecg@gmail.com"
@@ -129,7 +113,7 @@ export function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 hover:text-secondary transition text-xl w-full justify-start md:justify-end"
-                style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
+                style={{ fontFamily: "Poppins, Arial, sans-serif" }}
               >
                 <FaInstagram className="text-2xl" /> @manifeste.cg
               </a>
@@ -137,16 +121,6 @@ export function Footer() {
           </div>
         </div>
       </footer>
-      <div
-        className="w-full text-center text-white text-xs py-2"
-        style={{
-          background: "#a06cc1",
-          fontFamily: "Montserrat, Arial, sans-serif",
-          borderRadius: "0 0 0 0",
-        }}
-      >
-        © {new Date().getFullYear()} Manifeste. Todos os direitos reservados.
-      </div>
     </div>
   );
 }

@@ -2,21 +2,10 @@ import { Footer } from "@/components/Footer";
 import { StagewiseDevToolbar } from "@/components/StagewiseDevToolbar";
 import { CartProvider } from "@/contexts/CartContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import "@fontsource/poppins/400.css";
+import "@fontsource/poppins/700.css";
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
-
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "Manifeste - Produtos Selecionados",
@@ -48,8 +37,8 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${inter.variable} ${playfair.variable} antialiased`}
-        style={{ fontFamily: "Inter, Helvetica Neue, Arial, sans-serif" }}
+        className="antialiased"
+        style={{ fontFamily: "Poppins, Arial, sans-serif" }}
       >
         <ThemeProvider>
           <CartProvider>{children}</CartProvider>
