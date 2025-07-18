@@ -2,14 +2,59 @@
 
 import { Header } from "@/components/Header";
 import { ShoppingCart } from "@/components/ShoppingCart";
-import { Category, supabase } from "@/lib/supabaseClient";
+import { Category, Product, supabase } from "@/lib/supabaseClient";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function HomePage() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
+  const [offers, setOffers] = useState<Product[]>([]);
+
+  const testimonials = [
+    {
+      name: "Poliana",
+      product: "Piggy Sugador de Clitóris Recarregável",
+      rating: 5,
+      title: "É o melhor toy que uma mulher pode ter!",
+      text: "Fazem dois anos que comprei e foi o melhor investimento! Ele é perfeito. Você nem precisa estar no clima, que chega lá em segundos. É realmente o melhor.",
+    },
+    {
+      name: "Mila",
+      product: "Must Vibrador Rabbit com Aquecimento",
+      rating: 5,
+      title: "FUI PRO CÉU",
+      text: "Já tinha o best e adorava... e ja tinha um tempo que eu tava namorando o Must, justo pelo fato dele esquentar... ai rolou a promo e eu ✨comprei✨ e amei!",
+    },
+    {
+      name: "Maju F",
+      product: "Must Vibrador Rabbit com Aquecimento",
+      rating: 5,
+      title: "Criação abençoada",
+      text: "Meu Must chegou a noite e fui ver se tava tudo certo não resisti fui experimentar msm, vei que maravilhosa ainda tava frio ele esquentou tudo kkkkkk, no começo...",
+    },
+    {
+      name: "Juliana Berto",
+      product: "Must Vibrador Rabbit com Aquecimento",
+      rating: 5,
+      title: "Reclamação = goza muito rápido",
+      text: "O meu must chegou, cheguei do trabalho e a primeira coisa que eu fiz foi testar, queria fazer uma reclamação pq eu me sinto um macho precoce que goza na primeira...",
+    },
+  ];
+  const [testimonialIdx, setTestimonialIdx] = useState(0);
+  const testimonialTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  // Animação automática
+  useEffect(() => {
+    if (testimonialTimeout.current) clearTimeout(testimonialTimeout.current);
+    testimonialTimeout.current = setTimeout(() => {
+      setTestimonialIdx((prev: number) => (prev + 1) % testimonials.length);
+    }, 6000);
+    return () => {
+      if (testimonialTimeout.current) clearTimeout(testimonialTimeout.current);
+    };
+  }, [testimonialIdx]);
 
   useEffect(() => {
     async function fetchCategories() {
@@ -27,6 +72,22 @@ export default function HomePage() {
     }
     fetchCategories();
   }, []);
+
+  useEffect(() => {
+    async function fetchOffers() {
+      const { data } = await supabase
+        .from("products")
+        .select("*", { count: "exact" })
+        .eq("status", "active")
+        .order("stock_quantity", { ascending: false })
+        .limit(3);
+      setOffers(data || []);
+    }
+    fetchOffers();
+  }, []);
+
+  // Cores de fundo para os cards de oferta
+  const offerBgColors = ["#ffe0f7", "#e0e7ff", "#ffe4ec"];
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
@@ -196,59 +257,265 @@ export default function HomePage() {
             </div>
           )}
         </section>
+        {/* Ofertas */}
+        <section className="w-full py-12 md:py-20 ">
+          <h2
+            className="text-4xl md:text-5xl font-bold text-black/90 text-center font-[Poppins] mb-12"
+            style={{
+              letterSpacing: "-1px",
+              fontFamily: "Poppins, Arial, sans-serif",
+            }}
+          >
+            Ofertas
+          </h2>
+          <div className="w-full max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 md:gap-14 px-2 md:px-0">
+            {offers.map((product, idx) => {
+              const hasDiscount =
+                product.original_price &&
+                product.original_price > product.price;
+              const discountPercent =
+                hasDiscount && product.original_price
+                  ? Math.round(
+                      100 - (product.price / product.original_price) * 100
+                    )
+                  : 0;
+              const hasFreeShipping = product.price >= 250;
+              const bg = offerBgColors[idx % offerBgColors.length];
+              return (
+                <div
+                  key={product.id}
+                  className="relative flex flex-col items-center rounded-[2.5rem] shadow-xl border border-[#ececec] p-0 overflow-hidden group transition-all duration-300 min-h-[480px] bg-white"
+                  style={{ background: bg }}
+                >
+                  {/* Badges */}
+                  <div className="absolute top-5 left-5 flex flex-col gap-2 z-10">
+                    {hasDiscount && (
+                      <span className="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                        {discountPercent}% OFF
+                      </span>
+                    )}
+                    <span className="bg-[#fe53b3] text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                      OFERTA
+                    </span>
+                    {hasFreeShipping && (
+                      <span className="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                        FRETE GRÁTIS
+                      </span>
+                    )}
+                  </div>
+                  {/* Imagem */}
+                  <div className="w-full flex-1 flex items-center justify-center mb-4 pt-8 pb-2 px-8">
+                    {product.image_urls && product.image_urls.length > 0 ? (
+                      <img
+                        src={product.image_urls[0]}
+                        alt={product.name}
+                        className="object-contain rounded-2xl w-full max-h-64 md:max-h-72 lg:max-h-80"
+                        style={{
+                          background: bg,
+                          maxWidth: "90%",
+                          height: "auto",
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-56 flex items-center justify-center bg-[#f5f5f5] text-[#b689e0] rounded-2xl">
+                        Sem imagem
+                      </div>
+                    )}
+                  </div>
+                  {/* Nome */}
+                  <div className="px-6 w-full flex flex-col items-center">
+                    <div
+                      className="text-lg md:text-xl font-bold text-black text-center font-[Poppins] mb-4"
+                      style={{ fontFamily: "Poppins, Arial, sans-serif" }}
+                    >
+                      {product.name}
+                    </div>
+                  </div>
+                  {/* Preço */}
+                  <div className="flex items-center justify-center gap-2 mb-1">
+                    {hasDiscount && (
+                      <span className="text-gray-400 line-through text-base">
+                        R${" "}
+                        {Number(product.original_price).toLocaleString(
+                          "pt-BR",
+                          { minimumFractionDigits: 2 }
+                        )}
+                      </span>
+                    )}
+                    <span className="text-2xl font-bold text-[#fe53b3]">
+                      R${" "}
+                      {Number(product.price).toLocaleString("pt-BR", {
+                        minimumFractionDigits: 2,
+                      })}
+                    </span>
+                  </div>
+                  {/* Parcelamento fake */}
+                  <div className="text-xs text-gray-600 mb-4">
+                    6x de R${" "}
+                    {(product.price / 6).toLocaleString("pt-BR", {
+                      minimumFractionDigits: 2,
+                    })}{" "}
+                    sem juros
+                  </div>
+                  {/* Botão Comprar (aparece só no hover) */}
+                  <div className="w-full flex justify-center mb-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <button
+                      className="px-8 py-3 rounded-full font-bold text-white bg-[#fe53b3] shadow-lg text-lg font-[Poppins] hover:bg-[#b689e0] transition-colors"
+                      style={{ fontFamily: "Poppins, Arial, sans-serif" }}
+                    >
+                      COMPRAR
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
       </div>
-      <section className="w-full max-w-6xl flex flex-col md:flex-row gap-6 md:gap-10 py-6 md:py-10 animate-fadein delay-350">
-        <a
-          href="#"
-          className="flex-1 bg-white rounded-2xl shadow-lg border-2 border-primary/10 flex items-center gap-4 p-6 hover:scale-105 hover:shadow-2xl transition-all"
-        >
-          <img
-            src="/banner/flower.png"
-            alt="Conheça nossa loja"
-            className="w-16 h-16 rounded-xl object-cover"
-          />
-          <div>
-            <div className="font-bold text-lg text-primary">
-              Conheça nossa loja
-            </div>
-            <div className="text-black/70 text-sm">
-              Visite nossa unidade física em Campo Grande
-            </div>
+      {/* Entrega Discreta e Rápida */}
+      <section className="w-full py-12 md:py-20 bg-[#ededed] flex flex-col md:flex-row items-center justify-center gap-10 md:gap-20">
+        <div className="flex-1 flex items-center justify-center">
+          <div className="bg-[#0076ff] rounded-3xl p-6 md:p-10 flex items-center justify-center w-full max-w-md min-h-[320px]">
+            <img
+              src="/entrega.png"
+              alt="Entrega Discreta"
+              className="w-full h-auto max-h-64 object-contain rounded-2xl"
+            />
           </div>
-        </a>
-        <a
-          href="#"
-          className="flex-1 bg-white rounded-2xl shadow-lg border-2 border-primary/10 flex items-center gap-4 p-6 hover:scale-105 hover:shadow-2xl transition-all"
-        >
-          <img
-            src="/banner/hands.png"
-            alt="Troca Fácil"
-            className="w-16 h-16 rounded-xl object-cover"
-          />
-          <div>
-            <div className="font-bold text-lg text-primary">Troca Fácil</div>
-            <div className="text-black/70 text-sm">
-              Facilidade e agilidade na troca dos seus produtos
-            </div>
+        </div>
+        <div className="flex-1 flex flex-col items-center md:items-start justify-center text-center md:text-left px-2 md:px-0">
+          <h2
+            className="text-3xl md:text-5xl font-extrabold text-[#7b61ff] mb-4 font-[Poppins]"
+            style={{ fontFamily: "Poppins, Arial, sans-serif" }}
+          >
+            Entrega discreta{" "}
+            <span className="text-[#fe53b3]">e em até 1 hora</span>
+          </h2>
+          <div
+            className="text-lg md:text-xl font-semibold text-gray-700 mb-2 font-[Poppins]"
+            style={{ fontFamily: "Poppins, Arial, sans-serif" }}
+          >
+            Fatura sigilosa, caixa neutra e sem menção à loja ou ao conteúdo.
           </div>
-        </a>
-        <a
-          href="#"
-          className="flex-1 bg-white rounded-2xl shadow-lg border-2 border-primary/10 flex items-center gap-4 p-6 hover:scale-105 hover:shadow-2xl transition-all"
-        >
-          <img
-            src="/banner/bed.png"
-            alt="Grupo VIP"
-            className="w-16 h-16 rounded-xl object-cover"
-          />
-          <div>
-            <div className="font-bold text-lg text-primary">Grupo VIP</div>
-            <div className="text-black/70 text-sm">
-              Entre para o grupo e receba ofertas exclusivas
-            </div>
+          <div
+            className="text-base text-gray-600 font-[Poppins]"
+            style={{ fontFamily: "Poppins, Arial, sans-serif" }}
+          >
+            Entregamos em até <b>1 hora</b> para Campo Grande/MS. Rápido, seguro
+            e com total discrição!
           </div>
-        </a>
+        </div>
       </section>
+      {/* Depoimentos / Avaliações */}
+      <section className="w-full py-12 md:py-20 bg-[#f5f5f5] flex flex-col items-center">
+        <h2
+          className="text-4xl md:text-5xl font-bold text-black/90 text-center font-[Poppins] mb-12"
+          style={{
+            letterSpacing: "-1px",
+            fontFamily: "Poppins, Arial, sans-serif",
+          }}
+        >
+          O que dizem nossas clientes
+        </h2>
+        <div className="relative w-full max-w-5xl flex items-center justify-center">
+          {/* Slider */}
+          <button
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 rounded-full shadow p-2 hover:bg-[#b689e0]/20 transition hidden sm:block"
+            onClick={() =>
+              setTestimonialIdx(
+                (prev) => (prev - 1 + testimonials.length) % testimonials.length
+              )
+            }
+            aria-label="Anterior"
+          >
+            <span style={{ fontSize: 28, color: "#b689e0" }}>‹</span>
+          </button>
+          <div className="w-full overflow-hidden">
+            <div
+              className="flex transition-transform duration-700"
+              style={{ transform: `translateX(-${testimonialIdx * 100}%)` }}
+            >
+              {testimonials.map((t, idx) => (
+                <div
+                  key={idx}
+                  className="min-w-full px-2 sm:px-4 flex justify-center"
+                >
+                  <div className="bg-white rounded-2xl shadow-lg border border-[#ececec] p-8 max-w-xl w-full flex flex-col gap-3 animate-fadein">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-12 h-12 rounded-full bg-[#ede3f6] flex items-center justify-center font-bold text-lg text-[#b689e0]">
+                        {t.name[0]}
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-gray-700 font-semibold text-base font-[Poppins]">
+                          {t.name}
+                        </span>
+                        <span className="text-black font-bold text-base font-[Poppins]">
+                          {t.product}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 mb-1">
+                      {Array.from({ length: t.rating }).map((_, i) => (
+                        <span
+                          key={i}
+                          style={{ color: "#FFD600", fontSize: 18 }}
+                        >
+                          ★
+                        </span>
+                      ))}
+                    </div>
+                    <div className="font-bold text-gray-800 text-base mb-1 font-[Poppins]">
+                      {t.title}
+                    </div>
+                    <div className="text-gray-700 text-base font-[Poppins]">
+                      {t.text}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <button
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 rounded-full shadow p-2 hover:bg-[#b689e0]/20 transition hidden sm:block"
+            onClick={() =>
+              setTestimonialIdx((prev) => (prev + 1) % testimonials.length)
+            }
+            aria-label="Próximo"
+          >
+            <span style={{ fontSize: 28, color: "#b689e0" }}>›</span>
+          </button>
+        </div>
+        {/* Dots mobile */}
+        <div className="flex gap-2 mt-6 sm:hidden justify-center">
+          {testimonials.map((_, i) => (
+            <button
+              key={i}
+              className={`w-3 h-3 rounded-full ${i === testimonialIdx ? "bg-[#b689e0]" : "bg-[#ede3f6]"}`}
+              onClick={() => setTestimonialIdx(i)}
+              aria-label={`Ir para depoimento ${i + 1}`}
+            />
+          ))}
+        </div>
+      </section>
+
+      <section className="w-full py-12 bg-white flex flex-col items-center justify-center">
+        <h2
+          className="text-3xl md:text-4xl font-extrabold text-[#7b61ff] text-center font-[Poppins] mb-3"
+          style={{ fontFamily: "Poppins, Arial, sans-serif" }}
+        >
+          Nossa rede Manifeste
+        </h2>
+        <div className="flex items-center gap-2 text-lg md:text-xl text-[#222] font-[Poppins]">
+          <svg width="28" height="28" fill="none" viewBox="0 0 24 24">
+            <path
+              fill="#222"
+              d="M7.75 2A5.75 5.75 0 0 0 2 7.75v8.5A5.75 5.75 0 0 0 7.75 22h8.5A5.75 5.75 0 0 0 22 16.25v-8.5A5.75 5.75 0 0 0 16.25 2h-8.5Zm0 1.5h8.5A4.25 4.25 0 0 1 20.5 7.75v8.5a4.25 4.25 0 0 1-4.25 4.25h-8.5A4.25 4.25 0 0 1 3.5 16.25v-8.5A4.25 4.25 0 0 1 7.75 3.5Zm8.25 2.25a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM12 7.25A4.75 4.75 0 1 0 12 16.75a4.75 4.75 0 0 0 0-9.5Zm0 1.5a3.25 3.25 0 1 1 0 6.5a3.25 3.25 0 0 1 0-6.5Z"
+            />
+          </svg>
+          <span className="font-semibold">@manifestecg</span>
+        </div>
+      </section>
+
       <ShoppingCart isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
       <style jsx global>{`
         .category-card-hover {
