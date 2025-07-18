@@ -5,7 +5,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { ProductDetail } from "@/components/ProductDetail";
 import { ShoppingCart } from "@/components/ShoppingCart";
 import { gtagEvent } from "@/lib/gtag";
-import { Product, supabase } from "@/lib/supabaseClient";
+import { getProductImageUrls, Product, supabase } from "@/lib/supabaseClient";
 import { notFound } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -34,7 +34,10 @@ export default function ProductPage({ params }: ProductPageProps) {
       if (error || !data) {
         setProduct(null);
       } else {
-        setProduct(data);
+        setProduct({
+          ...data,
+          image_urls: getProductImageUrls(data.image_urls || []),
+        });
         // Buscar relacionados
         if (data.category_id) {
           const { data: relatedData } = await supabase

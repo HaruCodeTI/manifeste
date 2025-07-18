@@ -90,3 +90,12 @@ export interface OrderItem {
   quantity: number;
   price_at_purchase: number;
 }
+
+export function getProductImageUrls(imagePaths: string[]): string[] {
+  return (imagePaths || []).map((path) => {
+    const { data } = supabase.storage
+      .from("imagens-produtos")
+      .getPublicUrl(path);
+    return data.publicUrl;
+  });
+}

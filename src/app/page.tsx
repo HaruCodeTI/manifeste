@@ -185,7 +185,7 @@ export default function HomePage() {
           ) : (
             <div className="w-full max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 md:gap-14 px-2 md:px-0">
               {categories
-                .filter((cat) => !/brincad/i.test(cat.name))
+                .filter((cat) => !/brincad|kit|conjunto/i.test(cat.name))
                 .map((cat) => {
                   // Definir cor e imagem para cada categoria
                   let bg = "#e0e7ff";
@@ -208,6 +208,9 @@ export default function HomePage() {
                   } else if (/anal/i.test(cat.name)) {
                     bg = "#e0e7ff";
                     img = "/2.png";
+                  } else if (/kit|conjunto/i.test(cat.name)) {
+                    bg = "#e0e7ff";
+                    img = "/4.png";
                   }
                   return (
                     <Link

@@ -5,7 +5,6 @@ import { Toast } from "@/components/ui/toast";
 import { useCartContext } from "@/contexts/CartContext";
 import { Product } from "@/lib/supabaseClient";
 import { ArrowLeft, Star } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -75,44 +74,39 @@ export function ProductDetail({ product }: ProductDetailProps) {
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
           {/* Galeria de Imagens */}
-          <div className="flex flex-row lg:flex-col gap-4 items-start">
-            {/* Miniaturas verticais */}
+          <div className="flex flex-row gap-4 items-start w-full max-w-lg mx-auto md:max-w-2xl">
+            {/* Miniaturas (todas exceto a principal) */}
             {product.image_urls && product.image_urls.length > 1 && (
-              <div className="flex lg:flex-col flex-row gap-3">
-                {product.image_urls.map((image, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setSelectedImage(index)}
-                    className={`aspect-square bg-white rounded-xl overflow-hidden border-2 transition-all duration-300 hover:scale-105 ${
-                      selectedImage === index
-                        ? "border-[#fe53b3] shadow-lg scale-105"
-                        : "border-[#ede3f6] hover:border-[#fe53b3]"
-                    }`}
-                  >
-                    <Image
-                      src={image}
-                      alt={`${product.name} - Imagem ${index + 1}`}
-                      width={80}
-                      height={80}
-                      className="object-cover w-full h-full"
-                    />
-                  </button>
-                ))}
+              <div className="flex flex-col gap-2 items-center justify-start mt-2 max-h-[420px] overflow-y-auto md:overflow-x-hidden">
+                {product.image_urls.map(
+                  (img, idx) =>
+                    idx !== selectedImage && (
+                      <button
+                        key={img}
+                        onClick={() => setSelectedImage(idx)}
+                        className={`w-20 h-20 aspect-square bg-white rounded-xl overflow-hidden border-2 transition-all duration-300 hover:scale-105 ${selectedImage !== idx ? "border-[#ede3f6] hover:border-[#fe53b3]" : "border-[#fe53b3] shadow-lg scale-105"}`}
+                        style={{ minWidth: 80, minHeight: 80 }}
+                        aria-label={`Ver imagem ${idx + 1}`}
+                      >
+                        <img
+                          src={img}
+                          alt={`${product.name} - Miniatura ${idx + 1}`}
+                          className="object-cover w-full h-full"
+                          loading="lazy"
+                        />
+                      </button>
+                    )
+                )}
               </div>
             )}
-            {/* Imagem Principal */}
-            <div
-              className="aspect-square bg-white rounded-2xl overflow-hidden relative border border-[#ede3f6] shadow-lg flex-1 min-w-[260px] max-w-[480px] mx-auto"
-              style={{ boxShadow: "0 2px 16px 0 #b689e020" }}
-            >
+            {/* Imagem principal */}
+            <div className="flex-1 aspect-square bg-white rounded-2xl overflow-hidden relative border border-[#ede3f6] shadow-lg flex items-center justify-center min-w-[220px] max-w-[420px] mx-auto">
               {product.image_urls && product.image_urls[selectedImage] ? (
-                <Image
+                <img
                   src={product.image_urls[selectedImage]}
                   alt={product.name}
-                  fill
-                  className="object-contain transition-all duration-500 hover:scale-110"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 40vw"
-                  priority={true}
+                  className="object-contain w-full h-full transition-all duration-500 rounded-2xl"
+                  style={{ maxHeight: 420, maxWidth: 420 }}
                 />
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center bg-white text-[#b689e0] gap-2 rounded-2xl border-none">

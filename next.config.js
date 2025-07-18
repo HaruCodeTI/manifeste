@@ -5,6 +5,7 @@ const nextConfig = {
       "images.unsplash.com",
       "lojagall.vtexassets.com",
       "www.distribuidorasexshop.com.br",
+      "bxybenfsenafildrevew.supabase.co",
     ],
   },
 };

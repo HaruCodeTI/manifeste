@@ -5,7 +5,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { ShoppingCart } from "@/components/ShoppingCart";
 import { LoadingGrid } from "@/components/ui/loading";
 import { gtagEvent } from "@/lib/gtag";
-import { Product, supabase } from "@/lib/supabaseClient";
+import { getProductImageUrls, Product, supabase } from "@/lib/supabaseClient";
 import { useEffect, useRef, useState } from "react";
 
 interface Category {
@@ -72,6 +72,7 @@ export default function ProdutosPage() {
           (data || []).map((p) => ({
             ...p,
             stock_quantity: Number(p.stock_quantity) || 0,
+            image_urls: getProductImageUrls(p.image_urls || []),
           }))
         );
         setTotalPages(count ? Math.ceil(count / itemsPerPage) : 1);
