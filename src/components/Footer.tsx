@@ -56,7 +56,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="#"
+                  href="/politica-de-privacidade"
                   className="transition-colors duration-200 text-white hover:text-secondary focus:text-white font-sans"
                   style={{ fontFamily: "Poppins, Arial, sans-serif" }}
                 >
@@ -65,7 +65,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="#"
+                  href="/politica-de-entrega"
                   className="transition-colors duration-200 text-white hover:text-secondary focus:text-white font-sans"
                   style={{ fontFamily: "Poppins, Arial, sans-serif" }}
                 >
