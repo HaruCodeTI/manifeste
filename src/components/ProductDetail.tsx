@@ -14,7 +14,11 @@ interface ProductDetailProps {
 
 export function ProductDetail({ product }: ProductDetailProps) {
   const { addToCart } = useCartContext();
-  const [selectedImage, setSelectedImage] = useState(0);
+
+  const [selectedImage, setSelectedImage] = useState(() => {
+    // Se não há imagens, começar com 0, senão com a primeira imagem disponível
+    return product.image_urls && product.image_urls.length > 0 ? 0 : 0;
+  });
   const [showToast, setShowToast] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [stockAlert, setStockAlert] = useState(false);
@@ -74,54 +78,83 @@ export function ProductDetail({ product }: ProductDetailProps) {
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
           {/* Galeria de Imagens */}
-          <div className="flex flex-row gap-4 items-start w-full max-w-lg mx-auto md:max-w-2xl">
-            {/* Miniaturas (todas exceto a principal) */}
-            {product.image_urls && product.image_urls.length > 1 && (
-              <div className="flex flex-col gap-2 items-center justify-start mt-2 max-h-[420px] overflow-y-auto md:overflow-x-hidden">
-                {product.image_urls.map(
-                  (img, idx) =>
-                    idx !== selectedImage && (
-                      <button
-                        key={img}
-                        onClick={() => setSelectedImage(idx)}
-                        className={`w-20 h-20 aspect-square bg-white rounded-xl overflow-hidden border-2 transition-all duration-300 hover:scale-105 ${selectedImage !== idx ? "border-[#ede3f6] hover:border-[#fe53b3]" : "border-[#fe53b3] shadow-lg scale-105"}`}
-                        style={{ minWidth: 80, minHeight: 80 }}
-                        aria-label={`Ver imagem ${idx + 1}`}
+          <div className="w-full max-w-lg mx-auto md:max-w-2xl">
+            {product.image_urls && product.image_urls.length > 1 ? (
+              // Layout com miniaturas (múltiplas imagens)
+              <div className="flex flex-row gap-4 items-start">
+                {/* Miniaturas */}
+                <div className="flex flex-col gap-2 items-center justify-start mt-2 max-h-[420px] overflow-y-auto md:overflow-x-hidden">
+                  {product.image_urls.map(
+                    (img, idx) =>
+                      idx !== selectedImage && (
+                        <button
+                          key={img}
+                          onClick={() => setSelectedImage(idx)}
+                          className={`w-20 h-20 aspect-square bg-white rounded-xl overflow-hidden border-2 transition-all duration-300 hover:scale-105 ${selectedImage !== idx ? "border-[#ede3f6] hover:border-[#fe53b3]" : "border-[#fe53b3] shadow-lg scale-105"}`}
+                          style={{ minWidth: 80, minHeight: 80 }}
+                          aria-label={`Ver imagem ${idx + 1}`}
+                        >
+                          <img
+                            src={img}
+                            alt={`${product.name} - Miniatura ${idx + 1}`}
+                            className="object-cover w-full h-full"
+                            loading="lazy"
+                          />
+                        </button>
+                      )
+                  )}
+                </div>
+                {/* Imagem principal */}
+                <div className="flex-1 aspect-square bg-white rounded-2xl overflow-hidden relative border border-[#ede3f6] shadow-lg flex items-center justify-center min-w-[220px] max-w-[420px] mx-auto">
+                  {product.image_urls[selectedImage] ? (
+                    <img
+                      src={product.image_urls[selectedImage]}
+                      alt={product.name}
+                      className="object-contain w-full h-full transition-all duration-500 rounded-2xl"
+                      style={{ maxHeight: 420, maxWidth: 420 }}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-white text-[#b689e0] gap-2 rounded-2xl border-none">
+                      <span
+                        style={{ fontSize: 48, lineHeight: 1, marginBottom: 8 }}
                       >
-                        <img
-                          src={img}
-                          alt={`${product.name} - Miniatura ${idx + 1}`}
-                          className="object-cover w-full h-full"
-                          loading="lazy"
-                        />
-                      </button>
-                    )
+                        ❤
+                      </span>
+                      <span className="text-xs font-medium font-[Poppins] text-[#b689e0] text-center px-2">
+                        Em breve a foto do produto com todo o cuidado que você
+                        merece!
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              // Layout sem miniaturas (uma imagem ou nenhuma)
+              <div className="w-full aspect-square bg-white rounded-2xl overflow-hidden relative border border-[#ede3f6] shadow-lg flex items-center justify-center min-w-[220px] max-w-[420px] mx-auto">
+                {product.image_urls &&
+                product.image_urls.length > 0 &&
+                product.image_urls[0] ? (
+                  <img
+                    src={product.image_urls[0]}
+                    alt={product.name}
+                    className="object-contain w-full h-full transition-all duration-500 rounded-2xl"
+                    style={{ maxHeight: 420, maxWidth: 420 }}
+                  />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center bg-white text-[#b689e0] gap-2 rounded-2xl border-none">
+                    <span
+                      style={{ fontSize: 48, lineHeight: 1, marginBottom: 8 }}
+                    >
+                      ❤
+                    </span>
+                    <span className="text-xs font-medium font-[Poppins] text-[#b689e0] text-center px-2">
+                      Em breve a foto do produto com todo o cuidado que você
+                      merece!
+                    </span>
+                  </div>
                 )}
               </div>
             )}
-            {/* Imagem principal */}
-            <div className="flex-1 aspect-square bg-white rounded-2xl overflow-hidden relative border border-[#ede3f6] shadow-lg flex items-center justify-center min-w-[220px] max-w-[420px] mx-auto">
-              {product.image_urls && product.image_urls[selectedImage] ? (
-                <img
-                  src={product.image_urls[selectedImage]}
-                  alt={product.name}
-                  className="object-contain w-full h-full transition-all duration-500 rounded-2xl"
-                  style={{ maxHeight: 420, maxWidth: 420 }}
-                />
-              ) : (
-                <div className="w-full h-full flex flex-col items-center justify-center bg-white text-[#b689e0] gap-2 rounded-2xl border-none">
-                  <span
-                    style={{ fontSize: 48, lineHeight: 1, marginBottom: 8 }}
-                  >
-                    ❤
-                  </span>
-                  <span className="text-xs font-medium font-[Poppins] text-[#b689e0] text-center px-2">
-                    Em breve a foto do produto com todo o cuidado que você
-                    merece!
-                  </span>
-                </div>
-              )}
-            </div>
           </div>
           {/* Informações do Produto */}
           <div className="space-y-6 flex flex-col justify-center">
