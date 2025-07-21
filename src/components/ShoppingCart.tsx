@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCartContext } from "@/contexts/CartContext";
-import { cn } from "@/lib/utils";
+import { calcDebito, cn } from "@/lib/utils";
 import { Minus, Plus, ShoppingBag, Trash2, X } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -15,8 +15,7 @@ interface ShoppingCartProps {
 }
 
 export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
-  const { cart, removeFromCart, updateQuantity, getTotalPrice, clearCart } =
-    useCartContext();
+  const { cart, removeFromCart, updateQuantity, clearCart } = useCartContext();
   const router = useRouter();
   const [stockAlertId, setStockAlertId] = useState<string | null>(null);
   const [stockMap, setStockMap] = useState<Record<string, number>>({});
@@ -60,6 +59,9 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
     updateQuantity(item.id, item.quantity + 1);
   };
 
+  const getTotalPix = () =>
+    cart.reduce((acc, item) => acc + calcDebito(item.price) * item.quantity, 0);
+
   return (
     <>
       {isOpen && (
@@ -67,16 +69,14 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
       )}
       <div
         className={cn(
-          "fixed right-0 top-0 h-full w-full sm:w-[400px] max-w-full bg-white border-l z-50 shadow-xl transition-transform duration-300 ease-in-out", // fundo branco, sombra, sem rounded
+          "fixed right-0 top-0 h-full w-full sm:w-[400px] max-w-full bg-white border-l z-50 shadow-xl transition-transform duration-300 ease-in-out",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
       >
         <Card className="h-full border-none bg-white text-black shadow-none rounded-none">
           {" "}
-          {/* fundo branco, texto preto, sem borda nem rounded */}
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-6 px-6 border-b border-[#e5d4f7]">
             {" "}
-            {/* borda lilás suave */}
             <CardTitle
               className="text-xl font-sans flex items-center gap-2 text-black"
               style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
@@ -157,7 +157,13 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
                                 fontFamily: "Montserrat, Arial, sans-serif",
                               }}
                             >
-                              R$ {item.price.toFixed(2).replace(".", ",")}
+                              R${" "}
+                              {calcDebito(item.price)
+                                .toFixed(2)
+                                .replace(".", ",")}{" "}
+                              <span className="text-xs text-[#00b85b]">
+                                (Pix/Débito)
+                              </span>
                             </p>
                           </div>
                           <div className="flex items-center gap-2">
@@ -219,7 +225,7 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
                       className="text-2xl font-bold text-[#b689e0] font-sans"
                       style={{ fontFamily: "Montserrat, Arial, sans-serif" }}
                     >
-                      R$ {getTotalPrice().toFixed(2).replace(".", ",")}
+                      R$ {getTotalPix().toFixed(2).replace(".", ",")}
                     </span>
                   </div>
                   <div className="space-y-2">

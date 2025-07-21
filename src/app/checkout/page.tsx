@@ -4,8 +4,9 @@ import { Header } from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Select, SelectItem, SelectValue } from "@/components/ui/select";
 import { useCartContext } from "@/contexts/CartContext";
+import { calcularTotalPagamento, TAP_TO_PAY_FEES } from "@/lib/utils";
 import { ArrowLeft, ArrowRight, Package } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -37,7 +38,12 @@ function isValidPhone(phone: string) {
   return /^\(?\d{2}\)?\s?9?\d{4,5}-?\d{4}$/.test(phone.replace(/\D/g, ""));
 }
 
-type PaymentMethod = "card" | "pix" | "delivery";
+type PaymentMethod =
+  | "pix"
+  | "debit"
+  | "card"
+  | "card_installments"
+  | "delivery";
 type ShippingMethod = "delivery" | "pickup";
 
 interface ShippingInfo {
@@ -126,10 +132,23 @@ function Stepper({ step }: { step: number }) {
   );
 }
 
+// Função para mapear paymentMethod para o tipo esperado pela função utilitária
+function mapPaymentMethodToUtil(
+  m: PaymentMethod
+): "pix" | "debito" | "credito_avista" | "credito_parcelado" {
+  if (m === "pix") return "pix";
+  if (m === "debit") return "debito";
+  if (m === "card") return "credito_avista";
+  if (m === "card_installments") return "credito_parcelado";
+  return "pix"; // fallback seguro
+}
+
 export default function CheckoutPage() {
   const { cart, getTotalPrice, clearCart } = useCartContext();
   const router = useRouter();
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("card");
+  const [installments, setInstallments] = useState(2); // Começa em 2x para parcelado
+  const maxInstallments = 12;
   const [shippingMethod] = useState<ShippingMethod>("delivery");
   const [shippingInfo, setShippingInfo] = useState<ShippingInfo>({
     cep: "",
@@ -158,21 +177,22 @@ export default function CheckoutPage() {
       ? (subtotal * coupon.value) / 100
       : coupon.value
     : 0;
-  const totalWithDiscount = Math.max(
-    0,
-    subtotal - discount + (shippingMethod === "pickup" ? 0 : shippingCost)
-  );
+  const { total, valorParcela } = calcularTotalPagamento({
+    subtotal,
+    shipping: shippingCost,
+    desconto: discount,
+    metodo: mapPaymentMethodToUtil(paymentMethod),
+    parcelas: installments,
+  });
 
-  // Novo estado para steps
-  const [step, setStep] = useState(1); // 1: Entrega, 2: Pagamento
+  const [step, setStep] = useState(1);
 
-  // Estado para mostrar campos de endereço só após buscar o CEP
   const [cepBuscado, setCepBuscado] = useState(false);
-  // Estado para loading do botão de finalizar pedido
+
   const [isFinalizingOrder, setIsFinalizingOrder] = useState(false);
   const cepValido =
     shippingInfo.cep.replace(/\D/g, "").length === 8 && cepBuscado;
-  // Campos obrigatórios para step 1 (dados de contato + endereço)
+
   const isStep1Valid =
     isValidEmail(customerInfo.email) &&
     cepValido &&
@@ -204,7 +224,7 @@ export default function CheckoutPage() {
       }
 
       setCoupon(data.coupon);
-      setShowCouponField(false); // Esconder o campo após aplicar
+      setShowCouponField(false);
     } catch (err: unknown) {
       if (err instanceof Error) {
         setCouponError(err.message || "Erro ao validar cupom");
@@ -222,13 +242,11 @@ export default function CheckoutPage() {
     setCouponError("");
   };
 
-  // Atualizar frete sempre que subtotal ou método mudar
   useEffect(() => {
     if (shippingMethod === "pickup") {
       setShippingCost(0);
     } else {
-      // Frete grátis acima de 100 reais
-      if (subtotal > 100) {
+      if (subtotal >= 100) {
         setShippingCost(0);
       } else {
         setShippingCost(15);
@@ -239,29 +257,6 @@ export default function CheckoutPage() {
   const handleCheckout = async () => {
     setIsFinalizingOrder(true);
     try {
-      if (paymentMethod === "card") {
-        const response = await fetch("/api/checkout", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            items: cart,
-            customerInfo,
-            shippingInfo,
-            shippingCost: shippingMethod === "pickup" ? 0 : shippingCost,
-            shippingMethod,
-            paymentMethod,
-            total: totalWithDiscount,
-            coupon: coupon ? { id: coupon.id, code: coupon.code } : undefined,
-          }),
-        });
-        const data = await response.json();
-        if (!response.ok || !data.url)
-          throw new Error(data.error || "Erro ao criar checkout Stripe");
-        clearCart();
-        window.location.href = data.url;
-        return;
-      }
-
       const response = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -272,11 +267,12 @@ export default function CheckoutPage() {
           shippingCost: shippingMethod === "pickup" ? 0 : shippingCost,
           shippingMethod,
           paymentMethod,
-          total: totalWithDiscount,
+          total: total,
           coupon: coupon ? { id: coupon.id, code: coupon.code } : undefined,
         }),
       });
       const data = await response.json();
+
       if (!response.ok) throw new Error(data.error || "Erro ao criar pedido");
       clearCart();
       router.push(`/sucesso?order=${data.orderId}`);
@@ -326,6 +322,28 @@ export default function CheckoutPage() {
       </div>
     );
   }
+
+  // Gera as opções de parcelas (2x a 12x)
+  const installmentOptions = Array.from(
+    { length: maxInstallments - 1 },
+    (_, i) => i + 2
+  ).map((n) => {
+    const { valorParcela } = calcularTotalPagamento({
+      subtotal,
+      shipping: shippingCost,
+      desconto: discount,
+      metodo: "credito_parcelado", // Sempre parcelado para opções de parcela
+      parcelas: n,
+    });
+    const taxa = TAP_TO_PAY_FEES.credito_parcelado[n] || 0;
+    const semJuros = taxa === 0;
+    return {
+      n,
+      label: semJuros
+        ? `${n}x de R$ ${valorParcela?.toLocaleString("pt-BR", { minimumFractionDigits: 2 })} sem juros`
+        : `${n}x de R$ ${valorParcela?.toLocaleString("pt-BR", { minimumFractionDigits: 2 })} `,
+    };
+  });
 
   return (
     <div className="min-h-screen bg-[#ede3f6] font-[Poppins,Arial,sans-serif]">
@@ -559,44 +577,60 @@ export default function CheckoutPage() {
                     <div className="mb-2 text-xs font-bold text-[#6d348b] tracking-widest font-[Poppins] uppercase">
                       Pagamento
                     </div>
-                    <RadioGroup
-                      value={paymentMethod}
-                      onValueChange={(v) =>
-                        setPaymentMethod(v as PaymentMethod)
-                      }
-                      className="flex flex-col gap-4 mt-4"
-                    >
-                      <label className="flex items-center gap-3 cursor-pointer">
-                        <RadioGroupItem
-                          value="pix"
-                          id="pix"
-                          className="border-[#b689e0]"
-                        />
-                        <span className="font-[Poppins] text-base">
-                          Pix (5% de desconto)
-                        </span>
+                    <div className="w-full max-w-xs">
+                      <label
+                        htmlFor="paymentMethod"
+                        className="block text-sm font-medium font-[Poppins] mb-1"
+                      >
+                        Forma de pagamento
                       </label>
-                      <label className="flex items-center gap-3 cursor-pointer">
-                        <RadioGroupItem
-                          value="card"
-                          id="card"
-                          className="border-[#b689e0]"
-                        />
-                        <span className="font-[Poppins] text-base">
-                          Cartão de Crédito/Débito
-                        </span>
-                      </label>
-                      <label className="flex items-center gap-3 cursor-pointer">
-                        <RadioGroupItem
-                          value="delivery"
-                          id="delivery"
-                          className="border-[#b689e0]"
-                        />
-                        <span className="font-[Poppins] text-base">
-                          Pagar na Entrega
-                        </span>
-                      </label>
-                    </RadioGroup>
+                      <Select
+                        id="paymentMethod"
+                        value={paymentMethod}
+                        onValueChange={(v) =>
+                          setPaymentMethod(v as PaymentMethod)
+                        }
+                        className="block w-full rounded-lg border border-[#b689e0] bg-white text-black font-[Poppins] text-base px-3 py-2 focus:border-[#fe53b3] focus:ring-1 focus:ring-[#fe53b3] transition-colors duration-200"
+                      >
+                        <SelectValue placeholder="Selecione..." />
+                        <SelectItem value="pix">Pix</SelectItem>
+                        <SelectItem value="debit">Débito</SelectItem>
+                        <SelectItem value="card">
+                          Cartão de Crédito (à vista)
+                        </SelectItem>
+                        <SelectItem value="card_installments">
+                          Cartão de Crédito (parcelado)
+                        </SelectItem>
+                      </Select>
+                    </div>
+                    <div className="mt-2 text-xs text-[#b689e0] font-[Poppins] w-full">
+                      O pagamento será realizado na entrega, escolha a
+                      modalidade para calcular o valor final.
+                    </div>
+                    {paymentMethod === "card_installments" && (
+                      <div className="mt-2 w-full max-w-xs">
+                        <label
+                          htmlFor="installments"
+                          className="block text-sm font-medium font-[Poppins] mb-1"
+                        >
+                          Número de parcelas
+                        </label>
+                        <select
+                          id="installments"
+                          value={installments}
+                          onChange={(e) =>
+                            setInstallments(Number(e.target.value))
+                          }
+                          className="mt-1 block w-full rounded-lg border border-[#b689e0] bg-white text-black font-[Poppins] text-base px-3 py-2 focus:border-[#fe53b3] focus:ring-1 focus:ring-[#fe53b3] transition-colors duration-200"
+                        >
+                          {installmentOptions.map((opt) => (
+                            <option key={opt.n} value={opt.n}>
+                              {opt.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
                   </div>
                   {/* Campos dinâmicos para cartão, se necessário, podem ser adicionados aqui */}
                   <div className="px-6 pt-8 pb-8 flex justify-center">
@@ -684,13 +718,17 @@ export default function CheckoutPage() {
                       {subtotal > 100 ? "Grátis" : "R$ 15,00"}
                     </span>
                   </div>
-                  <div className="flex justify-between text-lg font-bold mt-4">
+                  <div className="flex justify-between text-lg font-bold mt-4 w-full">
                     <span className="text-black">Total</span>
                     <span className="text-black">
-                      R${" "}
-                      {totalWithDiscount.toLocaleString("pt-BR", {
-                        minimumFractionDigits: 2,
-                      })}
+                      {paymentMethod === "pix" || paymentMethod === "debit"
+                        ? `R$ ${(subtotal - discount + shippingCost).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
+                        : `R$ ${total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`}
+                      {paymentMethod === "card_installments" &&
+                      installments > 1 &&
+                      valorParcela
+                        ? ` (${installments}x de R$ ${valorParcela.toLocaleString("pt-BR", { minimumFractionDigits: 2 })})`
+                        : ""}
                     </span>
                   </div>
                 </div>

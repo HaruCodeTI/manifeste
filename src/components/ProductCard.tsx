@@ -1,6 +1,7 @@
 "use client";
 
 import { Product } from "@/lib/supabaseClient";
+import { calcCreditoAvista, calcDebito } from "@/lib/utils";
 import Link from "next/link";
 
 interface ProductCardProps {
@@ -9,6 +10,8 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, small = false }: ProductCardProps) {
+  const valorDebito = calcDebito(product.price);
+  const valorCreditoAvista = calcCreditoAvista(product.price);
   return (
     <div
       className={`relative flex flex-col items-center rounded-[2.5rem] shadow-xl border border-[#ececec] p-0 overflow-hidden group transition-all duration-300
@@ -48,23 +51,19 @@ export function ProductCard({ product, small = false }: ProductCardProps) {
         </div>
       </div>
       {/* Preço */}
-      <div className="flex items-center justify-center gap-2 mb-1">
+      <div className="flex flex-col items-center justify-center mb-1 w-full">
         <span
-          className={`${small ? "text-lg" : "text-2xl"} font-bold text-[#fe53b3]`}
+          className={`${small ? "text-lg" : "text-2xl"} font-bold text-[#00b85b] font-[Poppins]`}
         >
-          R${" "}
-          {Number(product.price).toLocaleString("pt-BR", {
-            minimumFractionDigits: 2,
-          })}
+          R$ {valorDebito.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
         </span>
-      </div>
-      {/* Parcelamento */}
-      <div className="text-xs text-gray-600 mb-3">
-        6x de R${" "}
-        {(product.price / 6).toLocaleString("pt-BR", {
-          minimumFractionDigits: 2,
-        })}{" "}
-        sem juros
+        <span className="text-xs text-[#7b61ff] font-[Poppins] mt-1">
+          ou R${" "}
+          {valorCreditoAvista.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+          })}{" "}
+          no crédito à vista
+        </span>
       </div>
       {/* Botão COMPRAR - só aparece no hover */}
       <div

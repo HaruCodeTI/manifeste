@@ -47,7 +47,12 @@ export default function ProductPage({ params }: ProductPageProps) {
             .eq("status", "active")
             .neq("id", id)
             .limit(10);
-          setRelated(relatedData || []);
+          setRelated(
+            (relatedData || []).map((prod) => ({
+              ...prod,
+              image_urls: getProductImageUrls(prod.image_urls || []),
+            }))
+          );
         } else {
           setRelated([]);
         }

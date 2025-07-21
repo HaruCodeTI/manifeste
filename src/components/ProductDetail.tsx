@@ -4,6 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Toast } from "@/components/ui/toast";
 import { useCartContext } from "@/contexts/CartContext";
 import { Product } from "@/lib/supabaseClient";
+import {
+  calcCreditoAvista,
+  calcCreditoParcelado,
+  calcDebito,
+} from "@/lib/utils";
 import { ArrowLeft, Star } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -16,23 +21,27 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const { addToCart } = useCartContext();
 
   const [selectedImage, setSelectedImage] = useState(() => {
-    // Se não há imagens, começar com 0, senão com a primeira imagem disponível
     return product.image_urls && product.image_urls.length > 0 ? 0 : 0;
   });
   const [showToast, setShowToast] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [stockAlert, setStockAlert] = useState(false);
 
-  // Mock de avaliações (fixo)
   const rating = 5;
-  const reviews = 32; // valor fixo para não variar
-  // Todos os outros dados vêm de product (backend)
+  const reviews = 32;
   const hasDiscount =
     product.original_price && product.original_price > product.price;
   const discountPercent =
     hasDiscount && product.original_price
       ? Math.round(100 - (product.price / product.original_price) * 100)
       : 0;
+
+  const valorDebito = calcDebito(product.price);
+  const valorCreditoAvista = calcCreditoAvista(product.price);
+  const { total: valorParcelado, parcela: valorParcela } = calcCreditoParcelado(
+    product.price,
+    3
+  );
 
   const handleAddToCart = () => {
     if (quantity > product.stock_quantity) {
@@ -80,9 +89,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
           {/* Galeria de Imagens */}
           <div className="w-full max-w-lg mx-auto md:max-w-2xl">
             {product.image_urls && product.image_urls.length > 1 ? (
-              // Layout com miniaturas (múltiplas imagens)
               <div className="flex flex-row gap-4 items-start">
-                {/* Miniaturas */}
                 <div className="flex flex-col gap-2 items-center justify-start mt-2 max-h-[420px] overflow-y-auto md:overflow-x-hidden">
                   {product.image_urls.map(
                     (img, idx) =>
@@ -104,7 +111,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                       )
                   )}
                 </div>
-                {/* Imagem principal */}
+
                 <div className="flex-1 aspect-square bg-white rounded-2xl overflow-hidden relative border border-[#ede3f6] shadow-lg flex items-center justify-center min-w-[220px] max-w-[420px] mx-auto">
                   {product.image_urls[selectedImage] ? (
                     <img
@@ -129,7 +136,6 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 </div>
               </div>
             ) : (
-              // Layout sem miniaturas (uma imagem ou nenhuma)
               <div className="w-full aspect-square bg-white rounded-2xl overflow-hidden relative border border-[#ede3f6] shadow-lg flex items-center justify-center min-w-[220px] max-w-[420px] mx-auto">
                 {product.image_urls &&
                 product.image_urls.length > 0 &&
@@ -156,7 +162,6 @@ export function ProductDetail({ product }: ProductDetailProps) {
               </div>
             )}
           </div>
-          {/* Informações do Produto */}
           <div className="space-y-6 flex flex-col justify-center">
             <div className="space-y-4">
               <h1
@@ -165,7 +170,6 @@ export function ProductDetail({ product }: ProductDetailProps) {
               >
                 {product.name}
               </h1>
-              {/* Avaliação */}
               <div className="flex items-center gap-1 mb-1">
                 {Array.from({ length: rating }).map((_, i) => (
                   <Star key={i} size={20} fill="#FFD600" stroke="#FFD600" />
@@ -174,7 +178,6 @@ export function ProductDetail({ product }: ProductDetailProps) {
                   ({reviews})
                 </span>
               </div>
-              {/* Preço e descontos */}
               <div className="flex items-center gap-3 flex-wrap mb-2">
                 {hasDiscount && (
                   <span className="text-base text-gray-400 line-through">
@@ -186,19 +189,34 @@ export function ProductDetail({ product }: ProductDetailProps) {
                     {discountPercent}%OFF
                   </span>
                 )}
-                <span className="text-3xl font-bold text-[#fe53b3] font-[Poppins]">
-                  R$ {formatPrice(product.price)}
-                </span>
+                <div className="flex flex-col gap-3 mb-2">
+                  <span className="text-3xl font-bold text-[#00b85b] font-[Poppins]">
+                    R${" "}
+                    {valorDebito.toLocaleString("pt-BR", {
+                      minimumFractionDigits: 2,
+                    })}
+                  </span>
+                  <span className="text-base text-[#7b61ff] font-[Poppins]">
+                    ou R${" "}
+                    {valorCreditoAvista.toLocaleString("pt-BR", {
+                      minimumFractionDigits: 2,
+                    })}{" "}
+                    no crédito à vista
+                  </span>
+                  <span className="text-base text-gray-700 font-[Poppins]">
+                    3x de R${" "}
+                    {valorParcela.toLocaleString("pt-BR", {
+                      minimumFractionDigits: 2,
+                    })}{" "}
+                    no crédito parcelado (total R${" "}
+                    {valorParcelado.toLocaleString("pt-BR", {
+                      minimumFractionDigits: 2,
+                    })}
+                    )
+                  </span>
+                </div>
               </div>
-              {/* Parcelamento */}
-              <div className="text-base text-gray-700 font-semibold mb-2">
-                6x de R${" "}
-                {(product.price / 6).toLocaleString("pt-BR", {
-                  minimumFractionDigits: 2,
-                })}{" "}
-                sem juros
-              </div>
-              {/* Seletor de quantidade e botão comprar */}
+
               <div className="flex items-center gap-4 mb-4">
                 <div className="flex items-center gap-2 bg-white border border-[#ede3f6] rounded-full px-3 py-2 shadow-sm">
                   <Button
@@ -244,17 +262,14 @@ export function ProductDetail({ product }: ProductDetailProps) {
                   COMPRAR
                 </Button>
               </div>
-              {/* Mensagem de erro ao tentar passar do estoque */}
               {stockAlert && (
                 <div className="text-xs text-red-600 font-semibold mt-1">
                   Estoque máximo disponível!
                 </div>
               )}
             </div>
-            {/* Frete e extras - pode ser implementado depois */}
           </div>
         </div>
-        {/* Descrição */}
         <div className="mt-12 bg-[#f5f5f5] rounded-2xl p-8">
           <h2 className="text-2xl font-bold text-[#222] mb-4 font-[Poppins]">
             Descrição

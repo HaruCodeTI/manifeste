@@ -1,10 +1,5 @@
 import { CartItem } from "@/hooks/useCart";
 import { NextRequest, NextResponse } from "next/server";
-import Stripe from "stripe";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-06-30.basil",
-});
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,15 +13,6 @@ export async function POST(request: NextRequest) {
       paymentMethod,
       total,
       coupon,
-    }: {
-      items: CartItem[];
-      customerInfo: { name: string; email: string; phone: string };
-      shippingInfo: Record<string, unknown>;
-      shippingCost: number;
-      shippingMethod: string;
-      paymentMethod: string;
-      total: number;
-      coupon?: { id: string; code: string };
     } = body;
 
     if (!items || items.length === 0) {
@@ -54,7 +40,7 @@ export async function POST(request: NextRequest) {
       );
     }
     // Verificar se todos têm estoque suficiente
-    const insufficientStock = items.find((item) => {
+    const insufficientStock = items.find((item: CartItem) => {
       const product = products.find(
         (p: { id: string; stock_quantity: number }) => p.id === item.id
       );
@@ -74,97 +60,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const baseUrl =
-      process.env.NEXT_PUBLIC_BASE_URL ||
-      (process.env.NODE_ENV === "production"
-        ? "https://seu-dominio.com"
-        : "http://localhost:3000");
-
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      line_items: (() => {
-        let lineItems = [];
-
-        if (!coupon) {
-          // Sem cupom: usar preços originais
-          lineItems = items.map((item: CartItem) => ({
-            price_data: {
-              currency: "brl",
-              product_data: {
-                name: item.name,
-                images: item.image ? [item.image] : undefined,
-              },
-              unit_amount: Math.round(item.price * 100),
-            },
-            quantity: item.quantity,
-          }));
-        } else {
-          // Com cupom: ajustar preços proporcionalmente
-          const subtotal = items.reduce(
-            (sum, item) => sum + item.price * item.quantity,
-            0
-          );
-          const totalWithoutShipping =
-            total - (shippingMethod === "delivery" ? shippingCost : 0);
-          const discount = subtotal - totalWithoutShipping;
-          const discountRatio = discount / subtotal;
-
-          lineItems = items.map((item: CartItem) => {
-            const itemTotal = item.price * item.quantity;
-            const itemDiscount = itemTotal * discountRatio;
-            const adjustedPrice = (itemTotal - itemDiscount) / item.quantity;
-
-            return {
-              price_data: {
-                currency: "brl",
-                product_data: {
-                  name: `${item.name}${coupon ? ` (${coupon.code})` : ""}`,
-                  images: item.image ? [item.image] : undefined,
-                },
-                unit_amount: Math.round(adjustedPrice * 100),
-              },
-              quantity: item.quantity,
-            };
-          });
-        }
-
-        // Adicionar frete se aplicável
-        if (shippingMethod === "delivery" && shippingCost > 0) {
-          lineItems.push({
-            price_data: {
-              currency: "brl",
-              product_data: {
-                name: "Frete - Custo de entrega",
-                images: undefined,
-              },
-              unit_amount: Math.round(shippingCost * 100),
-            },
-            quantity: 1,
-          });
-        }
-
-        return lineItems;
-      })(),
-      mode: "payment",
-      success_url: `${baseUrl}/sucesso?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${baseUrl}/`,
-      metadata: {
-        items: JSON.stringify(
-          items.map((item) => ({
-            id: item.id,
-            quantity: item.quantity,
-            price: item.price,
-          }))
-        ),
-        total: total.toString(),
-        coupon: coupon ? JSON.stringify(coupon) : "",
-      },
-      shipping_address_collection: {
-        allowed_countries: ["BR"],
-      },
-      customer_email: undefined,
-    });
-
+    // Salvar pedido no Supabase
     const { data: order, error } = await supabase
       .from("orders")
       .insert([
@@ -182,12 +78,14 @@ export async function POST(request: NextRequest) {
           ),
           total_price: total, // Usar o total com desconto enviado do frontend
           discount_amount: coupon
-            ? items.reduce((sum, item) => sum + item.price * item.quantity, 0) -
-              total
+            ? items.reduce(
+                (sum: number, item: CartItem) =>
+                  sum + item.price * item.quantity,
+                0
+              ) - total
             : 0,
           coupon_id: coupon?.id || null,
           status: "pending_payment",
-          stripe_checkout_session_id: session.id,
         },
       ])
       .select("id")
@@ -253,9 +151,8 @@ export async function POST(request: NextRequest) {
       },
     ]);
 
-    return NextResponse.json({ url: session.url });
-  } catch (error) {
-    console.error("Erro ao criar sessão de checkout:", error);
+    return NextResponse.json({ orderId: order.id });
+  } catch {
     return NextResponse.json(
       { error: "Erro interno do servidor" },
       { status: 500 }

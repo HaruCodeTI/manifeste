@@ -8,6 +8,7 @@ import {
   Product,
   supabase,
 } from "@/lib/supabaseClient";
+import { calcCreditoAvista } from "@/lib/utils";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
@@ -133,7 +134,7 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-          {/* Pagamento */}
+
           <div className="flex flex-row items-center gap-4 bg-white rounded-2xl shadow border border-[#ececec] px-6 py-4 min-w-[220px] max-w-xs flex-1">
             <img
               src="/pagamento.svg"
@@ -151,7 +152,7 @@ export default function HomePage() {
                 className="text-black text-sm md:text-base font-[Poppins]"
                 style={{ fontFamily: "Poppins, Arial, sans-serif" }}
               >
-                até 6x sem juros no cartão ou 5% off no pix
+                até 3x sem juros no cartão ou 10% off no pix
               </div>
             </div>
           </div>
@@ -173,7 +174,7 @@ export default function HomePage() {
                 className="text-black text-sm md:text-base font-[Poppins]"
                 style={{ fontFamily: "Poppins, Arial, sans-serif" }}
               >
-                pix, boleto ou até 12x no cartão
+                pix, crédito a vista ou até 12x no cartão
               </div>
             </div>
           </div>
@@ -294,6 +295,8 @@ export default function HomePage() {
                   : 0;
               const hasFreeShipping = product.price >= 250;
               const bg = offerBgColors[idx % offerBgColors.length];
+
+              const valorCreditoAvista = calcCreditoAvista(product.price);
               return (
                 <div
                   key={product.id}
@@ -338,7 +341,7 @@ export default function HomePage() {
                   {/* Nome */}
                   <div className="px-6 w-full flex flex-col items-center">
                     <div
-                      className="text-lg md:text-xl font-bold text-black text-center font-[Poppins] mb-4"
+                      className="text-lg md:text-xl font-bold text-black text-center font-[Poppins] mb-2"
                       style={{ fontFamily: "Poppins, Arial, sans-serif" }}
                     >
                       {product.name}
@@ -355,29 +358,33 @@ export default function HomePage() {
                         )}
                       </span>
                     )}
-                    <span className="text-2xl font-bold text-[#fe53b3]">
+                    <span className="text-2xl font-bold text-[#fe53b3] font-[Poppins]">
                       R${" "}
                       {Number(product.price).toLocaleString("pt-BR", {
                         minimumFractionDigits: 2,
                       })}
                     </span>
                   </div>
-                  {/* Parcelamento fake */}
-                  <div className="text-xs text-gray-600 mb-4">
-                    6x de R${" "}
-                    {(product.price / 6).toLocaleString("pt-BR", {
-                      minimumFractionDigits: 2,
-                    })}{" "}
-                    sem juros
+
+                  <div className="w-full flex flex-col items-center text-center mb-4">
+                    <span className="text-xs text-[#7b61ff] font-[Poppins] mt-1">
+                      ou R${" "}
+                      {valorCreditoAvista.toLocaleString("pt-BR", {
+                        minimumFractionDigits: 2,
+                      })}{" "}
+                      no crédito à vista
+                    </span>
                   </div>
-                  {/* Botão Comprar (aparece só no hover) */}
+
                   <div className="w-full flex justify-center mb-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <button
-                      className="px-8 py-3 rounded-full font-bold text-white bg-[#fe53b3] shadow-lg text-lg font-[Poppins] hover:bg-[#b689e0] transition-colors"
-                      style={{ fontFamily: "Poppins, Arial, sans-serif" }}
-                    >
-                      COMPRAR
-                    </button>
+                    <Link href={`/produto/${product.id}`} legacyBehavior>
+                      <a
+                        className="px-8 py-3 rounded-full font-bold text-white bg-[#fe53b3] shadow-lg text-lg font-[Poppins] hover:bg-[#b689e0] transition-colors"
+                        style={{ fontFamily: "Poppins, Arial, sans-serif" }}
+                      >
+                        COMPRAR
+                      </a>
+                    </Link>
                   </div>
                 </div>
               );
