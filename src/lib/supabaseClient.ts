@@ -81,6 +81,8 @@ export interface Order {
   tracking_code: string | null;
   stripe_payment_intent_id: string | null;
   created_at: string;
+  installments?: number | null;
+  payment_fee?: number | null;
 }
 
 export interface OrderItem {

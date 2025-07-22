@@ -28,11 +28,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const initialStatus =
-      shippingMethod === "retirada" && paymentMethod === "cash"
-        ? "aguardando_retirada"
-        : "pending_payment";
-
     const { data: order, error } = await supabase
       .from("orders")
       .insert([
@@ -44,6 +39,8 @@ export async function POST(req: NextRequest) {
           shipping_cost: shippingCost,
           shipping_method: shippingMethod,
           payment_method: paymentMethod,
+          installments: body.installments || 1,
+          payment_fee: body.payment_fee || 0,
           subtotal: items.reduce(
             (sum: number, item: CartItem) => sum + item.price * item.quantity,
             0
@@ -57,7 +54,7 @@ export async function POST(req: NextRequest) {
               ) - total
             : 0,
           coupon_id: coupon?.id || null,
-          status: initialStatus,
+          status: "processing",
         },
       ])
       .select("id")
@@ -70,7 +67,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Cria itens do pedido
     const orderItems = items.map((item: CartItem) => ({
       order_id: order.id,
       product_id: item.id,
@@ -79,7 +75,6 @@ export async function POST(req: NextRequest) {
     }));
     await supabase.from("order_items").insert(orderItems);
 
-    // Atualizar uso do cupom se aplicável
     if (coupon?.id) {
       await supabase
         .from("coupons")
@@ -87,11 +82,10 @@ export async function POST(req: NextRequest) {
         .eq("id", coupon.id);
     }
 
-    // Cria histórico inicial
     await supabase.from("order_status_history").insert([
       {
         order_id: order.id,
-        status: initialStatus,
+        status: "processing",
         changed_by: customerInfo.email,
       },
     ]);

@@ -257,6 +257,7 @@ export default function CheckoutPage() {
   const handleCheckout = async () => {
     setIsFinalizingOrder(true);
     try {
+      console.log("paymentMethod", paymentMethod);
       const response = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -269,6 +270,12 @@ export default function CheckoutPage() {
           paymentMethod,
           total: total,
           coupon: coupon ? { id: coupon.id, code: coupon.code } : undefined,
+          installments:
+            paymentMethod === "card_installments" ? installments : 1,
+          payment_fee:
+            paymentMethod === "card_installments"
+              ? TAP_TO_PAY_FEES.credito_parcelado[installments] || 0
+              : 0,
         }),
       });
       const data = await response.json();

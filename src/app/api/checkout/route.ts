@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    console.log("body", body);
     const {
       items,
       customerInfo,
@@ -13,6 +14,8 @@ export async function POST(request: NextRequest) {
       paymentMethod,
       total,
       coupon,
+      installments,
+      payment_fee,
     } = body;
 
     if (!items || items.length === 0) {
@@ -72,6 +75,8 @@ export async function POST(request: NextRequest) {
           shipping_cost: shippingCost,
           shipping_method: shippingMethod,
           payment_method: paymentMethod,
+          installments: installments || 1,
+          payment_fee: payment_fee || 0,
           subtotal: items.reduce(
             (sum: number, item: CartItem) => sum + item.price * item.quantity,
             0

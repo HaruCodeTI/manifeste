@@ -27,6 +27,8 @@ export default function AcompanharPedidoPage() {
       shipping_method: string;
       tracking_code?: string;
       created_at: string;
+      installments?: number;
+      payment_fee?: number;
     };
     history: { status: string; changed_at: string; changed_by?: string }[];
     items: {
@@ -156,6 +158,15 @@ export default function AcompanharPedidoPage() {
       default:
         return "bg-gray-200 text-gray-700";
     }
+  };
+
+  const paymentMethodLabels: Record<string, string> = {
+    pix: "Pix",
+    debit: "Débito",
+    card: "Cartão de Crédito (à vista)",
+    card_installments: "Cartão de Crédito (parcelado)",
+    cash: "Dinheiro",
+    boleto: "Boleto",
   };
 
   return (
@@ -324,8 +335,16 @@ export default function AcompanharPedidoPage() {
                         Pagamento
                       </span>
                       <span className="font-semibold text-black font-[Poppins]">
-                        {result.order.payment_method}
+                        {paymentMethodLabels[result.order.payment_method] ||
+                          result.order.payment_method}
                       </span>
+
+                      {result.order.payment_method === "card_installments" &&
+                        (result.order.installments ?? 1) > 1 && (
+                          <span className="text-xs text-[#b689e0] font-[Poppins] mt-1">
+                            {result.order.installments ?? 1}x
+                          </span>
+                        )}
                     </div>
                     <div className="flex flex-col">
                       <span className="text-sm text-gray-600 font-[Poppins] mb-1">
