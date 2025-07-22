@@ -1,5 +1,6 @@
 "use client";
 
+import BannerCarousel from "@/components/BannerCarousel";
 import { Header } from "@/components/Header";
 import { ShoppingCart } from "@/components/ShoppingCart";
 import {
@@ -109,6 +110,7 @@ export default function HomePage() {
         selectedCategory=""
         onCategoryChange={() => {}}
       />
+      <BannerCarousel />
       <div className="w-full flex flex-col items-center px-2 md:px-4 gap-10 md:gap-16">
         {/* Barra de Benefícios */}
         <section className="w-full max-w-6xl flex flex-row flex-wrap justify-center items-stretch gap-6 md:gap-10 py-8 md:py-12 animate-fadein">
