@@ -2,9 +2,9 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 const banners = [
-  "/banner/new/20250722_1129_Soft Serenity Scene_simple_compose_01k0sbzcsnfa6se4f2nq0v9f5m.png",
-  "/banner/new/20250722_1147_Serene Outdoor Elegance_simple_compose_01k0sczks0f8da0epgspyb0knv.png",
-  "/banner/new/20250722_1202_Momento Sereno e Introspectivo_simple_compose_01k0sdvpf6e7gv24f9bn2d92jz.png",
+  "/banner/new/20250722_1436_Manhã Tranquila_simple_compose_01k0spmd6gft6s8c2cjea8ce3m.png",
+  "/banner/new/20250722_1437_Serene Sunlit Elegance_simple_compose_01k0sppekrf3z8y7w25mbmvjrh.png",
+  "/banner/new/20250722_1440_Sensual Serenity Outdoors_simple_compose_01k0spxfwbezd8nqf6svgh6x93.png",
   "/banner/new/20250722_1202_Serenidade ao Ar Livre_simple_compose_01k0sdvcasfd0tn3g46w8v3a70.png",
 ];
 
@@ -28,13 +28,11 @@ export default function BannerCarousel() {
       style={{
         width: "100%",
         maxWidth: 1200,
-        aspectRatio: "16/7",
+        aspectRatio: "16/9",
         position: "relative",
         overflow: "hidden",
         borderRadius: 12,
         margin: "32px auto",
-        maxHeight: 420,
-        height: "auto",
       }}
     >
       <div
@@ -50,10 +48,14 @@ export default function BannerCarousel() {
         <Image
           src={banners[idx]}
           alt="Banner principal"
-          fill
-          style={{ objectFit: "cover", background: "#fff" }}
-          priority
-          sizes="100vw"
+          layout="responsive"
+          width={1200}
+          height={675} // proporção 16:9
+          style={{
+            borderRadius: 12,
+            objectFit: "cover",
+            objectPosition: "center center",
+          }}
         />
       </div>
     </div>
