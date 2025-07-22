@@ -39,7 +39,11 @@ interface PedidoAdmin {
   total_price?: number;
   shipping_method?: string;
   payment_method?: string;
-  order_status_history?: { status: string; changed_at: string; changed_by?: string }[];
+  order_status_history?: {
+    status: string;
+    changed_at: string;
+    changed_by?: string;
+  }[];
   // Adicione outros campos conforme necessário
 }
 
@@ -48,7 +52,9 @@ export default function AdminPedidoDetailPage() {
   const params = useParams();
   const id = params?.id as string;
   const [pedido, setPedido] = useState<PedidoAdmin | null>(null);
-  const [history, setHistory] = useState<PedidoAdmin['order_status_history']>([]);
+  const [history, setHistory] = useState<PedidoAdmin["order_status_history"]>(
+    []
+  );
   const [status, setStatus] = useState("");
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
@@ -58,7 +64,7 @@ export default function AdminPedidoDetailPage() {
       typeof window !== "undefined" &&
       localStorage.getItem("admin_auth") !== "true"
     ) {
-      router.replace("/admin/login");
+      window.location.href = "/admin/login";
       return;
     }
     async function fetchPedido() {
@@ -73,7 +79,8 @@ export default function AdminPedidoDetailPage() {
         setHistory(
           (data.order_status_history || []).sort(
             (a: { changed_at: string }, b: { changed_at: string }) =>
-              new Date(a.changed_at).getTime() - new Date(b.changed_at).getTime()
+              new Date(a.changed_at).getTime() -
+              new Date(b.changed_at).getTime()
           )
         );
       }
@@ -91,7 +98,9 @@ export default function AdminPedidoDetailPage() {
           filter: `id=eq.${id}`,
         },
         (payload) => {
-          setPedido((prev: PedidoAdmin | null) => (prev ? { ...prev, ...payload.new } : prev));
+          setPedido((prev: PedidoAdmin | null) =>
+            prev ? { ...prev, ...payload.new } : prev
+          );
           setStatus(payload.new.status);
         }
       )

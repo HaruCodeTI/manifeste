@@ -1,61 +1,52 @@
 "use client";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-
-const ADMIN_USER = "admin";
-const ADMIN_PASS = process.env.NEXT_PUBLIC_ADMIN_PASS || "senhaSuperSecreta";
+import React, { useState } from "react";
 
 export default function AdminLoginPage() {
   const [user, setUser] = useState("");
   const [pass, setPass] = useState("");
   const [error, setError] = useState("");
-  const router = useRouter();
 
   function handleLogin(e: React.FormEvent) {
     e.preventDefault();
-    setError("");
-    if (user === ADMIN_USER && pass === ADMIN_PASS) {
+    if (user === "admin" && pass === "admin") {
       localStorage.setItem("admin_auth", "true");
-      router.push("/admin/pedidos");
+      window.location.href = "/admin/pedidos";
     } else {
       setError("Usuário ou senha inválidos");
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#ede3f6] px-4">
-      <form
-        onSubmit={handleLogin}
-        className="bg-white rounded-2xl shadow-md p-8 w-full max-w-sm border border-[#d4af37]/40 flex flex-col gap-4"
-      >
-        <h1 className="text-2xl font-bold text-[#6d348b] mb-2 text-center">
-          Login Admin
-        </h1>
-        <input
-          type="text"
-          placeholder="Usuário"
-          value={user}
-          onChange={(e) => setUser(e.target.value)}
-          className="border border-[#d4af37]/40 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#6d348b]/40"
-          autoFocus
-        />
-        <input
-          type="password"
-          placeholder="Senha"
-          value={pass}
-          onChange={(e) => setPass(e.target.value)}
-          className="border border-[#d4af37]/40 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#6d348b]/40"
-        />
-        {error && (
-          <div className="text-red-600 text-sm text-center">{error}</div>
-        )}
-        <button
-          type="submit"
-          className="bg-[#6d348b] text-white rounded py-2 font-bold hover:bg-[#4b206b] transition"
-        >
-          Entrar
-        </button>
-      </form>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="w-full max-w-sm bg-white rounded-xl shadow-md p-8 border border-gray-200">
+        <h1 className="text-2xl font-bold text-center mb-6">Login Admin</h1>
+        <form onSubmit={handleLogin} className="space-y-4">
+          <input
+            type="text"
+            placeholder="Usuário"
+            value={user}
+            onChange={(e) => setUser(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
+            autoFocus
+          />
+          <input
+            type="password"
+            placeholder="Senha"
+            value={pass}
+            onChange={(e) => setPass(e.target.value)}
+            className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
+          />
+          {error && (
+            <div className="text-red-500 text-sm text-center">{error}</div>
+          )}
+          <button
+            type="submit"
+            className="w-full bg-gray-800 text-white font-bold py-2 rounded hover:bg-gray-700 transition"
+          >
+            Entrar
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
