@@ -98,7 +98,7 @@ export function Footer() {
                 manifestecg@gmail.com
               </a>
               <a
-                href="https://wa.me/5567999999999"
+                href="https://wa.me/5567996590570"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-secondary transition flex items-center justify-start md:justify-end w-full"
@@ -106,7 +106,7 @@ export function Footer() {
                 <span
                   style={{ display: "inline-block", width: "1.8em" }}
                 ></span>
-                (67) 99999-9999
+                (67) 99659-0570
               </a>
               <a
                 href="https://instagram.com/manifeste.cg"

@@ -534,9 +534,26 @@ export default function HomePage() {
               d="M7.75 2A5.75 5.75 0 0 0 2 7.75v8.5A5.75 5.75 0 0 0 7.75 22h8.5A5.75 5.75 0 0 0 22 16.25v-8.5A5.75 5.75 0 0 0 16.25 2h-8.5Zm0 1.5h8.5A4.25 4.25 0 0 1 20.5 7.75v8.5a4.25 4.25 0 0 1-4.25 4.25h-8.5A4.25 4.25 0 0 1 3.5 16.25v-8.5A4.25 4.25 0 0 1 7.75 3.5Zm8.25 2.25a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM12 7.25A4.75 4.75 0 1 0 12 16.75a4.75 4.75 0 0 0 0-9.5Zm0 1.5a3.25 3.25 0 1 1 0 6.5a3.25 3.25 0 0 1 0-6.5Z"
             />
           </svg>
-          <span className="font-semibold">@manifestecg</span>
+          <span className="font-semibold">@manifeste.cg</span>
         </div>
       </section>
+
+      <div className="w-full flex flex-col items-center py-8 bg-white">
+        <h3 className="text-2xl md:text-3xl font-bold text-[#7b61ff] mb-4 font-[Poppins]">
+          Aproveite o momento
+        </h3>
+        <div style={{ width: "100%", maxWidth: 480 }}>
+          <iframe
+            data-testid="embed-iframe"
+            style={{ borderRadius: 12, width: "100%" }}
+            src="https://open.spotify.com/embed/playlist/4cLDQB2t9GJ2hTCUFwSPHN?utm_source=generator"
+            height="152"
+            frameBorder="0"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy"
+          ></iframe>
+        </div>
+      </div>
 
       <ShoppingCart isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
       <style jsx global>{`
