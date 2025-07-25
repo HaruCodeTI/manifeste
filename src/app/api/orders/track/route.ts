@@ -29,6 +29,8 @@ export async function GET(req: NextRequest) {
       .eq("customer_phone", phone)
       .order("created_at", { ascending: false });
 
+    console.log("orders", orders);
+
     if (error) {
       return NextResponse.json(
         { error: "Erro ao buscar pedidos" },
@@ -48,6 +50,8 @@ export async function GET(req: NextRequest) {
     .eq("customer_phone", phone)
     .single();
 
+  console.log("order", order);
+
   if (error || !order) {
     return NextResponse.json(
       { error: "Pedido não encontrado" },
@@ -64,9 +68,32 @@ export async function GET(req: NextRequest) {
   const { data: items } = await supabase
     .from("order_items")
     .select(
-      "product_id, variant_id, quantity, price_at_purchase, product_variant(color, image_urls), products(name)"
+      "product_id, variant_id, quantity, price_at_purchase, product_variants(color, image_urls)"
     )
     .eq("order_id", orderId);
+
+  console.log("items", items);
+
+  // Buscar os nomes dos produtos separadamente
+  if (items && items.length > 0) {
+    const productIds = items.map((item) => item.product_id).filter(Boolean);
+    const { data: products } = await supabase
+      .from("products")
+      .select("id, name")
+      .in("id", productIds);
+
+    // Mapear os nomes dos produtos aos itens
+    const itemsWithNames = items.map((item) => ({
+      ...item,
+      products: products?.find((p) => p.id === item.product_id) || null,
+    }));
+
+    return NextResponse.json({
+      order,
+      history: history || [],
+      items: itemsWithNames || [],
+    });
+  }
 
   return NextResponse.json({
     order,

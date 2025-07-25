@@ -3,6 +3,7 @@
 import { Header } from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getProductImageUrl } from "@/lib/supabaseClient";
 import { createClient } from "@supabase/supabase-js";
 import { ArrowLeft, Loader2, Package, Search } from "lucide-react";
 import Link from "next/link";
@@ -425,7 +426,9 @@ export default function AcompanharPedidoPage() {
                               item.product_variants.image_urls &&
                               item.product_variants.image_urls[0] ? (
                                 <img
-                                  src={item.product_variants.image_urls[0]}
+                                  src={getProductImageUrl(
+                                    item.product_variants.image_urls[0]
+                                  )}
                                   alt={item.products?.name || "Produto"}
                                   className="w-14 h-14 rounded-lg object-cover border border-[#e1e1e1] bg-[#f5f5f5]"
                                 />
