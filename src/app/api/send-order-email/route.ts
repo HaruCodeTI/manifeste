@@ -37,7 +37,9 @@ export async function POST(req: NextRequest) {
 
     const { data: items, error: itemsError } = await supabase
       .from("order_items")
-      .select("quantity, price_at_purchase, products(name)")
+      .select(
+        "quantity, price_at_purchase, product_variants(color, image_urls), products(name)"
+      )
       .eq("order_id", orderId);
     if (itemsError) {
       return NextResponse.json(

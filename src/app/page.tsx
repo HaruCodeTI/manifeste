@@ -5,7 +5,7 @@ import { Header } from "@/components/Header";
 import { ShoppingCart } from "@/components/ShoppingCart";
 import {
   Category,
-  getProductImageUrls,
+  getProductImageUrl,
   Product,
   supabase,
 } from "@/lib/supabaseClient";
@@ -84,14 +84,14 @@ export default function HomePage() {
     async function fetchOffers() {
       const { data } = await supabase
         .from("products")
-        .select("*", { count: "exact" })
+        .select("*, product_variants(*)")
         .eq("status", "active")
-        .order("stock_quantity", { ascending: false })
+        .order("created_at", { ascending: false })
         .limit(3);
       setOffers(
         (data || []).map((p) => ({
           ...p,
-          image_urls: getProductImageUrls(p.image_urls || []),
+          variants: p.product_variants || [],
         }))
       );
     }
@@ -286,109 +286,118 @@ export default function HomePage() {
           </h2>
           <div className="w-full max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 md:gap-14 px-2 md:px-0">
             {offers.map((product, idx) => {
+              const mainVariant =
+                product.variants && product.variants.length > 0
+                  ? product.variants[0]
+                  : null;
               const hasDiscount =
-                product.original_price &&
-                product.original_price > product.price;
+                mainVariant &&
+                mainVariant.original_price &&
+                mainVariant.original_price > mainVariant.price;
               const discountPercent =
-                hasDiscount && product.original_price
+                hasDiscount && mainVariant && mainVariant.original_price
                   ? Math.round(
-                      100 - (product.price / product.original_price) * 100
+                      100 -
+                        (mainVariant.price / mainVariant.original_price) * 100
                     )
                   : 0;
-              const hasFreeShipping = product.price >= 250;
+              const hasFreeShipping = mainVariant && mainVariant.price >= 250;
               const bg = offerBgColors[idx % offerBgColors.length];
 
-              const valorCreditoAvista = calcCreditoAvista(product.price);
+              const valorCreditoAvista = mainVariant
+                ? calcCreditoAvista(mainVariant.price)
+                : 0;
               return (
-                <div
+                <Link
                   key={product.id}
-                  className="relative flex flex-col items-center rounded-[2.5rem] shadow-xl border border-[#ececec] p-0 overflow-hidden group transition-all duration-300 min-h-[480px] bg-white"
-                  style={{ background: bg }}
+                  href={`/produto/${product.id}`}
+                  className="block group"
+                  style={{ textDecoration: "none" }}
                 >
-                  {/* Badges */}
-                  <div className="absolute top-5 left-5 flex flex-col gap-2 z-10">
-                    {hasDiscount && (
-                      <span className="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
-                        {discountPercent}% OFF
+                  <div
+                    className="relative flex flex-col items-center rounded-[2.5rem] shadow-xl border border-[#ececec] p-0 overflow-hidden group transition-all duration-300 min-h-[480px] bg-white"
+                    style={{ background: bg }}
+                  >
+                    {/* Badges */}
+                    <div className="absolute top-5 left-5 flex flex-col gap-2 z-10">
+                      {hasDiscount && (
+                        <span className="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                          {discountPercent}% OFF
+                        </span>
+                      )}
+                      <span className="bg-[#fe53b3] text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                        OFERTA
                       </span>
-                    )}
-                    <span className="bg-[#fe53b3] text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
-                      OFERTA
-                    </span>
-                    {hasFreeShipping && (
-                      <span className="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
-                        FRETE GRÁTIS
-                      </span>
-                    )}
-                  </div>
-                  {/* Imagem */}
-                  <div className="w-full flex-1 flex items-center justify-center mb-4 pt-8 pb-2 px-8">
-                    {product.image_urls && product.image_urls.length > 0 ? (
-                      <img
-                        src={product.image_urls[0]}
-                        alt={product.name}
-                        className="object-contain rounded-2xl w-full max-h-64 md:max-h-72 lg:max-h-80"
-                        style={{
-                          background: bg,
-                          maxWidth: "90%",
-                          height: "auto",
-                        }}
-                      />
-                    ) : (
-                      <div className="w-full h-56 flex items-center justify-center bg-[#f5f5f5] text-[#b689e0] rounded-2xl">
-                        Sem imagem
-                      </div>
-                    )}
-                  </div>
-                  {/* Nome */}
-                  <div className="px-6 w-full flex flex-col items-center">
-                    <div
-                      className="text-lg md:text-xl font-bold text-black text-center font-[Poppins] mb-2"
-                      style={{ fontFamily: "Poppins, Arial, sans-serif" }}
-                    >
-                      {product.name}
+                      {hasFreeShipping && (
+                        <span className="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                          FRETE GRÁTIS
+                        </span>
+                      )}
                     </div>
-                  </div>
-                  {/* Preço */}
-                  <div className="flex items-center justify-center gap-2 mb-1">
-                    {hasDiscount && (
-                      <span className="text-gray-400 line-through text-base">
-                        R${" "}
-                        {Number(product.original_price).toLocaleString(
-                          "pt-BR",
-                          { minimumFractionDigits: 2 }
-                        )}
-                      </span>
-                    )}
-                    <span className="text-2xl font-bold text-[#fe53b3] font-[Poppins]">
-                      R${" "}
-                      {Number(product.price).toLocaleString("pt-BR", {
-                        minimumFractionDigits: 2,
-                      })}
-                    </span>
-                  </div>
-
-                  <div className="w-full flex flex-col items-center text-center mb-4">
-                    <span className="text-xs text-[#7b61ff] font-[Poppins] mt-1">
-                      ou R${" "}
-                      {valorCreditoAvista.toLocaleString("pt-BR", {
-                        minimumFractionDigits: 2,
-                      })}{" "}
-                      no crédito à vista
-                    </span>
-                  </div>
-
-                  <div className="w-full flex justify-center mb-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <Link href={`/produto/${product.id}`} legacyBehavior>
-                      <a
-                        className="px-8 py-3 rounded-full font-bold text-white bg-[#fe53b3] shadow-lg text-lg font-[Poppins] hover:bg-[#b689e0] transition-colors"
+                    {/* Imagem */}
+                    <div className="w-full flex-1 flex items-center justify-center mb-4 pt-8 pb-2 px-8">
+                      {mainVariant &&
+                      mainVariant.image_urls &&
+                      mainVariant.image_urls.length > 0 ? (
+                        <img
+                          src={getProductImageUrl(mainVariant.image_urls[0])}
+                          alt={product.name}
+                          className="object-contain rounded-2xl w-full max-h-64 md:max-h-72 lg:max-h-80"
+                          style={{
+                            background: bg,
+                            maxWidth: "90%",
+                            height: "auto",
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full h-56 flex items-center justify-center bg-[#f5f5f5] text-[#b689e0] rounded-2xl">
+                          Sem imagem
+                        </div>
+                      )}
+                    </div>
+                    {/* Nome */}
+                    <div className="px-6 w-full flex flex-col items-center">
+                      <div
+                        className="text-lg md:text-xl font-bold text-black text-center font-[Poppins] mb-2"
                         style={{ fontFamily: "Poppins, Arial, sans-serif" }}
                       >
-                        COMPRAR
-                      </a>
-                    </Link>
+                        {product.name}
+                      </div>
+                    </div>
+                    {/* Preço */}
+                    <div className="flex items-center justify-center gap-2 mb-1">
+                      {hasDiscount && (
+                        <span className="text-gray-400 line-through text-base">
+                          R${" "}
+                          {mainVariant && mainVariant.original_price
+                            ? Number(mainVariant.original_price).toLocaleString(
+                                "pt-BR",
+                                { minimumFractionDigits: 2 }
+                              )
+                            : ""}
+                        </span>
+                      )}
+                      <span className="text-2xl font-bold text-[#fe53b3] font-[Poppins]">
+                        R${" "}
+                        {mainVariant
+                          ? Number(mainVariant.price).toLocaleString("pt-BR", {
+                              minimumFractionDigits: 2,
+                            })
+                          : ""}
+                      </span>
+                    </div>
+
+                    <div className="w-full flex flex-col items-center text-center mb-4">
+                      <span className="text-xs text-[#7b61ff] font-[Poppins] mt-1">
+                        ou R${" "}
+                        {valorCreditoAvista.toLocaleString("pt-BR", {
+                          minimumFractionDigits: 2,
+                        })}{" "}
+                        no crédito à vista
+                      </span>
+                    </div>
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>

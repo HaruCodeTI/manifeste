@@ -64,7 +64,7 @@ export async function GET(req: NextRequest) {
   const { data: items } = await supabase
     .from("order_items")
     .select(
-      "product_id, quantity, price_at_purchase, products(name, image_urls)"
+      "product_id, variant_id, quantity, price_at_purchase, product_variant(color, image_urls), products(name)"
     )
     .eq("order_id", orderId);
 

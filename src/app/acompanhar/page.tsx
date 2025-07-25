@@ -35,6 +35,10 @@ export default function AcompanharPedidoPage() {
       products?: { name: string };
       quantity: number;
       price_at_purchase: number;
+      product_variants?: {
+        color?: string;
+        image_urls?: string[];
+      };
     }[];
   } | null>(null);
   const [error, setError] = useState("");
@@ -414,11 +418,34 @@ export default function AcompanharPedidoPage() {
                         {result.items.map((item, i) => (
                           <div
                             key={i}
-                            className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4"
+                            className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 gap-2"
                           >
-                            <span className="font-semibold text-black font-[Poppins] mb-2 sm:mb-0 text-sm sm:text-base">
-                              {item.products?.name}
-                            </span>
+                            <div className="flex items-center gap-3">
+                              {item.product_variants &&
+                              item.product_variants.image_urls &&
+                              item.product_variants.image_urls[0] ? (
+                                <img
+                                  src={item.product_variants.image_urls[0]}
+                                  alt={item.products?.name || "Produto"}
+                                  className="w-14 h-14 rounded-lg object-cover border border-[#e1e1e1] bg-[#f5f5f5]"
+                                />
+                              ) : (
+                                <div className="w-14 h-14 flex items-center justify-center bg-[#f5f5f5] text-[#b689e0] rounded-lg border border-[#e1e1e1]">
+                                  ?
+                                </div>
+                              )}
+                              <div className="flex flex-col">
+                                <span className="font-semibold text-black font-[Poppins] text-sm sm:text-base">
+                                  {item.products?.name}
+                                </span>
+                                {item.product_variants &&
+                                  item.product_variants.color && (
+                                    <span className="text-xs text-gray-500">
+                                      Cor: {item.product_variants.color}
+                                    </span>
+                                  )}
+                              </div>
+                            </div>
                             <div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm">
                               <span className="text-gray-600 font-[Poppins]">
                                 Qtd: {item.quantity}

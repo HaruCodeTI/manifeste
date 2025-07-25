@@ -26,7 +26,7 @@ export default function ProductPage({ params }: ProductPageProps) {
       const { id } = await params;
       const { data, error } = await supabase
         .from("products")
-        .select("*")
+        .select("*, product_variants(*)")
         .eq("id", id)
         .eq("status", "active")
         .single();
@@ -36,13 +36,14 @@ export default function ProductPage({ params }: ProductPageProps) {
       } else {
         setProduct({
           ...data,
+          variants: data.product_variants || [],
           image_urls: getProductImageUrls(data.image_urls || []),
         });
         // Buscar relacionados
         if (data.category_id) {
           const { data: relatedData } = await supabase
             .from("products")
-            .select("*")
+            .select("*, product_variants(*)")
             .eq("category_id", data.category_id)
             .eq("status", "active")
             .neq("id", id)
@@ -50,7 +51,7 @@ export default function ProductPage({ params }: ProductPageProps) {
           setRelated(
             (relatedData || []).map((prod) => ({
               ...prod,
-              image_urls: getProductImageUrls(prod.image_urls || []),
+              variants: prod.product_variants || [],
             }))
           );
         } else {
@@ -69,7 +70,7 @@ export default function ProductPage({ params }: ProductPageProps) {
           {
             item_id: product.id,
             item_name: product.name,
-            price: product.price,
+            price: product.variants[0]?.price || 0,
           },
         ],
       });

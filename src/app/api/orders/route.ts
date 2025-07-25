@@ -1,4 +1,3 @@
-import { CartItem } from "@/hooks/useCart";
 import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -28,6 +27,43 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Buscar variantes do carrinho
+    type VariantMinimal = {
+      id: string;
+      product_id: string;
+      price: number;
+      stock_quantity: number;
+    };
+    const variantIds = items.map(
+      (item: { variant_id: string }) => item.variant_id
+    );
+    const { data: variants, error: variantsError } = await supabase
+      .from("product_variants")
+      .select("id, product_id, price, stock_quantity")
+      .in("id", variantIds);
+    if (variantsError || !variants) {
+      return NextResponse.json(
+        { error: "Erro ao validar variantes" },
+        { status: 500 }
+      );
+    }
+    // Verificar estoque
+    const insufficientStock = items.find(
+      (item: { variant_id: string; quantity: number }) => {
+        const variant = (variants as VariantMinimal[]).find(
+          (v) => v.id === item.variant_id
+        );
+        return !variant || variant.stock_quantity < item.quantity;
+      }
+    );
+    if (insufficientStock) {
+      return NextResponse.json(
+        { error: `Estoque insuficiente para a variante selecionada.` },
+        { status: 400 }
+      );
+    }
+
+    // Criar pedido
     const { data: order, error } = await supabase
       .from("orders")
       .insert([
@@ -42,13 +78,14 @@ export async function POST(req: NextRequest) {
           installments: body.installments || 1,
           payment_fee: body.payment_fee || 0,
           subtotal: items.reduce(
-            (sum: number, item: CartItem) => sum + item.price * item.quantity,
+            (sum: number, item: { price: number; quantity: number }) =>
+              sum + item.price * item.quantity,
             0
           ),
           total_price: total,
           discount_amount: coupon
             ? items.reduce(
-                (sum: number, item: CartItem) =>
+                (sum: number, item: { price: number; quantity: number }) =>
                   sum + item.price * item.quantity,
                 0
               ) - total
@@ -67,13 +104,38 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const orderItems = items.map((item: CartItem) => ({
-      order_id: order.id,
-      product_id: item.id,
-      quantity: item.quantity,
-      price_at_purchase: item.price,
-    }));
+    // Salvar itens do pedido com variant_id
+    const orderItems = items.map(
+      (item: {
+        product_id: string;
+        variant_id: string;
+        quantity: number;
+        price: number;
+      }) => ({
+        order_id: order.id,
+        product_id: item.product_id,
+        variant_id: item.variant_id,
+        quantity: item.quantity,
+        price_at_purchase: item.price,
+      })
+    );
     await supabase.from("order_items").insert(orderItems);
+
+    // Debitar estoque da variante
+    for (const item of items) {
+      const variant = (variants as VariantMinimal[]).find(
+        (v) => v.id === item.variant_id
+      );
+      if (!variant) continue;
+      const novoEstoque = Math.max(
+        0,
+        (variant.stock_quantity || 0) - item.quantity
+      );
+      await supabase
+        .from("product_variants")
+        .update({ stock_quantity: novoEstoque })
+        .eq("id", item.variant_id);
+    }
 
     if (coupon?.id) {
       await supabase

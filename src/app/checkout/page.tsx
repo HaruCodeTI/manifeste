@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectItem, SelectValue } from "@/components/ui/select";
 import { useCartContext } from "@/contexts/CartContext";
+import { getProductImageUrl } from "@/lib/supabaseClient";
 import { calcularTotalPagamento, TAP_TO_PAY_FEES } from "@/lib/utils";
 import { ArrowLeft, ArrowRight, Package } from "lucide-react";
 import Link from "next/link";
@@ -262,7 +263,14 @@ export default function CheckoutPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          items: cart,
+          items: cart.map((item) => ({
+            variant_id: item.variant_id,
+            product_id: item.product_id,
+            color: item.color,
+            image: item.image,
+            price: item.price,
+            quantity: item.quantity,
+          })),
           shippingInfo,
           customerInfo,
           shippingCost: shippingMethod === "pickup" ? 0 : shippingCost,
@@ -673,15 +681,21 @@ export default function CheckoutPage() {
                   </div>
                   <div className="flex flex-col gap-4">
                     {cart.map((item) => (
-                      <div key={item.id} className="flex items-center gap-3">
+                      <div
+                        key={item.variant_id}
+                        className="flex items-center gap-3"
+                      >
                         <img
-                          src={item.image}
+                          src={getProductImageUrl(item.image)}
                           alt={item.name}
                           className="w-14 h-14 rounded-lg object-cover border border-[#e1e1e1] bg-[#f5f5f5]"
                         />
                         <div className="flex-1">
                           <div className="font-[Poppins] text-sm text-black font-bold">
                             {item.name}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            Cor: {item.color}
                           </div>
                           <div className="text-xs text-gray-500">
                             x{item.quantity}

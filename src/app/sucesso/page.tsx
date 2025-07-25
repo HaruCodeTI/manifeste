@@ -14,7 +14,7 @@ function SuccessPageInner() {
   const orderId = searchParams.get("order");
   const sessionId = searchParams.get("session_id");
   const [comChannel, setComChannel] = useState<string>("");
-  const whatsNumber = "5567999587200";
+  const whatsNumber = "5567996590570";
   const [emailStatus, setEmailStatus] = useState<
     "idle" | "sending" | "success" | "error"
   >("idle");

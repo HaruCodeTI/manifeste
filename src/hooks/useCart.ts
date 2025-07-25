@@ -3,8 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export interface CartItem {
-  id: string;
+  product_id: string;
+  variant_id: string;
   name: string;
+  color: string;
   price: number;
   image: string;
   quantity: number;
@@ -55,11 +57,11 @@ export function useCart() {
     ) => {
       setCart((prevCart) => {
         const existingItem = prevCart.find(
-          (cartItem) => cartItem.id === item.id
+          (cartItem) => cartItem.variant_id === item.variant_id
         );
         if (existingItem) {
           return prevCart.map((cartItem) =>
-            cartItem.id === item.id
+            cartItem.variant_id === item.variant_id
               ? { ...cartItem, quantity: cartItem.quantity + quantity }
               : cartItem
           );
@@ -74,19 +76,21 @@ export function useCart() {
     []
   );
 
-  const removeFromCart = useCallback((itemId: string) => {
-    setCart((prevCart) => prevCart.filter((item) => item.id !== itemId));
+  const removeFromCart = useCallback((variantId: string) => {
+    setCart((prevCart) =>
+      prevCart.filter((item) => item.variant_id !== variantId)
+    );
   }, []);
 
   const updateQuantity = useCallback(
-    (itemId: string, quantity: number) => {
+    (variantId: string, quantity: number) => {
       if (quantity <= 0) {
-        removeFromCart(itemId);
+        removeFromCart(variantId);
         return;
       }
       setCart((prevCart) =>
         prevCart.map((item) =>
-          item.id === itemId ? { ...item, quantity } : item
+          item.variant_id === variantId ? { ...item, quantity } : item
         )
       );
     },

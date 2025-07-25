@@ -5,7 +5,7 @@ import { ProductCard } from "@/components/ProductCard";
 import { ShoppingCart } from "@/components/ShoppingCart";
 import { LoadingGrid } from "@/components/ui/loading";
 import { gtagEvent } from "@/lib/gtag";
-import { getProductImageUrls, Product, supabase } from "@/lib/supabaseClient";
+import { Product, supabase } from "@/lib/supabaseClient";
 import { useEffect, useRef, useState } from "react";
 
 interface Category {
@@ -24,7 +24,7 @@ export default function ProdutosPage() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(12);
+  const [itemsPerPage, setItemsPerPage] = useState(15);
   const [sort, setSort] = useState<
     "featured" | "price_asc" | "price_desc" | "az" | "za"
   >("featured");
@@ -54,25 +54,18 @@ export default function ProdutosPage() {
       setLoading(true);
       let query = supabase
         .from("products")
-        .select("*", { count: "exact" })
+        .select("*, product_variants(*)", { count: "exact" })
         .eq("status", "active");
       if (debouncedSearch) query = query.ilike("name", `%${debouncedSearch}%`);
       if (selectedCategory) query = query.eq("category_id", selectedCategory);
-      if (sort === "price_asc")
-        query = query.order("price", { ascending: true });
-      else if (sort === "price_desc")
-        query = query.order("price", { ascending: false });
-      else if (sort === "az") query = query.order("name", { ascending: true });
-      else if (sort === "za") query = query.order("name", { ascending: false });
-      else query = query.order("created_at", { ascending: false });
+      query = query.order("created_at", { ascending: false });
       query = query.range((page - 1) * itemsPerPage, page * itemsPerPage - 1);
       const { data, count, error } = await query;
       if (!error) {
         setProducts(
           (data || []).map((p) => ({
             ...p,
-            stock_quantity: Number(p.stock_quantity) || 0,
-            image_urls: getProductImageUrls(p.image_urls || []),
+            variants: p.product_variants || [],
           }))
         );
         setTotalPages(count ? Math.ceil(count / itemsPerPage) : 1);
@@ -91,7 +84,7 @@ export default function ProdutosPage() {
           item_id: p.id,
           item_name: p.name,
           index: idx + 1,
-          price: p.price,
+          price: p.variants?.[0]?.price ?? 0,
         })),
       });
     }
@@ -158,7 +151,7 @@ export default function ProdutosPage() {
                   fontFamily: "Montserrat, Arial, sans-serif",
                 }}
               >
-                {[4, 8, 12, 20, 40].map((n) => (
+                {[4, 8, 15, 20, 40].map((n) => (
                   <option key={n} value={n}>
                     {n}
                   </option>

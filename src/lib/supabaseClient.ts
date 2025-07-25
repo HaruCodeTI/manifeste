@@ -24,17 +24,14 @@ export interface Category {
   created_at: string;
 }
 
-export interface Product {
+export interface ProductVariant {
   id: string;
-  category_id: string | null;
-  name: string;
-  description: string | null;
+  product_id: string;
+  color: string;
   price: number;
-  sku: string | null;
   stock_quantity: number;
-  status: ProductStatus;
-  image_urls: string[] | null;
-  tags: string[] | null;
+  sku: string | null;
+  image_urls: string[];
   weight_grams: number | null;
   dimensions_cm: {
     height: number;
@@ -45,6 +42,18 @@ export interface Product {
   updated_at: string | null;
   original_price: number | null;
   is_offer: boolean;
+}
+
+export interface Product {
+  id: string;
+  category_id: string | null;
+  name: string;
+  description: string | null;
+  status: ProductStatus;
+  tags: string[] | null;
+  created_at: string;
+  updated_at: string | null;
+  variants: ProductVariant[]; // NOVO: lista de variantes
 }
 
 export interface Coupon {
@@ -89,6 +98,7 @@ export interface OrderItem {
   id: string;
   order_id: string;
   product_id: string | null;
+  variant_id: string | null; // NOVO: referência à variante
   quantity: number;
   price_at_purchase: number;
 }
@@ -100,4 +110,9 @@ export function getProductImageUrls(imagePaths: string[]): string[] {
       .getPublicUrl(path);
     return data.publicUrl;
   });
+}
+
+export function getProductImageUrl(filename: string): string {
+  if (!filename) return "";
+  return `https://bxybenfsenafildrevew.supabase.co/storage/v1/object/public/imagens-produtos/${filename}`;
 }
