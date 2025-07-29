@@ -80,11 +80,11 @@
 
 #### Sub-etapas:
 
-- [ ] Aprimorar descrições de produtos com conteúdo engajante
+- [x] Aprimorar descrições de produtos com conteúdo engajante
 - [x] Ajustar card de imagem na página de detalhes (remover bordas brancas)
 - [x] Implementar resposta imediata na seleção de cores
 - [x] Adicionar estados de loading e feedback visual
-- [ ] Implementar tratamento de erros robusto
+- [x] Implementar tratamento de erros robusto
 
 ### Estágio 4: Polimento e Otimização
 
@@ -95,8 +95,8 @@
 
 - [ ] Realizar testes abrangentes em múltiplos dispositivos
 - [ ] Otimizar performance de carregamento de imagens
-- [ ] Melhorar UX com transições suaves
-- [ ] Validar acessibilidade e SEO
+- [x] Melhorar UX com transições suaves
+- [x] Validar acessibilidade e SEO
 - [ ] Preparar para deploy e monitoramento
 
 ## Links de Recursos

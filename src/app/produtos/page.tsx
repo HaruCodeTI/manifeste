@@ -3,7 +3,10 @@
 import { Header } from "@/components/Header";
 import { ProductCard } from "@/components/ProductCard";
 import { ShoppingCart } from "@/components/ShoppingCart";
+import { LoadingError } from "@/components/ui/error-display";
 import { LoadingGrid } from "@/components/ui/loading";
+import { ListItem, ListTransition } from "@/components/ui/transitions";
+import { useErrorHandler } from "@/hooks/useErrorHandler";
 import { gtagEvent } from "@/lib/gtag";
 import { Product, supabase } from "@/lib/supabaseClient";
 import { useEffect, useRef, useState } from "react";
@@ -29,15 +32,21 @@ export default function ProdutosPage() {
     "featured" | "price_asc" | "price_desc" | "az" | "za"
   >("featured");
 
+  const { error, handleAsync } = useErrorHandler();
+
   useEffect(() => {
     async function fetchCategories() {
-      const { data } = await supabase
-        .from("categories")
-        .select("id, name, slug");
-      setCategories(data || []);
+      await handleAsync(async () => {
+        const { data, error } = await supabase
+          .from("categories")
+          .select("id, name, slug");
+
+        if (error) throw error;
+        setCategories(data || []);
+      });
     }
     fetchCategories();
-  }, []);
+  }, [handleAsync]);
 
   useEffect(() => {
     if (searchTimeout.current) clearTimeout(searchTimeout.current);
@@ -52,28 +61,32 @@ export default function ProdutosPage() {
   useEffect(() => {
     async function fetchProducts() {
       setLoading(true);
-      let query = supabase
-        .from("products")
-        .select("*, product_variants(*)", { count: "exact" })
-        .eq("status", "active");
-      if (debouncedSearch) query = query.ilike("name", `%${debouncedSearch}%`);
-      if (selectedCategory) query = query.eq("category_id", selectedCategory);
+      await handleAsync(async () => {
+        let query = supabase
+          .from("products")
+          .select("*, product_variants(*)", { count: "exact" })
+          .eq("status", "active");
+        if (debouncedSearch)
+          query = query.ilike("name", `%${debouncedSearch}%`);
+        if (selectedCategory) query = query.eq("category_id", selectedCategory);
 
-      // Aplicar ordenação baseada no estado sort
-      switch (sort) {
-        case "az":
-          query = query.order("name", { ascending: true });
-          break;
-        case "za":
-          query = query.order("name", { ascending: false });
-          break;
-        default:
-          query = query.order("created_at", { ascending: false });
-      }
+        // Aplicar ordenação baseada no estado sort
+        switch (sort) {
+          case "az":
+            query = query.order("name", { ascending: true });
+            break;
+          case "za":
+            query = query.order("name", { ascending: false });
+            break;
+          default:
+            query = query.order("created_at", { ascending: false });
+        }
 
-      query = query.range((page - 1) * itemsPerPage, page * itemsPerPage - 1);
-      const { data, count, error } = await query;
-      if (!error) {
+        query = query.range((page - 1) * itemsPerPage, page * itemsPerPage - 1);
+        const { data, count, error } = await query;
+
+        if (error) throw error;
+
         const productsData = (data || []).map((p) => ({
           ...p,
           variants: p.product_variants || [],
@@ -90,11 +103,18 @@ export default function ProdutosPage() {
 
         setProducts(productsData);
         setTotalPages(count ? Math.ceil(count / itemsPerPage) : 1);
-      }
+      });
       setLoading(false);
     }
     fetchProducts();
-  }, [debouncedSearch, selectedCategory, page, itemsPerPage, sort]);
+  }, [
+    debouncedSearch,
+    selectedCategory,
+    page,
+    itemsPerPage,
+    sort,
+    handleAsync,
+  ]);
 
   useEffect(() => {
     if (products.length > 0) {
@@ -186,7 +206,15 @@ export default function ProdutosPage() {
               </span>
             </div>
           </div>
-          {loading ? (
+          {error.hasError ? (
+            <LoadingError
+              error={error}
+              onRetry={() => {
+                // Recarregar dados
+                window.location.reload();
+              }}
+            />
+          ) : loading ? (
             <LoadingGrid />
           ) : products.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24">
@@ -198,11 +226,15 @@ export default function ProdutosPage() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 lg:gap-8">
-              {products.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
+            <ListTransition>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 lg:gap-8">
+                {products.map((product, index) => (
+                  <ListItem key={product.id} index={index}>
+                    <ProductCard product={product} />
+                  </ListItem>
+                ))}
+              </div>
+            </ListTransition>
           )}
           {totalPages > 1 && (
             <div className="flex justify-center items-center gap-2 mt-12">

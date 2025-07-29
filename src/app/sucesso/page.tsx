@@ -130,13 +130,19 @@ function SuccessPageInner() {
                 className="flex flex-col gap-3"
               >
                 <label className="flex items-center gap-3 cursor-pointer w-full p-4 rounded-lg border border-[#e1e1e1] hover:bg-[#f5f5f5] transition-colors">
-                  <RadioGroupItem value="none" className="border-[#b689e0]" />
+                  <RadioGroupItem
+                    value="none"
+                    className="border-[#b689e0] sr-only"
+                  />
                   <span className="text-black font-[Poppins] text-left">
                     Não quero receber, vou acompanhar pelo site
                   </span>
                 </label>
                 <label className="flex items-center gap-3 cursor-pointer w-full p-4 rounded-lg border border-[#e1e1e1] hover:bg-[#f5f5f5] transition-colors">
-                  <RadioGroupItem value="email" className="border-[#b689e0]" />
+                  <RadioGroupItem
+                    value="email"
+                    className="border-[#b689e0] sr-only"
+                  />
                   <span className="text-black font-[Poppins] text-left">
                     Receber por e-mail
                   </span>
@@ -144,7 +150,7 @@ function SuccessPageInner() {
                 <label className="flex items-center gap-3 cursor-pointer w-full p-4 rounded-lg border border-[#e1e1e1] hover:bg-[#f5f5f5] transition-colors">
                   <RadioGroupItem
                     value="whatsapp"
-                    className="border-[#b689e0]"
+                    className="border-[#b689e0] sr-only"
                   />
                   <span className="text-black font-[Poppins] text-left">
                     Receber por WhatsApp
