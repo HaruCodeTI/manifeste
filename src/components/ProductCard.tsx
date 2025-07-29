@@ -41,7 +41,7 @@ export function ProductCard({ product, small = false }: ProductCardProps) {
     >
       <div
         className={`relative flex flex-col items-center rounded-[2.5rem] shadow-xl border border-[#ececec] p-0 overflow-hidden group transition-all duration-300
-          ${small ? "min-h-[220px] max-h-[300px] w-[160px] max-w-[160px]" : "min-h-[420px]"}
+          ${small ? "h-[280px] w-[160px]" : "h-[520px] sm:h-[500px] md:h-[600px] lg:h-[600px] w-full"}
           bg-transparent hover:-translate-y-2 hover:shadow-2xl
           ${small ? "hover:scale-105" : ""}`}
         style={{
@@ -51,7 +51,7 @@ export function ProductCard({ product, small = false }: ProductCardProps) {
         }}
       >
         <div
-          className={`w-full flex items-center justify-center ${small ? "pt-4 pb-2 px-3 h-32" : "pt-6 pb-2 px-4 flex-1"}`}
+          className={`w-full flex items-center justify-center ${small ? "h-32" : "h-72 sm:h-72 md:h-80 lg:h-96"}`}
         >
           {mainVariant &&
           mainVariant.image_urls &&
@@ -59,11 +59,16 @@ export function ProductCard({ product, small = false }: ProductCardProps) {
             <img
               src={getProductImageUrl(mainVariant.image_urls[0])}
               alt={product.name}
-              className={`object-contain ${small ? "max-h-28 max-w-28" : "max-h-64 md:max-h-72 lg:max-h-80 max-w-48"}`}
+              className="object-cover w-full h-full"
               style={{
-                width: "auto",
-                height: "auto",
-                objectFit: "contain",
+                objectFit: "cover",
+                objectPosition: "center",
+                imageRendering: "crisp-edges",
+              }}
+              loading="lazy"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = target.src.split("?")[0];
               }}
             />
           ) : (
@@ -76,7 +81,7 @@ export function ProductCard({ product, small = false }: ProductCardProps) {
         </div>
         {/* Nome */}
         <div
-          className={`${small ? "px-2" : "px-4"} w-full flex flex-col items-center`}
+          className={`${small ? "px-2 py-2" : "px-4 py-2 sm:py-2"} w-full flex flex-col items-center min-h-[40px] sm:min-h-[60px]`}
         >
           <div
             className={`${small ? "text-sm leading-tight" : "text-lg md:text-xl"} font-bold text-black text-center font-[Poppins] mb-1 ${small ? "line-clamp-2" : ""}`}
@@ -101,12 +106,11 @@ export function ProductCard({ product, small = false }: ProductCardProps) {
             </div>
           )}
         </div>
-        {/* Preço */}
         <div
-          className={`${small ? "px-2" : "px-4"} flex flex-col items-center justify-center mb-2 w-full`}
+          className={`${small ? "px-2 py-3" : "px-4 py-3 sm:py-4 md:py-6"} flex flex-col items-center justify-center w-full sm:mt-2 lg:mt-auto`}
         >
           <span
-            className={`${small ? "text-base" : "text-2xl"} font-bold text-[#00b85b] font-[Poppins]`}
+            className={`${small ? "text-base" : "text-2xl sm:text-2xl"} font-bold text-[#00b85b] font-[Poppins]`}
           >
             {mainVariant ? (
               <>
@@ -120,7 +124,7 @@ export function ProductCard({ product, small = false }: ProductCardProps) {
             )}
           </span>
           {mainVariant && !small && (
-            <span className="text-xs text-[#7b61ff] font-[Poppins] mt-1">
+            <span className="text-xs text-[#7b61ff] font-[Poppins] mt-1 text-center">
               ou R${" "}
               {calcCreditoAvista(mainVariant.price).toLocaleString("pt-BR", {
                 minimumFractionDigits: 2,
@@ -128,18 +132,18 @@ export function ProductCard({ product, small = false }: ProductCardProps) {
               no crédito à vista
             </span>
           )}
+          {/* Botão COMPRAR - removido no mobile */}
+          {!small && (
+            <div className="hidden sm:flex w-full justify-center mt-1 sm:mt-2 mb-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <button
+                className="px-4 sm:px-6 py-1.5 sm:py-2 rounded-full font-bold text-white bg-[#fe53b3] shadow text-xs sm:text-sm font-[Poppins] hover:bg-[#fe53b3] hover:scale-105 transition-all duration-200 text-center"
+                style={{ fontFamily: "Poppins, Arial, sans-serif" }}
+              >
+                COMPRAR
+              </button>
+            </div>
+          )}
         </div>
-        {/* Botão COMPRAR - removido no modo small */}
-        {!small && (
-          <div className="w-full flex justify-center mb-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-            <button
-              className="px-4 py-1.5 rounded-full font-bold text-white bg-[#fe53b3] shadow text-sm font-[Poppins] hover:bg-[#fe53b3] hover:scale-105 transition-all duration-200 text-center"
-              style={{ fontFamily: "Poppins, Arial, sans-serif" }}
-            >
-              COMPRAR
-            </button>
-          </div>
-        )}
       </div>
     </Link>
   );

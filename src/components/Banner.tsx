@@ -51,10 +51,8 @@ export function Banner() {
 
   return (
     <div
-      className="w-screen max-w-none relative overflow-hidden bg-white p-0 m-0 border-0"
+      className="w-screen max-w-none relative overflow-hidden bg-white p-0 m-0 border-0 h-[200px] sm:h-[300px] md:h-[400px] lg:h-[500px] xl:h-[600px]"
       style={{
-        height: "340px",
-        minHeight: 180,
         borderRadius: 0,
         marginBottom: 0,
       }}
@@ -69,7 +67,7 @@ export function Banner() {
           <div
             key={banner.image}
             className="w-full h-full flex-shrink-0 p-0 m-0 relative"
-            style={{ height: "340px", borderRadius: 0 }}
+            style={{ borderRadius: 0 }}
           >
             <a
               href={banner.link}
@@ -84,7 +82,7 @@ export function Banner() {
                 style={{ objectFit: "cover", borderRadius: 0 }}
                 className="w-full h-full p-0 m-0 border-0"
                 priority={i === 0}
-                sizes="100vw"
+                sizes="(max-width: 640px) 100vw, (max-width: 768px) 100vw, (max-width: 1024px) 100vw, 100vw"
               />
             </a>
           </div>
@@ -101,24 +99,6 @@ export function Banner() {
           />
         ))}
       </div>
-      <style jsx>{`
-        div[data-banner] {
-          border-radius: 0 !important;
-        }
-        .banner-img {
-          border-radius: 0 !important;
-        }
-        @media (min-width: 768px) {
-          div[data-banner] {
-            height: 520px !important;
-          }
-        }
-        @media (min-width: 1200px) {
-          div[data-banner] {
-            height: 600px !important;
-          }
-        }
-      `}</style>
     </div>
   );
 }

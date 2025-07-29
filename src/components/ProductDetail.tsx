@@ -128,25 +128,30 @@ export function ProductDetail({ product }: ProductDetailProps) {
                   )}
                 </div>
 
-                <div className="w-full bg-white rounded-2xl overflow-hidden relative border border-[#ede3f6] shadow-lg flex items-center justify-center min-h-[320px] max-w-[420px] mx-auto">
+                <div className="w-full bg-white rounded-2xl overflow-hidden relative shadow-lg flex items-center justify-center min-h-[320px] max-w-[420px] mx-auto">
                   {variant.image_urls[selectedImage] ? (
                     <img
                       src={getProductImageUrl(
                         variant.image_urls[selectedImage]
                       )}
                       alt={product.name}
-                      className="object-contain w-full h-full transition-all duration-500 rounded-2xl"
+                      className="object-cover w-full h-full transition-all duration-500 rounded-2xl"
                       style={{
                         maxHeight: 420,
                         maxWidth: "100%",
-                        width: "auto",
-                        height: "auto",
                         cursor: "zoom-in",
+                        imageRendering: "crisp-edges",
                       }}
                       onClick={() => setShowImageModal(true)}
+                      loading="lazy"
+                      onError={(e) => {
+                        // Fallback para imagem original se a otimizada falhar
+                        const target = e.target as HTMLImageElement;
+                        target.src = target.src.split("?")[0];
+                      }}
                     />
                   ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center bg-white text-[#b689e0] gap-2 rounded-2xl border-none">
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-white text-[#b689e0] gap-2 rounded-2xl">
                       <span
                         style={{ fontSize: 48, lineHeight: 1, marginBottom: 8 }}
                       >
@@ -161,19 +166,28 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 </div>
               </div>
             ) : (
-              <div className="w-full aspect-square bg-white rounded-2xl overflow-hidden relative border border-[#ede3f6] shadow-lg flex items-center justify-center min-w-[220px] max-w-[420px] mx-auto">
+              <div className="w-full aspect-square bg-white rounded-2xl overflow-hidden relative shadow-lg flex items-center justify-center min-w-[220px] max-w-[420px] mx-auto">
                 {variant.image_urls &&
                 variant.image_urls.length > 0 &&
                 variant.image_urls[0] ? (
                   <img
                     src={getProductImageUrl(variant.image_urls[0])}
                     alt={product.name}
-                    className="object-contain w-full h-full transition-all duration-500 rounded-2xl"
-                    style={{ maxHeight: 420, maxWidth: 420, cursor: "zoom-in" }}
+                    className="object-cover w-full h-full transition-all duration-500 rounded-2xl"
+                    style={{
+                      cursor: "zoom-in",
+                      imageRendering: "crisp-edges",
+                    }}
                     onClick={() => setShowImageModal(true)}
+                    loading="lazy"
+                    onError={(e) => {
+                      // Fallback para imagem original se a otimizada falhar
+                      const target = e.target as HTMLImageElement;
+                      target.src = target.src.split("?")[0];
+                    }}
                   />
                 ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center bg-white text-[#b689e0] gap-2 rounded-2xl border-none">
+                  <div className="w-full h-full flex flex-col items-center justify-center bg-white text-[#b689e0] gap-2 rounded-2xl">
                     <span
                       style={{ fontSize: 48, lineHeight: 1, marginBottom: 8 }}
                     >
@@ -303,10 +317,13 @@ export function ProductDetail({ product }: ProductDetailProps) {
                       setSelectedVariantIdx(idx);
                       setSelectedImage(0);
                     }}
-                    className={`w-8 h-8 rounded-full border-2 ${selectedVariantIdx === idx ? "border-[#fe53b3] scale-110" : "border-gray-300"}`}
+                    className={`w-8 h-8 rounded-full border-2 transition-all duration-150 hover:scale-110 ${
+                      selectedVariantIdx === idx
+                        ? "border-[#fe53b3] scale-110 shadow-lg"
+                        : "border-gray-300 hover:border-[#fe53b3]"
+                    }`}
                     style={{
                       background: getColorCode(v.color),
-                      transition: "all 0.2s",
                     }}
                     title={v.color}
                   />

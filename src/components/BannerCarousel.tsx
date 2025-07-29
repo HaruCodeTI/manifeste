@@ -25,14 +25,13 @@ export default function BannerCarousel() {
 
   return (
     <div
+      className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
       style={{
-        width: "100%",
-        maxWidth: 1200,
         aspectRatio: "16/9",
         position: "relative",
         overflow: "hidden",
         borderRadius: 12,
-        margin: "32px auto",
+        margin: "16px auto",
       }}
     >
       <div
@@ -48,15 +47,35 @@ export default function BannerCarousel() {
         <Image
           src={banners[idx]}
           alt="Banner principal"
-          layout="responsive"
-          width={1200}
-          height={675} // proporção 16:9
+          fill
+          quality={90}
           style={{
             borderRadius: 12,
             objectFit: "cover",
             objectPosition: "center center",
           }}
+          sizes="(max-width: 640px) 100vw, (max-width: 768px) 100vw, (max-width: 1024px) 100vw, 1200px"
+          priority={idx === 0}
         />
+      </div>
+
+      {/* Indicadores */}
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
+        {banners.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => {
+              setFade(false);
+              setTimeout(() => {
+                setIdx(i);
+                setFade(true);
+              }, 300);
+            }}
+            className={`w-2 h-2 rounded-full transition-colors ${
+              i === idx ? "bg-white" : "bg-white/50"
+            }`}
+          />
+        ))}
       </div>
     </div>
   );

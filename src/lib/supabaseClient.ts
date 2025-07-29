@@ -114,5 +114,6 @@ export function getProductImageUrls(imagePaths: string[]): string[] {
 
 export function getProductImageUrl(filename: string): string {
   if (!filename) return "";
-  return `https://bxybenfsenafildrevew.supabase.co/storage/v1/object/public/imagens-produtos/${filename}`;
+  // Adicionar parâmetros para melhor qualidade e otimização
+  return `https://bxybenfsenafildrevew.supabase.co/storage/v1/object/public/imagens-produtos/${filename}?quality=90&format=webp`;
 }

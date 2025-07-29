@@ -58,16 +58,37 @@ export default function ProdutosPage() {
         .eq("status", "active");
       if (debouncedSearch) query = query.ilike("name", `%${debouncedSearch}%`);
       if (selectedCategory) query = query.eq("category_id", selectedCategory);
-      query = query.order("created_at", { ascending: false });
+
+      // Aplicar ordenação baseada no estado sort
+      switch (sort) {
+        case "az":
+          query = query.order("name", { ascending: true });
+          break;
+        case "za":
+          query = query.order("name", { ascending: false });
+          break;
+        default:
+          query = query.order("created_at", { ascending: false });
+      }
+
       query = query.range((page - 1) * itemsPerPage, page * itemsPerPage - 1);
       const { data, count, error } = await query;
       if (!error) {
-        setProducts(
-          (data || []).map((p) => ({
-            ...p,
-            variants: p.product_variants || [],
-          }))
-        );
+        const productsData = (data || []).map((p) => ({
+          ...p,
+          variants: p.product_variants || [],
+        }));
+
+        // Ordenação por preço sempre no frontend
+        if (sort === "price_asc" || sort === "price_desc") {
+          productsData.sort((a, b) => {
+            const priceA = a.variants?.[0]?.price || 0;
+            const priceB = b.variants?.[0]?.price || 0;
+            return sort === "price_asc" ? priceA - priceB : priceB - priceA;
+          });
+        }
+
+        setProducts(productsData);
         setTotalPages(count ? Math.ceil(count / itemsPerPage) : 1);
       }
       setLoading(false);
@@ -177,7 +198,7 @@ export default function ProdutosPage() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-7">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 lg:gap-8">
               {products.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
