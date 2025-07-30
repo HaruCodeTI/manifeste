@@ -2,14 +2,9 @@
 
 import BannerCarousel from "@/components/BannerCarousel";
 import { Header } from "@/components/Header";
+import { ProductCard } from "@/components/ProductCard";
 import { ShoppingCart } from "@/components/ShoppingCart";
-import {
-  Category,
-  getProductImageUrl,
-  Product,
-  supabase,
-} from "@/lib/supabaseClient";
-import { calcCreditoAvista } from "@/lib/utils";
+import { Category, Product, supabase } from "@/lib/supabaseClient";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
@@ -303,101 +298,26 @@ export default function HomePage() {
                   : 0;
               const hasFreeShipping = mainVariant && mainVariant.price >= 250;
               const bg = offerBgColors[idx % offerBgColors.length];
-
-              const valorCreditoAvista = mainVariant
-                ? calcCreditoAvista(mainVariant.price)
-                : 0;
               return (
-                <Link
-                  key={product.id}
-                  href={`/produto/${product.id}`}
-                  className="block group"
-                  style={{ textDecoration: "none" }}
-                >
-                  <div
-                    className="relative flex flex-col items-center rounded-[2.5rem] shadow-xl border border-[#ececec] p-0 overflow-hidden group transition-all duration-300 min-h-[480px] bg-white"
-                    style={{ background: bg }}
-                  >
-                    {/* Badges */}
-                    <div className="absolute top-5 left-5 flex flex-col gap-2 z-10">
-                      {hasDiscount && (
-                        <span className="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
-                          {discountPercent}% OFF
-                        </span>
-                      )}
-                      <span className="bg-[#fe53b3] text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
-                        OFERTA
+                <div key={product.id} className="relative">
+                  {/* Badges */}
+                  <div className="absolute top-5 left-5 flex flex-col gap-2 z-10">
+                    {hasDiscount && (
+                      <span className="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                        {discountPercent}% OFF
                       </span>
-                      {hasFreeShipping && (
-                        <span className="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
-                          FRETE GRÁTIS
-                        </span>
-                      )}
-                    </div>
-                    {/* Imagem */}
-                    <div className="w-full flex-1 flex items-center justify-center mb-4 pt-8 pb-2 px-8">
-                      {mainVariant &&
-                      mainVariant.image_urls &&
-                      mainVariant.image_urls.length > 0 ? (
-                        <img
-                          src={getProductImageUrl(mainVariant.image_urls[0])}
-                          alt={product.name}
-                          className="object-contain rounded-2xl w-full max-h-64 md:max-h-72 lg:max-h-80"
-                          style={{
-                            background: bg,
-                            maxWidth: "90%",
-                            height: "auto",
-                          }}
-                        />
-                      ) : (
-                        <div className="w-full h-56 flex items-center justify-center bg-[#f5f5f5] text-[#b689e0] rounded-2xl">
-                          Sem imagem
-                        </div>
-                      )}
-                    </div>
-                    {/* Nome */}
-                    <div className="px-6 w-full flex flex-col items-center">
-                      <div
-                        className="text-lg md:text-xl font-bold text-black text-center font-[Poppins] mb-2"
-                        style={{ fontFamily: "Poppins, Arial, sans-serif" }}
-                      >
-                        {product.name}
-                      </div>
-                    </div>
-                    {/* Preço */}
-                    <div className="flex items-center justify-center gap-2 mb-1">
-                      {hasDiscount && (
-                        <span className="text-gray-400 line-through text-base">
-                          R${" "}
-                          {mainVariant && mainVariant.original_price
-                            ? Number(mainVariant.original_price).toLocaleString(
-                                "pt-BR",
-                                { minimumFractionDigits: 2 }
-                              )
-                            : ""}
-                        </span>
-                      )}
-                      <span className="text-2xl font-bold text-[#fe53b3] font-[Poppins]">
-                        R${" "}
-                        {mainVariant
-                          ? Number(mainVariant.price).toLocaleString("pt-BR", {
-                              minimumFractionDigits: 2,
-                            })
-                          : ""}
+                    )}
+                    <span className="bg-[#fe53b3] text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                      OFERTA
+                    </span>
+                    {hasFreeShipping && (
+                      <span className="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                        FRETE GRÁTIS
                       </span>
-                    </div>
-
-                    <div className="w-full flex flex-col items-center text-center mb-4">
-                      <span className="text-xs text-[#7b61ff] font-[Poppins] mt-1">
-                        ou R${" "}
-                        {valorCreditoAvista.toLocaleString("pt-BR", {
-                          minimumFractionDigits: 2,
-                        })}{" "}
-                        no crédito à vista
-                      </span>
-                    </div>
+                    )}
                   </div>
-                </Link>
+                  <ProductCard product={product} bgColor={bg} />
+                </div>
               );
             })}
           </div>

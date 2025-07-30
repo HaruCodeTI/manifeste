@@ -89,13 +89,13 @@ export function Footer() {
               style={{ fontFamily: "Poppins, Arial, sans-serif" }}
             >
               <a
-                href="mailto:manifestecg@gmail.com"
+                href="mailto:contato@manifestecg.com.br"
                 className="hover:text-secondary transition flex items-center justify-start md:justify-end w-full"
               >
                 <span
                   style={{ display: "inline-block", width: "1.8em" }}
                 ></span>
-                manifestecg@gmail.com
+                contato@manifestecg.com.br
               </a>
               <a
                 href="https://wa.me/5567996590570"

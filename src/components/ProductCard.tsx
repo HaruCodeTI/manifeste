@@ -8,9 +8,14 @@ import Link from "next/link";
 interface ProductCardProps {
   product: Product;
   small?: boolean;
+  bgColor?: string; // cor de fundo opcional
 }
 
-export function ProductCard({ product, small = false }: ProductCardProps) {
+export function ProductCard({
+  product,
+  small = false,
+  bgColor,
+}: ProductCardProps) {
   const mainVariant =
     product.variants && product.variants.length > 0
       ? product.variants[0]
@@ -47,13 +52,13 @@ export function ProductCard({ product, small = false }: ProductCardProps) {
             bg-transparent hover:-translate-y-2 hover:shadow-2xl
             ${small ? "hover:scale-105" : ""}`}
           style={{
-            background: "white",
+            background: bgColor || "white",
             fontFamily: "Poppins, Arial, sans-serif",
             cursor: "pointer",
           }}
         >
           <div
-            className={`w-full flex items-center justify-center ${small ? "h-32" : "h-72 sm:h-72 md:h-80 lg:h-96"}`}
+            className={`w-full flex items-center justify-center ${small ? "h-32" : "h-80 sm:h-72 md:h-80 lg:h-96"}`}
           >
             {mainVariant &&
             mainVariant.image_urls &&
@@ -81,70 +86,77 @@ export function ProductCard({ product, small = false }: ProductCardProps) {
               </div>
             )}
           </div>
-          {/* Nome */}
-          <div
-            className={`${small ? "px-2 py-2" : "px-4 py-2 sm:py-2"} w-full flex flex-col items-center min-h-[40px] sm:min-h-[60px]`}
-          >
+          {/* Bloco flexível para alinhar título+cores e footer */}
+          <div className="flex-1 flex flex-col justify-between w-full">
+            {/* Nome e cores */}
             <div
-              className={`${small ? "text-sm leading-tight" : "text-lg md:text-xl"} font-bold text-black text-center font-[Poppins] mb-1 ${small ? "line-clamp-2" : ""}`}
-              style={{ fontFamily: "Poppins, Arial, sans-serif" }}
+              className={`${small ? "px-2 py-2" : "px-4 py-2 sm:py-2"} w-full flex flex-col items-center min-h-[40px] sm:min-h-[60px]`}
             >
-              {product.name}
-            </div>
-            {/* Cores disponíveis */}
-            {product.variants && product.variants.length > 1 && (
-              <div className="flex gap-1 mt-1 justify-center">
-                {product.variants.map((variant) => (
-                  <span
-                    key={variant.id}
-                    className={`${small ? "w-3 h-3" : "w-4 h-4"} rounded-full border border-gray-300`}
-                    style={{
-                      background: getColorCode(variant.color),
-                      display: "inline-block",
-                    }}
-                    title={variant.color}
-                  />
-                ))}
+              <div
+                className={`${small ? "text-sm leading-tight" : "text-lg md:text-xl"} font-bold text-black text-center font-[Poppins] mb-1 ${small ? "line-clamp-2" : ""}`}
+                style={{ fontFamily: "Poppins, Arial, sans-serif" }}
+              >
+                {product.name}
               </div>
-            )}
-          </div>
-          <div
-            className={`${small ? "px-2 py-3" : "px-4 py-3 sm:py-4 md:py-6"} flex flex-col items-center justify-center w-full sm:mt-2 lg:mt-auto`}
-          >
-            <span
-              className={`${small ? "text-base" : "text-2xl sm:text-2xl"} font-bold text-[#00b85b] font-[Poppins]`}
-            >
-              {mainVariant ? (
-                <>
-                  R${" "}
-                  {Number(mainVariant.price).toLocaleString("pt-BR", {
-                    minimumFractionDigits: 2,
-                  })}
-                </>
-              ) : (
-                <>&nbsp;</>
+              {/* Cores disponíveis */}
+              {product.variants && product.variants.length > 1 && (
+                <div className="flex gap-1 mt-1 justify-center">
+                  {product.variants.map((variant) => (
+                    <span
+                      key={variant.id}
+                      className={`${small ? "w-3 h-3" : "w-4 h-4"} rounded-full border border-gray-300`}
+                      style={{
+                        background: getColorCode(variant.color),
+                        display: "inline-block",
+                      }}
+                      title={variant.color}
+                    />
+                  ))}
+                </div>
               )}
-            </span>
-            {mainVariant && !small && (
-              <span className="text-xs text-[#7b61ff] font-[Poppins] mt-1 text-center">
-                ou R${" "}
-                {calcCreditoAvista(mainVariant.price).toLocaleString("pt-BR", {
-                  minimumFractionDigits: 2,
-                })}{" "}
-                no crédito à vista
+            </div>
+            {/* Footer: preço, parcelamento, botão */}
+            <div
+              className={`${small ? "px-2 py-3" : "px-4 py-3 sm:py-4 md:py-6"} flex flex-col items-center justify-center w-full sm:mt-2 lg:mt-auto`}
+            >
+              <span
+                className={`${small ? "text-base" : "text-2xl sm:text-2xl"} font-bold text-[#00b85b] font-[Poppins]`}
+              >
+                {mainVariant ? (
+                  <>
+                    R${" "}
+                    {Number(mainVariant.price).toLocaleString("pt-BR", {
+                      minimumFractionDigits: 2,
+                    })}
+                  </>
+                ) : (
+                  <>&nbsp;</>
+                )}
               </span>
-            )}
-            {/* Botão COMPRAR - removido no mobile */}
-            {!small && (
-              <div className="hidden sm:flex w-full justify-center mt-1 sm:mt-2 mb-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                <button
-                  className="px-4 sm:px-6 py-1.5 sm:py-2 rounded-full font-bold text-white bg-[#fe53b3] shadow text-xs sm:text-sm font-[Poppins] hover:bg-[#fe53b3] hover:scale-105 transition-all duration-200 text-center"
-                  style={{ fontFamily: "Poppins, Arial, sans-serif" }}
-                >
-                  COMPRAR
-                </button>
-              </div>
-            )}
+              {mainVariant && !small && (
+                <span className="text-xs text-[#7b61ff] font-[Poppins] mt-1 text-center">
+                  ou R${" "}
+                  {calcCreditoAvista(mainVariant.price).toLocaleString(
+                    "pt-BR",
+                    {
+                      minimumFractionDigits: 2,
+                    }
+                  )}{" "}
+                  no crédito à vista
+                </span>
+              )}
+              {/* Botão COMPRAR - removido no mobile */}
+              {!small && (
+                <div className="hidden sm:flex w-full justify-center mt-1 sm:mt-2 mb-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  <button
+                    className="px-4 sm:px-6 py-1.5 sm:py-2 rounded-full font-bold text-white bg-[#fe53b3] shadow text-xs sm:text-sm font-[Poppins] hover:bg-[#fe53b3] hover:scale-105 transition-all duration-200 text-center"
+                    style={{ fontFamily: "Poppins, Arial, sans-serif" }}
+                  >
+                    COMPRAR
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </Link>
