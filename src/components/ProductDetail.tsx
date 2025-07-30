@@ -1,9 +1,9 @@
 "use client";
 
+import { MarkdownRenderer } from "@/components/MarkdownRenderer";
 import { Button } from "@/components/ui/button";
 import { Toast } from "@/components/ui/toast";
 import { useCartContext } from "@/contexts/CartContext";
-import { formatProductDescription } from "@/lib/descriptionFormatter";
 import { Product, getProductImageUrl } from "@/lib/supabaseClient";
 import { calcCreditoParcelado, calcPix } from "@/lib/utils";
 import { ArrowLeft, Star } from "lucide-react";
@@ -341,78 +341,11 @@ export function ProductDetail({ product }: ProductDetailProps) {
             Descrição
           </h2>
           <div className="text-base text-[#222] font-[Poppins] leading-relaxed">
-            {(() => {
-              const formattedDescription = formatProductDescription(
-                product.description || "",
-                product.name
-              );
-
-              return (
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-xl font-bold text-[#7b61ff] mb-2">
-                      {formattedDescription.title}
-                    </h3>
-                    <p className="text-lg text-[#666] mb-4">
-                      {formattedDescription.subtitle}
-                    </p>
-                    <p className="text-[#444] mb-6">
-                      {formattedDescription.details}
-                    </p>
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div>
-                      <h4 className="font-bold text-[#7b61ff] mb-3">
-                        Características:
-                      </h4>
-                      <ul className="space-y-2">
-                        {formattedDescription.features.map(
-                          (feature: string, index: number) => (
-                            <li key={index} className="flex items-start">
-                              <span className="text-[#fe53b3] mr-2">•</span>
-                              <span>{feature}</span>
-                            </li>
-                          )
-                        )}
-                      </ul>
-                    </div>
-
-                    <div>
-                      <h4 className="font-bold text-[#7b61ff] mb-3">
-                        Benefícios:
-                      </h4>
-                      <ul className="space-y-2">
-                        {formattedDescription.benefits.map(
-                          (benefit: string, index: number) => (
-                            <li key={index} className="flex items-start">
-                              <span className="text-[#fe53b3] mr-2">•</span>
-                              <span>{benefit}</span>
-                            </li>
-                          )
-                        )}
-                      </ul>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h4 className="font-bold text-[#7b61ff] mb-3">
-                      Dicas de Uso:
-                    </h4>
-                    <ul className="space-y-2">
-                      {formattedDescription.tips.map(
-                        (tip: string, index: number) => (
-                          <li key={index} className="flex items-start">
-                            <span className="text-[#fe53b3] mr-2">•</span>
-                            <span>{tip}</span>
-                          </li>
-                        )
-                      )}
-                    </ul>
-                  </div>
-                </div>
-              );
-            })()}
+            {product.description ? (
+              <MarkdownRenderer content={product.description} />
+            ) : (
+              <p className="text-[#666] italic">Descrição em breve...</p>
+            )}
           </div>
         </div>
       </div>
