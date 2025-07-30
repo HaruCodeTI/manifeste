@@ -5,7 +5,7 @@ import { Toast } from "@/components/ui/toast";
 import { useCartContext } from "@/contexts/CartContext";
 import { formatProductDescription } from "@/lib/descriptionFormatter";
 import { Product, getProductImageUrl } from "@/lib/supabaseClient";
-import { calcCreditoAvista, calcCreditoParcelado } from "@/lib/utils";
+import { calcCreditoParcelado, calcPix } from "@/lib/utils";
 import { ArrowLeft, Star } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -36,7 +36,8 @@ export function ProductDetail({ product }: ProductDetailProps) {
       ? Math.round(100 - (variant.price / variant.original_price) * 100)
       : 0;
 
-  const valorCreditoAvista = calcCreditoAvista(variant.price);
+  const valorPix = calcPix(variant.price);
+  const valorCreditoAvista = variant.price;
   const { total: valorParcelado, parcela: valorParcela } = calcCreditoParcelado(
     variant.price,
     3
@@ -232,9 +233,12 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 <div className="flex flex-col gap-3 mb-2">
                   <span className="text-3xl font-bold text-[#00b85b] font-[Poppins]">
                     R${" "}
-                    {variant.price.toLocaleString("pt-BR", {
+                    {valorPix.toLocaleString("pt-BR", {
                       minimumFractionDigits: 2,
                     })}
+                    <span className="text-lg text-[#00b85b] font-[Poppins] ml-2">
+                      no PIX
+                    </span>
                   </span>
                   <span className="text-base text-[#7b61ff] font-[Poppins]">
                     ou R${" "}

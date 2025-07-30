@@ -18,6 +18,7 @@ export async function POST(req: NextRequest) {
       paymentMethod,
       total,
       coupon,
+      descontoPix = 0, // Novo campo para desconto PIX
     } = body;
 
     if (!items || !customerInfo?.email || !total) {
@@ -83,13 +84,14 @@ export async function POST(req: NextRequest) {
             0
           ),
           total_price: total,
-          discount_amount: coupon
-            ? items.reduce(
-                (sum: number, item: { price: number; quantity: number }) =>
-                  sum + item.price * item.quantity,
-                0
-              ) - total
-            : 0,
+          discount_amount:
+            (coupon
+              ? items.reduce(
+                  (sum: number, item: { price: number; quantity: number }) =>
+                    sum + item.price * item.quantity,
+                  0
+                ) - total
+              : 0) + descontoPix, // Incluir desconto PIX no total
           coupon_id: coupon?.id || null,
           status: "processing",
         },

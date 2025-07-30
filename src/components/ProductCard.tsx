@@ -2,7 +2,7 @@
 
 import { CardTransition } from "@/components/ui/transitions";
 import { getProductImageUrl, Product } from "@/lib/supabaseClient";
-import { calcCreditoAvista } from "@/lib/utils";
+import { calcPix } from "@/lib/utils";
 import Link from "next/link";
 
 interface ProductCardProps {
@@ -100,7 +100,7 @@ export function ProductCard({
               </div>
               {/* Cores disponíveis */}
               {product.variants && product.variants.length > 1 && (
-                <div className="flex gap-1 mt-1 justify-center">
+                <div className="flex gap-1  justify-center">
                   {product.variants.map((variant) => (
                     <span
                       key={variant.id}
@@ -125,9 +125,12 @@ export function ProductCard({
                 {mainVariant ? (
                   <>
                     R${" "}
-                    {Number(mainVariant.price).toLocaleString("pt-BR", {
+                    {calcPix(mainVariant.price).toLocaleString("pt-BR", {
                       minimumFractionDigits: 2,
                     })}
+                    <span className="text-xs text-[#00b85b] font-[Poppins] ml-1">
+                      no PIX
+                    </span>
                   </>
                 ) : (
                   <>&nbsp;</>
@@ -136,18 +139,15 @@ export function ProductCard({
               {mainVariant && !small && (
                 <span className="text-xs text-[#7b61ff] font-[Poppins] mt-1 text-center">
                   ou R${" "}
-                  {calcCreditoAvista(mainVariant.price).toLocaleString(
-                    "pt-BR",
-                    {
-                      minimumFractionDigits: 2,
-                    }
-                  )}{" "}
+                  {mainVariant.price.toLocaleString("pt-BR", {
+                    minimumFractionDigits: 2,
+                  })}{" "}
                   no crédito à vista
                 </span>
               )}
               {/* Botão COMPRAR - removido no mobile */}
               {!small && (
-                <div className="hidden sm:flex w-full justify-center mt-1 sm:mt-2 mb-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <div className="hidden sm:flex w-full justify-center  sm:mt-2 mb-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                   <button
                     className="px-4 sm:px-6 py-1.5 sm:py-2 rounded-full font-bold text-white bg-[#fe53b3] shadow text-xs sm:text-sm font-[Poppins] hover:bg-[#fe53b3] hover:scale-105 transition-all duration-200 text-center"
                     style={{ fontFamily: "Poppins, Arial, sans-serif" }}

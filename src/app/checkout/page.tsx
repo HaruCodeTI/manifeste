@@ -149,7 +149,7 @@ export default function CheckoutPage() {
   const router = useRouter();
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("card");
   const [installments, setInstallments] = useState(2); // Começa em 2x para parcelado
-  const maxInstallments = 12;
+  const maxInstallments = 3;
   const [shippingMethod] = useState<ShippingMethod>("delivery");
   const [shippingInfo, setShippingInfo] = useState<ShippingInfo>({
     cep: "",
@@ -178,7 +178,7 @@ export default function CheckoutPage() {
       ? (subtotal * coupon.value) / 100
       : coupon.value
     : 0;
-  const { total, valorParcela } = calcularTotalPagamento({
+  const { total, valorParcela, descontoPix } = calcularTotalPagamento({
     subtotal,
     shipping: shippingCost,
     desconto: discount,
@@ -278,6 +278,7 @@ export default function CheckoutPage() {
           paymentMethod,
           total: total,
           coupon: coupon ? { id: coupon.id, code: coupon.code } : undefined,
+          descontoPix: descontoPix || 0, // Enviar desconto PIX
           installments:
             paymentMethod === "card_installments" ? installments : 1,
           payment_fee:
@@ -733,6 +734,17 @@ export default function CheckoutPage() {
                       </span>
                     </div>
                   )}
+                  {paymentMethod === "pix" && descontoPix > 0 && (
+                    <div className="flex justify-between text-sm mb-2">
+                      <span className="text-gray-700">Desconto PIX (5%)</span>
+                      <span className="font-bold text-[#00b85b]">
+                        -R${" "}
+                        {descontoPix.toLocaleString("pt-BR", {
+                          minimumFractionDigits: 2,
+                        })}
+                      </span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-sm mb-2">
                     <span className="text-gray-700">Custo de frete</span>
                     <span className="font-bold text-black">
@@ -742,9 +754,10 @@ export default function CheckoutPage() {
                   <div className="flex justify-between text-lg font-bold mt-4 w-full">
                     <span className="text-black">Total</span>
                     <span className="text-black">
-                      {paymentMethod === "pix" || paymentMethod === "debit"
-                        ? `R$ ${(subtotal - discount + shippingCost).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
-                        : `R$ ${total.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`}
+                      R$
+                      {total.toLocaleString("pt-BR", {
+                        minimumFractionDigits: 2,
+                      })}
                       {paymentMethod === "card_installments" &&
                       installments > 1 &&
                       valorParcela

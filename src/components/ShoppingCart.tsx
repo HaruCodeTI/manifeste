@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCartContext } from "@/contexts/CartContext";
 import { getProductImageUrl } from "@/lib/supabaseClient";
-import { calcDebito, cn } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { ShoppingBag, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -50,7 +50,7 @@ export function ShoppingCart({ isOpen, onClose }: ShoppingCartProps) {
   };
 
   const getTotalPix = () =>
-    cart.reduce((acc, item) => acc + calcDebito(item.price) * item.quantity, 0);
+    cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
 
   return (
     <>
