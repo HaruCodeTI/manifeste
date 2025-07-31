@@ -1,81 +1,58 @@
 import Image from "next/image";
-import { useEffect, useState } from "react";
-
-const banners = [
-  "/banner/new/20250722_1436_Manhã Tranquila_simple_compose_01k0spmd6gft6s8c2cjea8ce3m.png",
-  "/banner/new/20250722_1437_Serene Sunlit Elegance_simple_compose_01k0sppekrf3z8y7w25mbmvjrh.png",
-  "/banner/new/20250722_1440_Sensual Serenity Outdoors_simple_compose_01k0spxfwbezd8nqf6svgh6x93.png",
-  "/banner/new/20250722_1202_Serenidade ao Ar Livre_simple_compose_01k0sdvcasfd0tn3g46w8v3a70.png",
-];
 
 export default function BannerCarousel() {
-  const [idx, setIdx] = useState(0);
-  const [fade, setFade] = useState(true);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setFade(false);
-      setTimeout(() => {
-        setIdx((prev) => (prev + 1) % banners.length);
-        setFade(true);
-      }, 300);
-    }, 4000);
-    return () => clearInterval(timer);
-  }, []);
-
   return (
-    <div
-      className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
-      style={{
-        aspectRatio: "16/9",
-        position: "relative",
-        overflow: "hidden",
-        borderRadius: 12,
-        margin: "16px auto",
-      }}
-    >
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          position: "absolute",
-          inset: 0,
-          transition: "opacity 0.4s cubic-bezier(0.4,0,0.2,1)",
-          opacity: fade ? 1 : 0,
-        }}
-      >
-        <Image
-          src={banners[idx]}
-          alt="Banner principal"
-          fill
-          quality={90}
+    <div className="w-full">
+      <div className="hidden lg:block w-full relative">
+        <div
+          className="w-full relative"
           style={{
-            borderRadius: 12,
-            objectFit: "cover",
-            objectPosition: "center center",
+            aspectRatio: "4/1",
+            border: "1px solid rgba(182, 137, 224, 0.2)",
+            borderRadius: "8px",
+            overflow: "hidden",
+            margin: "8px 0",
           }}
-          sizes="(max-width: 640px) 100vw, (max-width: 768px) 100vw, (max-width: 1024px) 100vw, 1200px"
-          priority={idx === 0}
-        />
+        >
+          <Image
+            src="/banner-lg.png"
+            alt="Banner principal - Desktop"
+            fill
+            quality={90}
+            style={{
+              objectFit: "cover",
+              objectPosition: "center center",
+            }}
+            sizes="100vw"
+            priority
+          />
+        </div>
       </div>
 
-      {/* Indicadores */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
-        {banners.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => {
-              setFade(false);
-              setTimeout(() => {
-                setIdx(i);
-                setFade(true);
-              }, 300);
+      {/* Banner para telas médias e mobile (abaixo de lg) */}
+      <div className="lg:hidden w-full px-4 sm:px-6">
+        <div
+          className="w-full relative"
+          style={{
+            aspectRatio: "12/11",
+            borderRadius: 12,
+            overflow: "hidden",
+          }}
+        >
+          <Image
+            src="/banner-sm.png"
+            alt="Banner principal - Mobile"
+            fill
+            quality={90}
+            style={{
+              borderRadius: 12,
+              objectFit: "cover",
+              objectPosition: "center center",
             }}
-            className={`w-2 h-2 rounded-full transition-colors ${
-              i === idx ? "bg-white" : "bg-white/50"
-            }`}
+            sizes="(max-width: 1023px) 100vw"
+            priority
           />
-        ))}
+        </div>
       </div>
     </div>
   );

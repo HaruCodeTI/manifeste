@@ -6,12 +6,51 @@ import { Toast } from "@/components/ui/toast";
 import { useCartContext } from "@/contexts/CartContext";
 import { Product, getProductImageUrl } from "@/lib/supabaseClient";
 import { calcCreditoParcelado, calcPix } from "@/lib/utils";
-import { ArrowLeft, Star } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
 interface ProductDetailProps {
   product: Product;
+}
+
+// Componente para exibir preços com desconto na tela do produto
+function ProductDetailDiscountPrice({
+  price,
+  discountPercent = 30,
+}: {
+  price: number;
+  discountPercent?: number;
+}) {
+  const originalPrice = Math.round(price / (1 - discountPercent / 100));
+  const discountedPrice = price;
+
+  return (
+    <div className="flex flex-col gap-2">
+      {/* Preço original riscado com badge */}
+      <div className="flex items-center gap-3">
+        <span className="text-lg text-gray-500 line-through font-[Poppins]">
+          R${" "}
+          {originalPrice.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+          })}
+        </span>
+        <span className="bg-[#fe53b3] text-white text-sm font-bold px-3 py-1 rounded-full">
+          {discountPercent}% OFF
+        </span>
+      </div>
+      {/* Preço com desconto */}
+      <span className="text-3xl font-bold text-[#00b85b] font-[Poppins]">
+        R${" "}
+        {discountedPrice.toLocaleString("pt-BR", {
+          minimumFractionDigits: 2,
+        })}
+        <span className="text-lg text-[#00b85b] font-[Poppins] ml-2">
+          no PIX
+        </span>
+      </span>
+    </div>
+  );
 }
 
 export function ProductDetail({ product }: ProductDetailProps) {
@@ -26,15 +65,6 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const [showImageModal, setShowImageModal] = useState(false);
 
   if (!variant) return null;
-
-  const rating = 5;
-  const reviews = 32;
-  const hasDiscount =
-    variant.original_price && variant.original_price > variant.price;
-  const discountPercent =
-    hasDiscount && variant.original_price
-      ? Math.round(100 - (variant.price / variant.original_price) * 100)
-      : 0;
 
   const valorPix = calcPix(variant.price);
   const valorCreditoAvista = variant.price;
@@ -81,10 +111,6 @@ export function ProductDetail({ product }: ProductDetailProps) {
       },
       quantity
     );
-  };
-
-  const formatPrice = (price: number) => {
-    return price.toFixed(2).replace(".", ",");
   };
 
   return (
@@ -211,54 +237,31 @@ export function ProductDetail({ product }: ProductDetailProps) {
               >
                 {product.name}
               </h1>
-              <div className="flex items-center gap-1 mb-1">
-                {Array.from({ length: rating }).map((_, i) => (
-                  <Star key={i} size={20} fill="#FFD600" stroke="#FFD600" />
-                ))}
-                <span className="ml-1 text-gray-700 text-base font-semibold">
-                  ({reviews})
-                </span>
+
+              {/* Preços com desconto de 30% */}
+              <div className="mb-4">
+                <ProductDetailDiscountPrice price={valorPix} />
               </div>
-              <div className="flex items-center gap-3 flex-wrap mb-2">
-                {hasDiscount && (
-                  <span className="text-base text-gray-400 line-through">
-                    R$ {formatPrice(variant.original_price!)}
-                  </span>
-                )}
-                {hasDiscount && (
-                  <span className="bg-[#00d26a] text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
-                    {discountPercent}%OFF
-                  </span>
-                )}
-                <div className="flex flex-col gap-3 mb-2">
-                  <span className="text-3xl font-bold text-[#00b85b] font-[Poppins]">
-                    R${" "}
-                    {valorPix.toLocaleString("pt-BR", {
-                      minimumFractionDigits: 2,
-                    })}
-                    <span className="text-lg text-[#00b85b] font-[Poppins] ml-2">
-                      no PIX
-                    </span>
-                  </span>
-                  <span className="text-base text-[#7b61ff] font-[Poppins]">
-                    ou R${" "}
-                    {valorCreditoAvista.toLocaleString("pt-BR", {
-                      minimumFractionDigits: 2,
-                    })}{" "}
-                    no crédito à vista
-                  </span>
-                  <span className="text-base text-gray-700 font-[Poppins]">
-                    3x de R${" "}
-                    {valorParcela.toLocaleString("pt-BR", {
-                      minimumFractionDigits: 2,
-                    })}{" "}
-                    no crédito parcelado (total R${" "}
-                    {valorParcelado.toLocaleString("pt-BR", {
-                      minimumFractionDigits: 2,
-                    })}
-                    )
-                  </span>
-                </div>
+
+              <div className="flex flex-col gap-3 mb-2">
+                <span className="text-base text-[#7b61ff] font-[Poppins]">
+                  ou R${" "}
+                  {valorCreditoAvista.toLocaleString("pt-BR", {
+                    minimumFractionDigits: 2,
+                  })}{" "}
+                  no crédito
+                </span>
+                <span className="text-base text-gray-700 font-[Poppins]">
+                  3x de R${" "}
+                  {valorParcela.toLocaleString("pt-BR", {
+                    minimumFractionDigits: 2,
+                  })}{" "}
+                  no crédito parcelado (total R${" "}
+                  {valorParcelado.toLocaleString("pt-BR", {
+                    minimumFractionDigits: 2,
+                  })}
+                  )
+                </span>
               </div>
 
               <div className="flex items-center gap-4 mb-4">

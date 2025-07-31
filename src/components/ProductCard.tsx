@@ -11,6 +11,84 @@ interface ProductCardProps {
   bgColor?: string; // cor de fundo opcional
 }
 
+// Componente para exibir preços com desconto
+function DiscountPrice({
+  price,
+  discountPercent = 30,
+}: {
+  price: number;
+  discountPercent?: number;
+}) {
+  const originalPrice = Math.round(price / (1 - discountPercent / 100));
+  const discountedPrice = price;
+
+  return (
+    <div className="flex flex-col items-center gap-1">
+      {/* Preço original riscado com badge */}
+      <div className="flex items-center gap-2">
+        <span className="text-sm text-gray-500 line-through font-[Poppins]">
+          R${" "}
+          {originalPrice.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+          })}
+        </span>
+        <span className="bg-[#fe53b3] text-white text-xs font-bold px-2 py-1 rounded-full">
+          {discountPercent}% OFF
+        </span>
+      </div>
+      {/* Preço com desconto */}
+      <span className="text-2xl font-bold text-[#00b85b] font-[Poppins]">
+        R${" "}
+        {discountedPrice.toLocaleString("pt-BR", {
+          minimumFractionDigits: 2,
+        })}
+        <span className="text-xs text-[#00b85b] font-[Poppins] ml-1">
+          no PIX
+        </span>
+      </span>
+    </div>
+  );
+}
+
+// Componente para preços pequenos com desconto
+function SmallDiscountPrice({
+  price,
+  discountPercent = 30,
+}: {
+  price: number;
+  discountPercent?: number;
+}) {
+  const originalPrice = Math.round(price / (1 - discountPercent / 100));
+  const discountedPrice = price;
+
+  return (
+    <div className="flex flex-col items-center gap-1">
+      {/* Preço original riscado com badge */}
+      <div className="flex items-center gap-1">
+        <span className="text-xs text-gray-500 line-through font-[Poppins]">
+          R${" "}
+          {originalPrice.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+          })}
+        </span>
+        <span className="bg-[#fe53b3] text-white text-xs font-bold px-1 py-0.5 rounded-full">
+          {discountPercent}% OFF
+        </span>
+      </div>
+      {/* Preço com desconto */}
+      <span className="text-base font-bold text-[#00b85b] font-[Poppins]">
+        R${" "}
+        {discountedPrice.toLocaleString("pt-BR", {
+          minimumFractionDigits: 2,
+        })}
+        <span className="text-xs text-[#00b85b] font-[Poppins] ml-1">
+          no PIX
+        </span>
+      </span>
+    </div>
+  );
+}
+
 export function ProductCard({
   product,
   small = false,
@@ -57,6 +135,7 @@ export function ProductCard({
             cursor: "pointer",
           }}
         >
+          {/* Área da imagem - altura fixa */}
           <div
             className={`w-full flex items-center justify-center ${small ? "h-32" : "h-80 sm:h-72 md:h-80 lg:h-96"}`}
           >
@@ -86,21 +165,21 @@ export function ProductCard({
               </div>
             )}
           </div>
-          {/* Bloco flexível para alinhar título+cores e footer */}
-          <div className="flex-1 flex flex-col justify-between w-full">
-            {/* Nome e cores */}
-            <div
-              className={`${small ? "px-2 py-2" : "px-4 py-2 sm:py-2"} w-full flex flex-col items-center min-h-[40px] sm:min-h-[60px]`}
-            >
+
+          {/* Área do conteúdo - altura flexível */}
+          <div className="flex-1 flex flex-col justify-between w-full p-4">
+            {/* Nome do produto - altura fixa */}
+            <div className="flex flex-col items-center mb-4">
               <div
-                className={`${small ? "text-sm leading-tight" : "text-lg md:text-xl"} font-bold text-black text-center font-[Poppins] mb-1 ${small ? "line-clamp-2" : ""}`}
+                className={`${small ? "text-sm leading-tight" : "text-lg md:text-xl"} font-bold text-black text-center font-[Poppins] ${small ? "line-clamp-2" : ""}`}
                 style={{ fontFamily: "Poppins, Arial, sans-serif" }}
               >
                 {product.name}
               </div>
+
               {/* Cores disponíveis */}
               {product.variants && product.variants.length > 1 && (
-                <div className="flex gap-1  justify-center">
+                <div className="flex gap-1 justify-center mt-2">
                   {product.variants.map((variant) => (
                     <span
                       key={variant.id}
@@ -115,46 +194,29 @@ export function ProductCard({
                 </div>
               )}
             </div>
-            {/* Footer: preço, parcelamento, botão */}
-            <div
-              className={`${small ? "px-2 py-3" : "px-4 py-3 sm:py-4 md:py-6"} flex flex-col items-center justify-center w-full sm:mt-2 lg:mt-auto`}
-            >
-              <span
-                className={`${small ? "text-base" : "text-2xl sm:text-2xl"} font-bold text-[#00b85b] font-[Poppins]`}
-              >
-                {mainVariant ? (
-                  <>
-                    R${" "}
-                    {calcPix(mainVariant.price).toLocaleString("pt-BR", {
-                      minimumFractionDigits: 2,
-                    })}
-                    <span className="text-xs text-[#00b85b] font-[Poppins] ml-1">
-                      no PIX
-                    </span>
-                  </>
+
+            {/* Área de preços e botão */}
+            <div className="flex flex-col items-center">
+              {/* Preços */}
+              {mainVariant ? (
+                small ? (
+                  <SmallDiscountPrice price={calcPix(mainVariant.price)} />
                 ) : (
-                  <>&nbsp;</>
-                )}
-              </span>
+                  <DiscountPrice price={calcPix(mainVariant.price)} />
+                )
+              ) : (
+                <div className="h-16"></div>
+              )}
+
+              {/* Informação adicional de crédito */}
               {mainVariant && !small && (
-                <span className="text-xs text-[#7b61ff] font-[Poppins] mt-1 text-center">
+                <span className="text-xs text-[#7b61ff] font-[Poppins] mt-2 text-center">
                   ou R${" "}
                   {mainVariant.price.toLocaleString("pt-BR", {
                     minimumFractionDigits: 2,
                   })}{" "}
-                  no crédito à vista
+                  no crédito
                 </span>
-              )}
-              {/* Botão COMPRAR - removido no mobile */}
-              {!small && (
-                <div className="hidden sm:flex w-full justify-center  sm:mt-2 mb-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  <button
-                    className="px-4 sm:px-6 py-1.5 sm:py-2 rounded-full font-bold text-white bg-[#fe53b3] shadow text-xs sm:text-sm font-[Poppins] hover:bg-[#fe53b3] hover:scale-105 transition-all duration-200 text-center"
-                    style={{ fontFamily: "Poppins, Arial, sans-serif" }}
-                  >
-                    COMPRAR
-                  </button>
-                </div>
               )}
             </div>
           </div>
