@@ -9,6 +9,7 @@ import { ListItem, ListTransition } from "@/components/ui/transitions";
 import { useErrorHandler } from "@/hooks/useErrorHandler";
 import { gtagEvent } from "@/lib/gtag";
 import { Product, supabase } from "@/lib/supabaseClient";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 interface Category {
@@ -18,6 +19,7 @@ interface Category {
 }
 
 export default function ProdutosPage() {
+  const searchParams = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -43,10 +45,19 @@ export default function ProdutosPage() {
 
         if (error) throw error;
         setCategories(data || []);
+        
+        // Definir categoria inicial baseada no parâmetro da URL
+        const categoriaSlug = searchParams.get("categoria");
+        if (categoriaSlug && data) {
+          const categoria = data.find(cat => cat.slug === categoriaSlug);
+          if (categoria) {
+            setSelectedCategory(categoria.id);
+          }
+        }
       });
     }
     fetchCategories();
-  }, [handleAsync]);
+  }, [handleAsync, searchParams]);
 
   useEffect(() => {
     if (searchTimeout.current) clearTimeout(searchTimeout.current);
@@ -68,7 +79,9 @@ export default function ProdutosPage() {
           .eq("status", "active");
         if (debouncedSearch)
           query = query.ilike("name", `%${debouncedSearch}%`);
-        if (selectedCategory) query = query.eq("category_id", selectedCategory);
+        if (selectedCategory) {
+          query = query.eq("category_id", selectedCategory);
+        }
 
         // Aplicar ordenação baseada no estado sort
         switch (sort) {
@@ -106,7 +119,11 @@ export default function ProdutosPage() {
       });
       setLoading(false);
     }
-    fetchProducts();
+    
+    // Só busca produtos se as categorias já foram carregadas
+    if (categories.length > 0) {
+      fetchProducts();
+    }
   }, [
     debouncedSearch,
     selectedCategory,
@@ -114,6 +131,7 @@ export default function ProdutosPage() {
     itemsPerPage,
     sort,
     handleAsync,
+    categories.length, // Adiciona dependência para garantir que categorias foram carregadas
   ]);
 
   useEffect(() => {

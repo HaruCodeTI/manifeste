@@ -14,50 +14,6 @@ export default function HomePage() {
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [offers, setOffers] = useState<Product[]>([]);
 
-  const testimonials = [
-    {
-      name: "Poliana",
-      product: "Piggy Sugador de Clitóris Recarregável",
-      rating: 5,
-      title: "É o melhor toy que uma mulher pode ter!",
-      text: "Fazem dois anos que comprei e foi o melhor investimento! Ele é perfeito. Você nem precisa estar no clima, que chega lá em segundos. É realmente o melhor.",
-    },
-    {
-      name: "Mila",
-      product: "Must Vibrador Rabbit com Aquecimento",
-      rating: 5,
-      title: "FUI PRO CÉU",
-      text: "Já tinha o best e adorava... e ja tinha um tempo que eu tava namorando o Must, justo pelo fato dele esquentar... ai rolou a promo e eu ✨comprei✨ e amei!",
-    },
-    {
-      name: "Maju F",
-      product: "Must Vibrador Rabbit com Aquecimento",
-      rating: 5,
-      title: "Criação abençoada",
-      text: "Meu Must chegou a noite e fui ver se tava tudo certo não resisti fui experimentar msm, vei que maravilhosa ainda tava frio ele esquentou tudo kkkkkk, no começo...",
-    },
-    {
-      name: "Juliana Berto",
-      product: "Must Vibrador Rabbit com Aquecimento",
-      rating: 5,
-      title: "Reclamação = goza muito rápido",
-      text: "O meu must chegou, cheguei do trabalho e a primeira coisa que eu fiz foi testar, queria fazer uma reclamação pq eu me sinto um macho precoce que goza na primeira...",
-    },
-  ];
-  const [testimonialIdx, setTestimonialIdx] = useState(0);
-  const testimonialTimeout = useRef<NodeJS.Timeout | null>(null);
-
-  // Animação automática
-  useEffect(() => {
-    if (testimonialTimeout.current) clearTimeout(testimonialTimeout.current);
-    testimonialTimeout.current = setTimeout(() => {
-      setTestimonialIdx((prev: number) => (prev + 1) % testimonials.length);
-    }, 6000);
-    return () => {
-      if (testimonialTimeout.current) clearTimeout(testimonialTimeout.current);
-    };
-  }, [testimonialIdx]);
-
   useEffect(() => {
     async function fetchCategories() {
       const { data } = await supabase
@@ -149,7 +105,7 @@ export default function HomePage() {
                 className="text-black text-sm md:text-base font-[Poppins]"
                 style={{ fontFamily: "Poppins, Arial, sans-serif" }}
               >
-                até 3x sem juros no cartão ou 10% off no pix
+                até 3x sem juros no cartão ou 5% off no pix
               </div>
             </div>
           </div>
@@ -200,7 +156,7 @@ export default function HomePage() {
                   let img = "";
                   if (/vibra/i.test(cat.name)) {
                     bg = "#ffe0f7";
-                    img = "/2.png";
+                    img = "/coelho.png";
                   } else if (/lubr/i.test(cat.name)) {
                     bg = "#ffe4ec";
                     img = "/1.png";
@@ -212,7 +168,7 @@ export default function HomePage() {
                     img = "/1.png";
                   } else if (/acess/i.test(cat.name)) {
                     bg = "#f3e8ff";
-                    img = "/3.png";
+                    img = "/anel-de-ritmo.png";
                   } else if (/anal/i.test(cat.name)) {
                     bg = "#e0e7ff";
                     img = "/2.png";
@@ -326,11 +282,11 @@ export default function HomePage() {
       {/* Entrega Discreta e Rápida */}
       <section className="w-full py-12 md:py-20 bg-[#ededed] flex flex-col md:flex-row items-center justify-center gap-10 md:gap-20">
         <div className="flex-1 flex items-center justify-center">
-          <div className="bg-[#0076ff] rounded-3xl p-6 md:p-10 flex items-center justify-center w-full max-w-md min-h-[320px]">
+          <div className="rounded-3xl flex items-center justify-center w-full max-w-md min-h-[320px] overflow-hidden">
             <img
-              src="/entrega.png"
+              src="/entrega-discreta.png"
               alt="Entrega Discreta"
-              className="w-full h-auto max-h-64 object-contain rounded-2xl"
+              className="w-full h-full object-cover rounded-3xl"
             />
           </div>
         </div>
@@ -355,97 +311,6 @@ export default function HomePage() {
             Entregamos em até <b>1 hora</b> para Campo Grande/MS. Rápido, seguro
             e com total discrição!
           </div>
-        </div>
-      </section>
-      {/* Depoimentos / Avaliações */}
-      <section className="w-full py-12 md:py-20 bg-[#f5f5f5] flex flex-col items-center">
-        <h2
-          className="text-4xl md:text-5xl font-bold text-black/90 text-center font-[Poppins] mb-12"
-          style={{
-            letterSpacing: "-1px",
-            fontFamily: "Poppins, Arial, sans-serif",
-          }}
-        >
-          O que dizem nossas clientes
-        </h2>
-        <div className="relative w-full max-w-5xl flex items-center justify-center">
-          {/* Slider */}
-          <button
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 rounded-full shadow p-2 hover:bg-[#b689e0]/20 transition hidden sm:block"
-            onClick={() =>
-              setTestimonialIdx(
-                (prev) => (prev - 1 + testimonials.length) % testimonials.length
-              )
-            }
-            aria-label="Anterior"
-          >
-            <span style={{ fontSize: 28, color: "#b689e0" }}>‹</span>
-          </button>
-          <div className="w-full overflow-hidden">
-            <div
-              className="flex transition-transform duration-700"
-              style={{ transform: `translateX(-${testimonialIdx * 100}%)` }}
-            >
-              {testimonials.map((t, idx) => (
-                <div
-                  key={idx}
-                  className="min-w-full px-2 sm:px-4 flex justify-center"
-                >
-                  <div className="bg-white rounded-2xl shadow-lg border border-[#ececec] p-8 max-w-xl w-full flex flex-col gap-3 animate-fadein">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="w-12 h-12 rounded-full bg-[#ede3f6] flex items-center justify-center font-bold text-lg text-[#b689e0]">
-                        {t.name[0]}
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-gray-700 font-semibold text-base font-[Poppins]">
-                          {t.name}
-                        </span>
-                        <span className="text-black font-bold text-base font-[Poppins]">
-                          {t.product}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1 mb-1">
-                      {Array.from({ length: t.rating }).map((_, i) => (
-                        <span
-                          key={i}
-                          style={{ color: "#FFD600", fontSize: 18 }}
-                        >
-                          ★
-                        </span>
-                      ))}
-                    </div>
-                    <div className="font-bold text-gray-800 text-base mb-1 font-[Poppins]">
-                      {t.title}
-                    </div>
-                    <div className="text-gray-700 text-base font-[Poppins]">
-                      {t.text}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <button
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/80 rounded-full shadow p-2 hover:bg-[#b689e0]/20 transition hidden sm:block"
-            onClick={() =>
-              setTestimonialIdx((prev) => (prev + 1) % testimonials.length)
-            }
-            aria-label="Próximo"
-          >
-            <span style={{ fontSize: 28, color: "#b689e0" }}>›</span>
-          </button>
-        </div>
-        {/* Dots mobile */}
-        <div className="flex gap-2 mt-6 sm:hidden justify-center">
-          {testimonials.map((_, i) => (
-            <button
-              key={i}
-              className={`w-3 h-3 rounded-full ${i === testimonialIdx ? "bg-[#b689e0]" : "bg-[#ede3f6]"}`}
-              onClick={() => setTestimonialIdx(i)}
-              aria-label={`Ir para depoimento ${i + 1}`}
-            />
-          ))}
         </div>
       </section>
 
