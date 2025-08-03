@@ -30,12 +30,12 @@ export default function BannerCarousel() {
       </div>
 
       {/* Banner para telas médias e mobile (abaixo de lg) */}
-      <div className="lg:hidden w-full px-4 sm:px-6">
+      <div className="lg:hidden w-full">
         <div
           className="w-full relative"
           style={{
             aspectRatio: "12/11",
-            borderRadius: 12,
+            borderRadius: 0,
             overflow: "hidden",
           }}
         >
@@ -45,7 +45,7 @@ export default function BannerCarousel() {
             fill
             quality={90}
             style={{
-              borderRadius: 12,
+              borderRadius: 0,
               objectFit: "cover",
               objectPosition: "center center",
             }}
