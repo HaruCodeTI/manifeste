@@ -201,16 +201,28 @@ export default function HomePage() {
                         }}
                       >
                         {img ? (
-                          <img
-                            src={img}
-                            alt={cat.name}
+                          <div
                             style={{
                               width: "70%",
                               height: "70%",
-                              objectFit: "cover",
                               borderRadius: "50%",
+                              background: "white",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              overflow: "hidden",
                             }}
-                          />
+                          >
+                            <img
+                              src={img}
+                              alt={cat.name}
+                              style={{
+                                width: "80%",
+                                height: "80%",
+                                objectFit: "contain",
+                              }}
+                            />
+                          </div>
                         ) : null}
                       </span>
                       <span
