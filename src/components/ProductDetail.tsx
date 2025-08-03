@@ -17,11 +17,18 @@ interface ProductDetailProps {
 // Componente para exibir preços com desconto na tela do produto
 function ProductDetailDiscountPrice({
   price,
-  discountPercent = 30,
 }: {
   price: number;
-  discountPercent?: number;
 }) {
+  // Calcula o desconto dinâmico baseado no preço
+  const getDiscountPercent = (price: number) => {
+    if (price >= 200) return 30; // Produtos mais caros mantêm 30%
+    if (price >= 100) return 25; // Produtos médios: 25%
+    if (price >= 50) return 20;  // Produtos menores: 20%
+    return 15; // Produtos muito baratos: 15%
+  };
+
+  const discountPercent = getDiscountPercent(price);
   const originalPrice = Math.round(price / (1 - discountPercent / 100));
   const discountedPrice = price;
 

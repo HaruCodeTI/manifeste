@@ -5,8 +5,9 @@ import { Header } from "@/components/Header";
 import { ProductCard } from "@/components/ProductCard";
 import { ShoppingCart } from "@/components/ShoppingCart";
 import { Category, Product, supabase } from "@/lib/supabaseClient";
+import { calcPix } from "@/lib/utils";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function HomePage() {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -241,28 +242,26 @@ export default function HomePage() {
                 product.variants && product.variants.length > 0
                   ? product.variants[0]
                   : null;
-              const hasDiscount =
-                mainVariant &&
-                mainVariant.original_price &&
-                mainVariant.original_price > mainVariant.price;
-              const discountPercent =
-                hasDiscount && mainVariant && mainVariant.original_price
-                  ? Math.round(
-                      100 -
-                        (mainVariant.price / mainVariant.original_price) * 100
-                    )
-                  : 0;
+              
+              // Calcula o desconto dinâmico baseado no preço no PIX
+              const getDiscountPercent = (price: number) => {
+                if (price >= 200) return 30; // Produtos mais caros mantêm 30%
+                if (price >= 100) return 25; // Produtos médios: 25%
+                if (price >= 50) return 20;  // Produtos menores: 20%
+                return 15; // Produtos muito baratos: 15%
+              };
+
+              const valorPix = mainVariant ? calcPix(mainVariant.price) : 0;
+              const discountPercent = getDiscountPercent(valorPix);
               const hasFreeShipping = mainVariant && mainVariant.price >= 250;
               const bg = offerBgColors[idx % offerBgColors.length];
               return (
                 <div key={product.id} className="relative">
                   {/* Badges */}
                   <div className="absolute top-5 left-5 flex flex-col gap-2 z-10">
-                    {hasDiscount && (
-                      <span className="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
-                        {discountPercent}% OFF
-                      </span>
-                    )}
+                    <span className="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                      {discountPercent}% OFF
+                    </span>
                     <span className="bg-[#fe53b3] text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
                       OFERTA
                     </span>

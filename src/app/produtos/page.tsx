@@ -10,7 +10,7 @@ import { useErrorHandler } from "@/hooks/useErrorHandler";
 import { gtagEvent } from "@/lib/gtag";
 import { Product, supabase } from "@/lib/supabaseClient";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 
 interface Category {
   id: string;
@@ -18,7 +18,7 @@ interface Category {
   slug: string;
 }
 
-export default function ProdutosPage() {
+function ProdutosPageContent() {
   const searchParams = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -294,5 +294,13 @@ export default function ProdutosPage() {
       </main>
       <ShoppingCart isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </div>
+  );
+}
+
+export default function ProdutosPage() {
+  return (
+    <Suspense fallback={<LoadingGrid />}>
+      <ProdutosPageContent />
+    </Suspense>
   );
 }

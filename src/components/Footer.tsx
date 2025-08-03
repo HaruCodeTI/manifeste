@@ -45,15 +45,7 @@ export function Footer() {
                   Missão, Visão e Valores
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="/trocas-e-devolucoes"
-                  className="transition-colors duration-200 text-white hover:text-secondary focus:text-white font-sans"
-                  style={{ fontFamily: "Poppins, Arial, sans-serif" }}
-                >
-                  Trocas e Devoluções
-                </Link>
-              </li>
+
               <li>
                 <Link
                   href="/politica-de-privacidade"

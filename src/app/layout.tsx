@@ -109,6 +109,11 @@ export default function RootLayout({
           <Footer />
           <StagewiseDevToolbar />
         </ThemeProvider>
+
+        {/* CÓDIGO DO CHATBOT */}
+        <script async src="https://cdn.botpress.cloud/webchat/v3.2/inject.js"></script>
+        <script async src="https://files.bpcontent.cloud/2025/07/23/18/20250723182312-TAQUW1J1.js"></script>
+        
       </body>
     </html>
   );
