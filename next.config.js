@@ -1,11 +1,23 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: [
-      "images.unsplash.com",
-      "lojagall.vtexassets.com",
-      "www.distribuidorasexshop.com.br",
-      "bxybenfsenafildrevew.supabase.co",
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'lojagall.vtexassets.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.distribuidorasexshop.com.br',
+      },
+      {
+        protocol: 'https',
+        hostname: 'bxybenfsenafildrevew.supabase.co',
+      },
     ],
   },
 };
