@@ -217,9 +217,10 @@ export default function HomePage() {
                               src={img}
                               alt={cat.name}
                               style={{
-                                width: "100%",
-                                height: "100%",
-                                objectFit: "cover",
+                                width: /lubr|gel/i.test(cat.name) ? "150%" : "200%",
+                                height: /lubr|gel/i.test(cat.name) ? "150%" : "200%",
+                                objectFit: /lubr|gel/i.test(cat.name) ? "cover" : "contain",
+                                objectPosition: /lubr|gel/i.test(cat.name) ? "center" : "center",
                                 borderRadius: "50%",
                               }}
                             />
