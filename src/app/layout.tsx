@@ -1,6 +1,7 @@
 import { Footer } from "@/components/Footer";
 import { StagewiseDevToolbar } from "@/components/StagewiseDevToolbar";
 import { StructuredData } from "@/components/StructuredData";
+import { BotpressChat } from "@/components/BotpressChat";
 import { CartProvider } from "@/contexts/CartContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import "@fontsource/poppins/400.css";
@@ -108,11 +109,10 @@ export default function RootLayout({
           <CartProvider>{children}</CartProvider>
           <Footer />
           <StagewiseDevToolbar />
+          <BotpressChat />
         </ThemeProvider>
 
-        {/* CÓDIGO DO CHATBOT */}
-        <script async src="https://cdn.botpress.cloud/webchat/v3.2/inject.js"></script>
-        <script async src="https://files.bpcontent.cloud/2025/07/23/18/20250723182312-TAQUW1J1.js"></script>
+        {/* Chat do Botpress agora é gerenciado pelo componente React */}
         
       </body>
     </html>
