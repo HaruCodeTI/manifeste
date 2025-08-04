@@ -28,6 +28,12 @@ async function fetchCepData(cep: string) {
   if (!res.ok) return null;
   const data = await res.json();
   if (data.erro) return null;
+  
+  // Validação: apenas Campo Grande/MS
+  if (data.localidade !== "Campo Grande" || data.uf !== "MS") {
+    throw new Error("Entregamos apenas em Campo Grande/MS. Infelizmente não atendemos sua região.");
+  }
+  
   return data;
 }
 
@@ -189,6 +195,7 @@ export default function CheckoutPage() {
   const [step, setStep] = useState(1);
 
   const [cepBuscado, setCepBuscado] = useState(false);
+  const [cepError, setCepError] = useState("");
 
   const [isFinalizingOrder, setIsFinalizingOrder] = useState(false);
   const cepValido =
@@ -200,7 +207,9 @@ export default function CheckoutPage() {
     customerInfo.name.trim().length > 1 &&
     customerInfo.phone.trim().length >= 10 &&
     isValidPhone(customerInfo.phone) &&
-    shippingInfo.number.trim().length > 0;
+    shippingInfo.number.trim().length > 0 &&
+    shippingInfo.city === "Campo Grande" &&
+    shippingInfo.state === "MS";
 
   const handleValidateCoupon = async () => {
     if (!couponCode.trim()) {
@@ -431,16 +440,26 @@ export default function CheckoutPage() {
                               ""
                             );
                             if (cleanCep.length === 8) {
-                              const data = await fetchCepData(cleanCep);
-                              if (data) {
-                                setShippingInfo((prev) => ({
-                                  ...prev,
-                                  address: data.logradouro || "",
-                                  neighborhood: data.bairro || "",
-                                  city: data.localidade || "",
-                                  state: data.uf || "MS",
-                                }));
-                                setCepBuscado(true);
+                              setCepError("");
+                              try {
+                                const data = await fetchCepData(cleanCep);
+                                if (data) {
+                                  setShippingInfo((prev) => ({
+                                    ...prev,
+                                    address: data.logradouro || "",
+                                    neighborhood: data.bairro || "",
+                                    city: data.localidade || "",
+                                    state: data.uf || "MS",
+                                  }));
+                                  setCepBuscado(true);
+                                }
+                              } catch (error) {
+                                if (error instanceof Error) {
+                                  setCepError(error.message);
+                                } else {
+                                  setCepError("Erro ao buscar CEP");
+                                }
+                                setCepBuscado(false);
                               }
                             }
                           }}
@@ -460,6 +479,13 @@ export default function CheckoutPage() {
                           Não sei meu CEP
                         </button>
                       </div>
+                      {cepError && (
+                        <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                          <p className="text-red-600 text-sm font-[Poppins]">
+                            {cepError}
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </div>
                   {/* ENDEREÇO (só aparece após buscar o CEP) */}
