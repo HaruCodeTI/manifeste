@@ -362,6 +362,8 @@ export default function HomePage() {
             </a>
           </div>
         </div>
+          </div>
+        </div>
       </section>
 
       <div className="w-full flex flex-col items-center py-8 bg-white">
