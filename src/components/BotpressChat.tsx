@@ -1,41 +1,24 @@
 "use client";
 
-import { useState } from 'react';
-import {
-  Webchat,
-  Fab,
-  useWebchat,
-} from '@botpress/webchat';
+import { useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 
-const clientId = "023bdfde-0f4d-4ca7-8de4-eb5ecebeef54";
+// Importação dinâmica para evitar SSR
+const BotpressWebchat = dynamic(() => import('./BotpressWebchatComponent'), {
+  ssr: false,
+  loading: () => null,
+});
 
 export function BotpressChat() {
-  const [isWebchatOpen, setIsWebchatOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
-  const { client, messages, participants, isTyping, error, clientState } = useWebchat({
-    clientId,
-  });
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
-  const toggleWebchat = () => {
-    setIsWebchatOpen((prevState) => !prevState);
-  };
-
-  if (error) {
-    console.error('Webchat error:', error);
+  if (!isMounted) {
     return null;
   }
 
-  return (
-    <>
-      <Fab onClick={toggleWebchat} />
-      {isWebchatOpen && (
-        <Webchat
-          clientId={clientId}
-          configuration={{
-            color: '#7b61ff',
-          }}
-        />
-      )}
-    </>
-  );
+  return <BotpressWebchat />;
 } 
