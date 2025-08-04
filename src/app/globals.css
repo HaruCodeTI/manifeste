@@ -1,0 +1,218 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import "tw-animate-css";
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap");
+
+:root {
+  --background: #b689e0;
+  --secondary-background: #e1e1e1;
+  --foreground: #1a1a1a;
+  --primary: #b689e0;
+  --primary-foreground: #ffffff;
+  --secondary: #fe53b3;
+  --secondary-foreground: #1a1a1a;
+  --muted: #f8e5d8;
+  --card: #ffffff;
+  --card-foreground: #1a1a1a;
+  --accent: #fffefd;
+  --destructive: #ef4444;
+  --border: #ffffff;
+  --radius: 0.75rem;
+  --font-main: "Montserrat", Arial, sans-serif;
+}
+
+.dark {
+  --background: #1a1a1a;
+  --foreground: #f4eae6;
+  --primary: #8e44ad;
+  --primary-foreground: #ffffff;
+  --secondary: #ff6f61;
+  --secondary-foreground: #f4eae6;
+  --muted: #232323;
+  --card: #232323;
+  --card-foreground: #f4eae6;
+  --accent: #d4af37;
+  --destructive: #ef4444;
+  --border: #d4af37;
+  --radius: 0.75rem;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+@layer base {
+  * {
+    border-radius: var(--radius);
+    font-family: var(--font-main);
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-main);
+    font-weight: 300;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: 700;
+  }
+  button,
+  input,
+  textarea,
+  select {
+    font-family: var(--font-main);
+    font-weight: 400;
+  }
+}
+
+@layer components {
+  .bg-primary {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+  }
+  .bg-secondary {
+    background-color: var(--secondary);
+    color: var(--secondary-foreground);
+  }
+  .bg-accent {
+    background-color: var(--accent);
+  }
+  .text-primary {
+    color: var(--primary);
+  }
+  .text-secondary {
+    color: var(--secondary);
+  }
+  .border-custom {
+    border-color: var(--border);
+  }
+}
+
+.markdown-content {
+  max-width: 100%;
+  overflow-wrap: break-word;
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.markdown-content h1 {
+  font-size: 2em;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.3em;
+}
+
+.markdown-content h2 {
+  font-size: 1.5em;
+}
+
+.markdown-content h3 {
+  font-size: 1.25em;
+}
+
+.markdown-content p {
+  margin-bottom: 1em;
+  line-height: 1.6;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  margin-bottom: 1em;
+  padding-left: 2em;
+}
+
+.markdown-content li {
+  margin-bottom: 0.5em;
+}
+
+.markdown-content strong {
+  font-weight: 600;
+}
+
+.markdown-content em {
+  font-style: italic;
+}
+
+.markdown-content a {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+.markdown-content a:hover {
+  text-decoration: none;
+}
+
+.markdown-content blockquote {
+  border-left: 4px solid var(--border);
+  padding-left: 1em;
+  margin: 1em 0;
+  font-style: italic;
+}
+
+.markdown-content code {
+  background-color: var(--muted);
+  padding: 0.2em 0.4em;
+  border-radius: 0.25em;
+  font-family: monospace;
+  font-size: 0.9em;
+}
+
+.markdown-content pre {
+  background-color: var(--muted);
+  padding: 1em;
+  border-radius: 0.5em;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+
+.markdown-content pre code {
+  background: none;
+  padding: 0;
+}
+
+.markdown-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+  border: 1px solid var(--border);
+}
+
+.markdown-content th,
+.markdown-content td {
+  padding: 0.5em;
+  text-align: left;
+  border: 1px solid var(--border);
+}
+
+.markdown-content th {
+  background-color: var(--muted);
+  font-weight: 600;
+}
+
+.markdown-content hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2em 0;
+}
+
+.markdown-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5em;
+}
