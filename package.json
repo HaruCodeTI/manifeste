@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@botpress/webchat": "^3.1.0",
     "@fontsource/poppins": "^5.2.6",
     "@radix-ui/react-slot": "^1.2.3",
     "@stripe/stripe-js": "^7.4.0",
