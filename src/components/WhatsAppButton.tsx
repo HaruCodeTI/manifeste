@@ -15,8 +15,8 @@ export function WhatsAppButton() {
   }, []);
 
   const handleWhatsAppClick = () => {
-    // Número do WhatsApp da empresa (substitua pelo número correto)
-    const phoneNumber = "5567999999999"; // Formato: código do país + DDD + número
+    // Número do WhatsApp da empresa
+    const phoneNumber = "5567996590570"; // Formato: código do país + DDD + número
     const message = "Olá! Gostaria de fazer um pedido ou tirar dúvidas sobre os produtos.";
     
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
