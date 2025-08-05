@@ -128,7 +128,7 @@ export default function HomePage() {
                 className="text-black text-sm md:text-base font-[Poppins]"
                 style={{ fontFamily: "Poppins, Arial, sans-serif" }}
               >
-                pix, crédito a vista ou até 12x no cartão
+                pix, débito ou crédito em até 3x
               </div>
             </div>
           </div>
