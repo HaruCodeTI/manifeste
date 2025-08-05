@@ -1,5 +1,6 @@
 import { Footer } from "@/components/Footer";
 import { StructuredData } from "@/components/StructuredData";
+import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { CartProvider } from "@/contexts/CartContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import "@fontsource/poppins/400.css";
@@ -106,6 +107,7 @@ export default function RootLayout({
         <ThemeProvider>
           <CartProvider>{children}</CartProvider>
           <Footer />
+          <WhatsAppButton />
         </ThemeProvider>
 
 
